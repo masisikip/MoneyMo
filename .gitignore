@@ -1,0 +1,33 @@
+# Ignore node modules (npm dependencies)
+node_modules/
+
+# Ignore package lock files (if not needed)
+package-lock.json
+yarn.lock
+
+# Ignore npm debug log
+npm-debug.log
+
+# Ignore environment variables file (.env)
+.env
+
+# Ignore Composer's vendor folder (if not using Composer)
+vendor/
+
+# Ignore system-specific files (macOS, Windows)
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor config files
+.idea/
+.vscode/
+
+# Ignore log files
+*.log
+
+# Ignore PHP cache files
+/.phpunit.result.cache
+
+# Ignore temporary files
+*.swp
+*.swo
