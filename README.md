@@ -31,7 +31,7 @@ MoneyMo: Money Monitor is an innovative Modern Digital Receipt Keeper and Invent
 Before you begin, ensure you have the following installed:
 
 - **XAMPP** - Includes Apache (web server) and PHP. Download and install it from [https://www.apachefriends.org/index.html](https://www.apachefriends.org/index.html).
-- **Node.js** (version X.X or higher) - Includes npm for managing frontend dependencies. Download and install it from [https://nodejs.org/](https://nodejs.org/).
+- **Node.js** (version 20.0 or higher) - Includes npm for managing frontend dependencies. Download and install it from [https://nodejs.org/](https://nodejs.org/).
 - **A modern web browser** - For testing and using the application.
 
 
@@ -39,7 +39,7 @@ Before you begin, ensure you have the following installed:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/uzzielkyle/MoneyMo.git .
+   git clone https://github.com/masisikip/MoneyMo.git .
    ```
 
 2. **Set up XAMPP**:
@@ -93,26 +93,31 @@ For more details, refer to the [API Documentation](docs/api/index.md).
 
 ```
 MoneyMo/
-├── src/                  # Frontend source files (HTML, CSS, JS)
-│   └── css/              # Source CSS files for the project
-│       └── input.css     # Tailwind CSS input configuration
-├── public/               # Publicly accessible frontend assets (compiled files)
-│   ├── assets/           # Images, fonts, and other static assets
-│   ├── css/              # Compiled Tailwind CSS output (e.g., tailwind.css)
-│   ├── js/               # Compiled and custom JavaScript files (including jQuery)
-│   └── index.php         # Main entry point for the frontend (serves HTML)
-├── api/                  # PHP backend files (API logic)
+├── api/                  # PHP backend files (API logic moved to this folder)
 │   ├── index.php         # Main backend file (API entry point)
 │   └── ...               # Additional backend PHP files
+
 ├── docs/                 # Documentation files
 │   ├── api/              # API documentation
 │   │   └── index.md      # API documentation landing page
 │   └── interface/        # UI user guide documentation
 │       └── index.md      # Interface user guide landing page
+
+├── public/               # Publicly accessible frontend assets (compiled files)
+│   ├── assets/           # Images, fonts, and other static assets
+│   ├── css/              # Compiled Tailwind CSS output (e.g., tailwind.css)
+│   ├── js/               # Compiled and custom JavaScript files (including jQuery)
+│   ├── index.php         # Main entry point for the frontend (serves HTML)
+│   └── ...               # Other pages and assets
+
+├── src/                  # Frontend source files (HTML, CSS, JS)
+│   └── css/              # Source CSS files for the project
+│       └── input.css     # Tailwind CSS input configuration
+
 ├── .gitignore            # Specifies files and directories to ignore in git
 ├── LICENSE               # Project license file
 ├── package.json          # NPM package dependencies and scripts
-└── README.md             # Project README file       
+└── README.md             # Project README file
 ```
 
 
