@@ -15,7 +15,6 @@ MoneyMo: Money Monitor is an innovative Modern Digital Receipt Keeper and Invent
   - [API Documentation](#api-documentation)
   - [Folder Structure](#folder-structure)
   - [Contributing](#contributing)
-  - [Contribution Guidelines](CONTRIBUTING.md)
   - [License](#license)
 
 
@@ -134,7 +133,6 @@ Contributions are welcome! Please follow these steps:
 Please follow these [guidelines](CONTRIBUTING.md) to ensure smooth collaboration and maintain high-quality documentation and code.
 
   
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
