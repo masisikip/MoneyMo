@@ -51,58 +51,10 @@
     <div class="flex-1 p-8">
         <div class="bg-white shadow p-4 rounded-lg mb-6 flex items-center justify-between">
             <h1 class="text-2xl font-bold flex items-center">
-                <span>Dashboard</span>
+                <span>Inventory Records</span>
                 <span class="text-gray-500 mx-2">|</span>
                 <span class="text-gray-600 font-normal">Hello, admin Jamaica!</span>
             </h1>
-        </div>
-
-        <div class="bg-white shadow rounded-lg p-6">
-            <table class="w-full border-collapse">
-                <thead>
-                    <tr class="bg-gray-200 text-gray-700">
-                        <th class="py-2 px-4 text-left">
-                            Student Name
-                            <i class="fas fa-sort ml-2 text-gray-400"></i> <!-- Sort Arrow -->
-                        </th>
-                        <th class="py-2 px-4 text-left">
-                            Item Category
-                            <i class="fas fa-sort ml-2 text-gray-400"></i> <!-- Sort Arrow -->
-                        </th>
-                        <th class="py-2 px-4 text-left">
-                            Price
-                            <i class="fas fa-sort ml-2 text-gray-400"></i> <!-- Sort Arrow -->
-                        </th>
-                        <th class="py-2 px-4 text-left">Option</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b">
-                        <td class="py-3 px-4">Dela Cruz, Juan</td>
-                        <td class="py-3 px-4">Iphone 16</td>
-                        <td class="py-3 px-4">499 USD</td>
-                        <td class="py-3 px-4">
-                            <button class="bg-black text-white px-4 py-1 rounded-lg">Print</button>
-                        </td>
-                    </tr>
-                    <tr class="border-b">
-                        <td class="py-3 px-4">Ponce, Crissel</td>
-                        <td class="py-3 px-4">Org Shirt</td>
-                        <td class="py-3 px-4">500 USD</td>
-                        <td class="py-3 px-4">
-                            <button class="bg-black text-white px-4 py-1 rounded-lg">Print</button>
-                        </td>
-                    </tr>
-                    <tr class="border-b">
-                        <td class="py-3 px-4">Pineda, Jr. Fernando</td>
-                        <td class="py-3 px-4">Org Fee</td>
-                        <td class="py-3 px-4">150 USD</td>
-                        <td class="py-3 px-4">
-                            <button class="bg-black text-white px-4 py-1 rounded-lg">Print</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
 
