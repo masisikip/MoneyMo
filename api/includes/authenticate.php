@@ -1,19 +1,18 @@
 <?php
-include_once(__DIR__ . '/extract-custom-headers.php');
 include_once(__DIR__ . '/connect-db.php');
 
 
 function authenticate($user_type) {
     global $pdo;
-    $custom_headers = extractCustomHeaders();
+    $headers = getallheaders();
 
-    if (empty($custom_headers['user_id']) || empty($custom_headers['password'])) {
+    if (empty($headers['user_id']) || empty($headers['password'])) {
         handleAuthFailure('Missing user_id or password.', 400);
         return;
     }
 
-    $user_id = (int) $custom_headers['user_id'];
-    $user_password = hash('sha256', $custom_headers['password']);
+    $user_id = (int) $headers['user_id'];
+    $user_password = hash('sha256', $headers['password']);
 
     $stmt = $pdo->prepare("SELECT iduser, password, usertype FROM user WHERE iduser = :iduser");
     $stmt->bindParam(':iduser', $user_id, PDO::PARAM_INT);
