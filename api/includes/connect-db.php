@@ -19,7 +19,6 @@ try {
     ];
 
     $pdo = new PDO($dsn, $username, $password, $options);
-    echo "Connected to the database successfully!";
 } catch (PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
 }
