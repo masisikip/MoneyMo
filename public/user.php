@@ -172,7 +172,7 @@ try {
                                         data-fname='{$admin['f_name']}'
                                         data-email='{$admin['email']}'
                                         data-usertype='{$admin['usertype']}'>
-                                        Edit
+                                        <i class='fas fa-edit'></i> 
                                     </a>";
                                 echo "</td>";
                                 echo "</tr>";
@@ -214,12 +214,12 @@ try {
                                         data-fname='{$userData['f_name']}'
                                         data-email='{$userData['email']}'
                                         data-usertype='{$userData['usertype']}'>
-                                        Edit
+                                        <i class='fas fa-edit'></i>
                                     </a>";
                                 echo "|";
                                 echo "<a href='views/logic/user_delete.php?id={$userData['iduser']}' class='text-red-500' 
                                         onclick='return confirm(\"Are you sure you want to delete this user?\");'>
-                                        Delete
+                                        <i class='fas fa-trash-alt'></i>
                                     </a>";
                                 echo "</td>";
                                 echo "</tr>";
@@ -265,8 +265,8 @@ try {
                 <label class="block text-gray-700">User Type:</label>
                 <input type="text" id="edit_usertype" class="border p-2 w-full rounded mb-4 bg-gray-200" readonly>
                 <div class="flex justify-end space-x-2">
-                    <button type="submit" name="update_user" class="bg-blue-500 text-white px-4 py-2 rounded">Update</button>
-                    <button type="button" id="closeModal" class="bg-red-500 text-white px-4 py-2 rounded">Cancel</button>
+                    <button type="submit" name="update_user" class="bg-black text-white px-4 py-2 rounded">Update</button>
+                    <button type="button" id="closeModal" class="bg-black text-white px-4 py-2 rounded">Cancel</button>
                 </div>
             </form>
         </div>
