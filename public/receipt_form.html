@@ -11,6 +11,7 @@
   <body class="bg-[#d9d9d9]">
     <!-- Main Modal -->
     <div
+      id="myModal"
       class="modal fixed w-full h-full top-0 left-0 flex items-center justify-center"
     >
       <!-- hoverlay  -->
@@ -21,8 +22,14 @@
       <div
         class="modal-container h-auto bg-white w-11/12 md:max-w-md mx-auto shadow-lg z-50 overflow-y-auto"
       >
-        <div class="bg-black">
+        <div class="bg-black grid grid-cols-2 gap-x-4">
           <p class="text-white font-medium ml-3 p-2">MoneyMo</p>
+          <button
+            type="button"
+            class="text-white hover:bg-white hover:text-black px-4 py-2 ml-auto"
+          >
+            X
+          </button>
         </div>
         <!-- Add modal content here -->
         <div class="modal-content py-4 text-left px-6">
