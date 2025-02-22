@@ -15,8 +15,6 @@ MoneyMo: Money Monitor is an innovative Modern Digital Receipt Keeper and Invent
   - [API Documentation](#api-documentation)
   - [Folder Structure](#folder-structure)
   - [Contributing](#contributing)
-  - [Contribution Guidelines](#contribution-guidelines)
-    - [General Guidelines:](#general-guidelines)
   - [License](#license)
 
 
@@ -32,7 +30,7 @@ MoneyMo: Money Monitor is an innovative Modern Digital Receipt Keeper and Invent
 Before you begin, ensure you have the following installed:
 
 - **XAMPP** - Includes Apache (web server) and PHP. Download and install it from [https://www.apachefriends.org/index.html](https://www.apachefriends.org/index.html).
-- **Node.js** (version X.X or higher) - Includes npm for managing frontend dependencies. Download and install it from [https://nodejs.org/](https://nodejs.org/).
+- **Node.js** (version 20.0 or higher) - Includes npm for managing frontend dependencies. Download and install it from [https://nodejs.org/](https://nodejs.org/).
 - **A modern web browser** - For testing and using the application.
 
 
@@ -40,7 +38,7 @@ Before you begin, ensure you have the following installed:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/uzzielkyle/MoneyMo.git .
+   git clone https://github.com/masisikip/MoneyMo.git .
    ```
 
 2. **Set up XAMPP**:
@@ -94,26 +92,31 @@ For more details, refer to the [API Documentation](docs/api/index.md).
 
 ```
 MoneyMo/
-├── src/                  # Frontend source files (HTML, CSS, JS)
-│   └── css/              # Source CSS files for the project
-│       └── input.css     # Tailwind CSS input configuration
-├── public/               # Publicly accessible frontend assets (compiled files)
-│   ├── assets/           # Images, fonts, and other static assets
-│   ├── css/              # Compiled Tailwind CSS output (e.g., tailwind.css)
-│   ├── js/               # Compiled and custom JavaScript files (including jQuery)
-│   └── index.php         # Main entry point for the frontend (serves HTML)
-├── api/                  # PHP backend files (API logic)
+├── api/                  # PHP backend files (API logic moved to this folder)
 │   ├── index.php         # Main backend file (API entry point)
 │   └── ...               # Additional backend PHP files
+
 ├── docs/                 # Documentation files
 │   ├── api/              # API documentation
 │   │   └── index.md      # API documentation landing page
 │   └── interface/        # UI user guide documentation
 │       └── index.md      # Interface user guide landing page
+
+├── public/               # Publicly accessible frontend assets (compiled files)
+│   ├── assets/           # Images, fonts, and other static assets
+│   ├── css/              # Compiled Tailwind CSS output (e.g., tailwind.css)
+│   ├── js/               # Compiled and custom JavaScript files (including jQuery)
+│   ├── index.php         # Main entry point for the frontend (serves HTML)
+│   └── ...               # Other pages and assets
+
+├── src/                  # Frontend source files (HTML, CSS, JS)
+│   └── css/              # Source CSS files for the project
+│       └── input.css     # Tailwind CSS input configuration
+
 ├── .gitignore            # Specifies files and directories to ignore in git
 ├── LICENSE               # Project license file
 ├── package.json          # NPM package dependencies and scripts
-└── README.md             # Project README file       
+└── README.md             # Project README file
 ```
 
 
@@ -127,31 +130,9 @@ Contributions are welcome! Please follow these steps:
 4. Push to the branch (`git push origin feature/YourFeatureName`).
 5. Open a pull request.
 
+Please follow these [guidelines](CONTRIBUTING.md) to ensure smooth collaboration and maintain high-quality documentation and code.
 
-## Contribution Guidelines
-
-Please follow these guidelines to ensure smooth collaboration and maintain high-quality documentation and code.
-
-### General Guidelines:
-- **Write documentation** for any new feature or change you implement. This includes:
-  - Updating the **README.md** if the overall workflow or instructions change.
-  - Adding to the **API documentation** if the backend endpoints are modified.
-  - Including relevant **UI documentation** if the user interface is updated or altered.
-  - Adding **code comments** where necessary to explain the logic behind complex or non-obvious code.
-
-- Follow the **existing coding conventions** of the project to maintain consistency.
-- Ensure that all **tests** (if applicable) pass before submitting your pull request.
-- Make sure to **provide meaningful commit messages** describing what was changed and why.
-- **Use conventional commit messages** following the format:
-  - **feat**: A new feature
-  - **fix**: A bug fix
-  - **docs**: Documentation only changes
-  - **style**: Code style changes (e.g., formatting, missing semicolons)
-  - **refactor**: Code changes that neither fix a bug nor add a feature
-  - **perf**: Performance improvements
-  - **test**: Adding or modifying tests
   
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
