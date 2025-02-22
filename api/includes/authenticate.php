@@ -9,7 +9,8 @@ function authenticate($user_type) {
 
     if (empty($custom_headers['user_id']) || empty($custom_headers['password'])) {
         http_response_code(400); // Bad Request
-        die(json_encode(['error' => 'Missing user_id or password.']));
+        echo json_encode(['error' => 'Missing user_id or password.']);
+        return;
     }
 
     $user_id = (int) $custom_headers['user_id'];
@@ -22,16 +23,19 @@ function authenticate($user_type) {
 
     if (!$user) {
         http_response_code(404); // Not Found
-        die(json_encode(['error' => 'User not found.']));
+        echo json_encode(['error' => 'User not found.']);
+        return;
     }
 
     if ($user_password !== $user['password']) {
         http_response_code(401); // Unauthorized
-        die(json_encode(['error' => 'Invalid password.']));
+        echo json_encode(['error' => 'Invalid password.']);
+        return;
     }
 
     if ($user['usertype'] !== $user_type) {
         http_response_code(403); // Forbidden
-        die(json_encode(['error' => 'Access denied for this user type.']));
+        echo json_encode(['error' => 'Access denied for this user type.']);
+        return;
     }
 }
