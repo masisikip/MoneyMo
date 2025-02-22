@@ -1,6 +1,6 @@
 <?php
 function extractCustomHeaders() {
-    $ignoreHeaders = ['Host', 'Accept', 'Accept-Encoding', 'user-agent', 'Content-Length'];
+    $ignoreHeaders = ['Host', 'Accept', 'Accept-Encoding', 'user-agent', 'User-Agent', 'Content-Length'];
 
     $headers = getallheaders();
 
@@ -13,5 +13,3 @@ function extractCustomHeaders() {
 
     return $extractedHeaders;
 }
-
-$custom_headers = extractCustomHeaders();
