@@ -19,6 +19,7 @@ try {
     ];
 
     $pdo = new PDO($dsn, $username, $password, $options);
+    $GLOBALS['pdo'] = $pdo;
 } catch (PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
 }
