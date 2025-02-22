@@ -8,8 +8,7 @@ function authenticate($user_type) {
     $custom_headers = extractCustomHeaders();
 
     if (empty($custom_headers['user_id']) || empty($custom_headers['password'])) {
-        http_response_code(400); // Bad Request
-        echo json_encode(['error' => 'Missing user_id or password.']);
+        handleAuthFailure('Missing user_id or password.', 400);
         return;
     }
 
@@ -22,20 +21,27 @@ function authenticate($user_type) {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
-        http_response_code(404); // Not Found
-        echo json_encode(['error' => 'User not found.']);
+        handleAuthFailure('User not found.', 404);
         return;
     }
 
     if ($user_password !== $user['password']) {
-        http_response_code(401); // Unauthorized
-        echo json_encode(['error' => 'Invalid password.']);
+        handleAuthFailure('Invalid password.', 401);
         return;
     }
 
     if ($user['usertype'] !== $user_type) {
-        http_response_code(403); // Forbidden
-        echo json_encode(['error' => 'Access denied for this user type.']);
+        handleAuthFailure('Access denied for this user type.', 403);
         return;
     }
+}
+
+function handleAuthFailure($message, $response_code) {
+    if (strpos($_SERVER['REQUEST_URI'], '/api/') === 0) {
+        http_response_code($response_code);
+        echo json_encode(['error' => $message]);
+    } else {
+        header('Location: /login');
+    }
+    exit;
 }
