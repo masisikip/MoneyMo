@@ -1,4 +1,12 @@
 <?php
+include_once 'C:\xampp\htdocs\masisikip\MoneyMo\api\includes\connect-db.php';
+
+try {
+    $stmt = $pdo->query("SELECT * FROM item");
+    $items = $stmt->fetchAll();
+} catch (PDOException $e) {
+    echo "Query failed: " . $e->getMessage();
+}
 ?>
 
 <!DOCTYPE html>
@@ -12,6 +20,59 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="flex h-screen bg-gray-100">
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/4 h-auto">
+            <h2 class="text-xl font-bold mb-4">Add New Item</h2>
+            <form id="addItemForm">
+                <div class="mb-4">
+                    <label for="code" class="block text-gray-700">Code</label>
+                    <input type="text" id="code" name="code" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700">Name</label>
+                    <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <div class="mb-4">
+                    <label for="value" class="block text-gray-700">Value</label>
+                    <input type="number" id="value" name="value" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" class="px-4 py-2 bg-black text-white rounded mr-2" onclick="toggleModal('addItemModal')">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Add Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End Add Item Modal -->
+
+    <!-- Update Item Modal -->
+    <div id="updateItemModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/4 h-auto">
+            <h2 class="text-xl font-bold mb-4">Update Item</h2>
+            <form id="updateItemForm">
+                <input type="hidden" id="updateId" name="id">
+                <div class="mb-4">
+                    <label for="updateCode" class="block text-gray-700">Code</label>
+                    <input type="text" id="updateCode" name="code" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <div class="mb-4">
+                    <label for="updateName" class="block text-gray-700">Name</label>
+                    <input type="text" id="updateName" name="name" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <div class="mb-4">
+                    <label for="updateValue" class="block text-gray-700">Value</label>
+                    <input type="number" id="updateValue" name="value" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" class="px-4 py-2 bg-black text-white rounded mr-2" onclick="toggleModal('updateItemModal')">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Update Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End Update Item Modal -->
+
     <aside class="w-64 bg-black text-white p-6 overflow-y-auto fixed h-full">
         <div class="flex items-center mb-10 mt-6">
             <img src="assets/logo.png" alt="MoneyMo Logo" class="h-8 w-8 mr-2">
@@ -53,163 +114,98 @@
             <h1 class="text-2xl font-bold flex items-center">
                 <span>Item Management</span>
                 <span class="text-gray-500 mx-2">|</span>
-                <span class="text-gray-600 font-normal">Hello, admin Jamaica!</span>
+                <span class="text-gray-600 font-normal">Hello, Admin!</span>
             </h1>
         </div>
-
         <div class="bg-white shadow p-4 rounded-lg">
-        
-            <!-- Merch Category -->
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-2 flex items-center">
-                    Merch
-                    <button class="ml-4 px-4 py-2 text-black rounded">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold flex items-center">
+                    Items
+                    <button class="ml-4 text-black flex items-center" onclick="toggleModal('addItemModal')">
                         <i class="fas fa-plus"></i>
                     </button>
-                </h3>
-                <hr class="border-gray-300 mb-4">
-                <div class="grid justify-center w-full grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9">
-                    <div class="p-4 bg-gray-200 rounded shadow h-48 flex flex-col justify-between">
-                        <p>ID Lanyard <span class="text-gray-600 float-right">200 PHP</span></p>
-                        <div class="flex justify-end space-x-2">
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4 bg-gray-200 rounded shadow h-48 flex flex-col justify-between">
-                        <p>Organization Shirt <span class="text-gray-600 float-right">550 PHP</span></p>
-                        <div class="flex justify-end space-x-2">
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4 bg-gray-200 rounded shadow h-48 flex flex-col justify-between">
-                        <p>Pins <span class="text-gray-600 float-right">50 PHP</span></p>
-                        <div class="flex justify-end space-x-2">
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4 bg-gray-200 rounded shadow h-48 flex flex-col justify-between">
-                        <p>Mugs <span class="text-gray-600 float-right">100 PHP</span></p>
-                        <div class="flex justify-end space-x-2">
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4 bg-gray-200 rounded shadow h-48 flex flex-col justify-between">
-                        <p>Stickers <span class="text-gray-600 float-right">5 PHP</span></p>
-                        <div class="flex justify-end space-x-2">
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                </h2>
             </div>
-
-            <!-- Collection Category -->
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-2 flex items-center">
-                    Collection
-                    <button class="ml-4 px-4 py-2 text-black rounded">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </h3>
-                <hr class="border-gray-300 mb-4">
-                <div class="grid justify-center w-full grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9">
+            <div class="grid justify-center w-full grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9">
+                <?php foreach ($items as $item): ?>
                     <div class="p-4 bg-gray-200 rounded shadow h-48 flex flex-col justify-between">
-                        <p>Organization Fee <span class="text-gray-600 float-right">150 PHP</span></p>
+                        <p><?php echo htmlspecialchars($item['name']); ?> <span class="text-gray-600 float-right"><?php echo htmlspecialchars($item['value']); ?> PHP</span></p>
                         <div class="flex justify-end space-x-2">
-                            <button class="px-3 py-1 text-black rounded">
+                            <button class="px-3 py-1 text-black rounded" onclick="openUpdateModal(<?php echo htmlspecialchars(json_encode($item)); ?>)">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="px-3 py-1 text-black rounded">
+                            <button class="px-3 py-1 text-black rounded" onclick="confirmDelete(<?php echo $item['iditem']; ?>)">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="p-4 bg-gray-200 rounded shadow h-48 flex flex-col justify-between">
-                        <p>Organization Fines <span class="text-gray-600 float-right">0 PHP</span></p>
-                        <div class="flex justify-end space-x-2">
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Miscellaneous Category -->
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-2 flex items-center">
-                    Miscellaneous
-                    <button class="ml-4 px-4 py-2 text-black rounded">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </h3>
-                <hr class="border-gray-300 mb-4">
-                <div class="grid justify-center w-full grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9">
-                    <div class="p-4 bg-gray-200 rounded shadow h-48 flex flex-col justify-between">
-                        <p>Acquaintance Fee <span class="text-gray-600 float-right">550 PHP</span></p>
-                        <div class="flex justify-end space-x-2">
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Services Category -->
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-2 flex items-center">
-                    Services
-                    <button class="ml-4 px-4 py-2 text-black rounded">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </h3>
-                <hr class="border-gray-300 mb-4">
-                <div class="grid justify-center w-full grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9">
-                    <div class="p-4 bg-gray-200 rounded shadow h-48 flex flex-col justify-between">
-                        <p>Printing <span class="text-gray-600 float-right">1 PHP</span></p>
-                        <div class="flex justify-end space-x-2">
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="px-3 py-1 text-black rounded">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
 </body>
+<script>
+    function toggleModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.toggle('hidden');
+    }
+
+    function openUpdateModal(item) {
+        document.getElementById('updateId').value = item.iditem;
+        document.getElementById('updateCode').value = item.code;
+        document.getElementById('updateName').value = item.name;
+        document.getElementById('updateValue').value = item.value;
+        toggleModal('updateItemModal');
+    }
+
+    function confirmDelete(id) {
+        if (confirm('Are you sure you want to delete this item?')) {
+            fetch('views/logic/item_delete.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${id}`
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+                location.reload();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    }
+
+    document.getElementById('addItemForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch('views/logic/item_create.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+            toggleModal('addItemModal');
+            location.reload();
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('updateItemForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch('views/logic/item_update.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+            toggleModal('updateItemModal');
+            location.reload();
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
 </html>
