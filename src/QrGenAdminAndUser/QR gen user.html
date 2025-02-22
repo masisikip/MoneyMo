@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+        <h1 class="text-2xl font-bold mb-4">QR Code Generator</h1>
+        <input type="text" id="userName" placeholder="Enter your name" class="w-full p-2 border border-gray-300 rounded mb-4">
+        <button onclick="generateQR()" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Generate QR Code</button>
+        <div id="qrcode" class="mt-4 flex justify-center items-center"></div>
+        <div id="userDisplay" class="mt-4 text-xl font-semibold"></div>
+    </div>
+
+    <script>
+        function generateQR() {
+            const userName = document.getElementById('userName').value;
+            const qrcodeDiv = document.getElementById('qrcode');
+            const userDisplay = document.getElementById('userDisplay');
+
+            qrcodeDiv.innerHTML = '';
+
+            userDisplay.textContent = `Hello, ${userName}!`;
+
+            new QRCode(qrcodeDiv, {
+                text: userName,
+                width: 128,
+                height: 128
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin QR Code Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+        <h1 class="text-2xl font-bold mb-4">Admin QR Code Generator</h1>
+        <input type="text" id="adminName" placeholder="Enter admin name" class="w-full p-2 border border-gray-300 rounded mb-4">
+        <button onclick="generateAdminQR()" class="bg-green-500 text-white p-2 rounded hover:bg-green-600">Generate Admin QR Code</button>
+        <div id="adminQrcode" class="mt-4 flex justify-center items-center"></div>
+        <div id="adminDisplay" class="mt-4 text-xl font-semibold"></div>
+    </div>
+
+    <script>
+        function generateAdminQR() {
+            const adminName = document.getElementById('adminName').value;
+            const adminQrcodeDiv = document.getElementById('adminQrcode');
+            const adminDisplay = document.getElementById('adminDisplay');
+
+            adminQrcodeDiv.innerHTML = '';
+
+            adminDisplay.textContent = `Admin: ${adminName}`;
+
+            new QRCode(adminQrcodeDiv, {
+                text: `Admin: ${adminName}`,
+                width: 128,
+                height: 128
+            });
+        }
+    </script>
+</body>
+</html>
