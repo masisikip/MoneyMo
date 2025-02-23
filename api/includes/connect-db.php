@@ -1,6 +1,5 @@
 <?php
-$load_env_path = __DIR__ . '/load-env.php';
-include_once($load_env_path);
+include_once(__DIR__ . '/load-env.php');
 
 try {
     $hostname = getenv('DB_HOST');
@@ -19,6 +18,7 @@ try {
     ];
 
     $pdo = new PDO($dsn, $username, $password, $options);
+    $GLOBALS['pdo'] = $pdo; 
 } catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
+    echo json_encode("Connection failed: " . $e->getMessage());
 }

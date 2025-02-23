@@ -1,3 +1,53 @@
-<php
+<?php
+include_once(__DIR__ . '/connect-db.php');
 
 
+function authenticate($user_type=null, $user_id=null, $user_password=null, $autostop=true, $hashed=false) {
+    global $pdo;
+    $headers = getallheaders();
+    
+    if ($user_id === null || $user_password === null) {
+        if (empty($headers['x-id']) || empty($headers['x-password'])) {
+            handleAuthFailure('Missing user_id or password.', 400, $autostop);
+            return;
+        }
+
+        $user_id = (int) $headers['x-id'];
+        if (!$hashed){
+            $user_password = hash('sha256', $headers['x-password']);
+        } else {
+            $user_password = $headers['x-password'];
+        }
+        
+    }    
+
+    $stmt = $pdo->prepare("SELECT iduser, password, usertype FROM user WHERE iduser = :iduser");
+    $stmt->bindParam(':iduser', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        handleAuthFailure('User not found.', 404, $autostop);
+        return null;
+    }
+
+    if ($user_password !== $user['password']) {
+        handleAuthFailure('Invalid password.', 401, $autostop);
+        return null;
+    }
+
+    if ($user['usertype'] !== $user_type && $user['usertype'] !== 1 && $user_type !== null) {
+        handleAuthFailure('Access denied for this user type.', 403, $autostop);
+        return null;
+    }
+
+    return ["id" => $user['iduser'], "password" => $user['password'], "type" => $user['usertype']];
+}
+
+function handleAuthFailure($message, $response_code, $autostop) {
+    if ($autostop) {
+        http_response_code($response_code);
+        echo json_encode(['error' => $message]);
+        exit;
+    }    
+}
