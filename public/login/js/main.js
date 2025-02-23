@@ -31,7 +31,6 @@ $(document).ready(function() {
         'x-password': hashedPassword
       },
       success: function(response) {
-        alert(`Login successful!: ${response}`);
         window.location.href = '/public/test-page'
       },
       error: function(xhr) {

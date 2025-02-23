@@ -2,7 +2,7 @@
 include_once(__DIR__ . '/connect-db.php');
 
 
-function authenticate($user_type=null, $user_id=null, $user_password=null, $autostop=true) {
+function authenticate($user_type=null, $user_id=null, $user_password=null, $autostop=true, $hashed=false) {
     global $pdo;
     $headers = getallheaders();
     
@@ -13,7 +13,12 @@ function authenticate($user_type=null, $user_id=null, $user_password=null, $auto
         }
 
         $user_id = (int) $headers['x-id'];
-        $user_password = hash('sha256', $headers['x-password']);
+        if (!$hashed){
+            $user_password = hash('sha256', $headers['x-password']);
+        } else {
+            $user_password = $headers['x-password'];
+        }
+        
     }    
 
     $stmt = $pdo->prepare("SELECT iduser, password, usertype FROM user WHERE iduser = :iduser");
@@ -31,12 +36,12 @@ function authenticate($user_type=null, $user_id=null, $user_password=null, $auto
         return null;
     }
 
-    if ($user['usertype'] !== $user_type && $user_type !== null) {
+    if ($user['usertype'] !== $user_type && $user['usertype'] !== 1 && $user_type !== null) {
         handleAuthFailure('Access denied for this user type.', 403, $autostop);
         return null;
     }
 
-    return ["id" => $user_id, "password" => $user_password, "type" => $user['usertype']];
+    return ["id" => $user['iduser'], "password" => $user['password'], "type" => $user['usertype']];
 }
 
 function handleAuthFailure($message, $response_code, $autostop) {
