@@ -2,7 +2,7 @@
 include_once(__DIR__ . '/connect-db.php');
 
 
-function authenticate($user_id=null, $user_password=null, $user_type, $autostop=true) {
+function authenticate($user_type=null, $user_id=null, $user_password=null, $autostop=true) {
     global $pdo;
     $headers = getallheaders();
     
@@ -32,10 +32,11 @@ function authenticate($user_id=null, $user_password=null, $user_type, $autostop=
         return null;
     }
 
-    if ($user['usertype'] !== $user_type) {
+    if ($user['usertype'] !== $user_type && $user_type !== null) {
         handleAuthFailure('Access denied for this user type.', 403, $autostop);
         return null;
     }
+
     return ["id" => $user_id, "password" => $user_password, "type" => $user_type];
 }
 
