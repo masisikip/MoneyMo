@@ -1,15 +1,11 @@
 $(document).ready(function () {
-  $("#myModal").hide();
-});
-
-$(document).ready(function () {
   $(".clickable-div").click(function () {
-    $("#myModal").fadeIn();
+    $("#myModal").addClass("flex").removeClass("hidden");
   });
 });
 
 $(document).ready(function () {
   $("#closeModal").click(function () {
-    $("#myModal").fadeOut();
+    $("#myModal").addClass("hidden").removeClass("flex");
   });
 });
