@@ -124,11 +124,10 @@ MoneyMo/
 
 Contributions are welcome! Please follow these steps:
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/YourFeatureName`).
-3. Commit your changes (`git commit -m 'Add some feature'`).
-4. Push to the branch (`git push origin feature/YourFeatureName`).
-5. Open a pull request.
+1. Create a new branch for your feature/update (`git checkout -b feature/YourFeatureName`).
+2. Commit your changes (`git commit -m 'Add some feature'`).
+3. Push to the branch (`git push origin feature/YourFeatureName`).
+4. Open a pull request.
 
 Please follow these [guidelines](CONTRIBUTING.md) to ensure smooth collaboration and maintain high-quality documentation and code.
 
