@@ -7,15 +7,14 @@ function authenticate($user_type=null, $user_id=null, $user_password=null, $auto
     $headers = getallheaders();
     
     if ($user_id === null || $user_password === null) {
-        if (empty($headers['user_id']) || empty($headers['password'])) {
+        if (empty($headers['x-id']) || empty($headers['x-password'])) {
             handleAuthFailure('Missing user_id or password.', 400, $autostop);
             return;
         }
 
-        $user_id = (int) $headers['user_id'];
-        $user_password = hash('sha256', $headers['password']);
-    }
-    
+        $user_id = (int) $headers['x-id'];
+        $user_password = hash('sha256', $headers['x-password']);
+    }    
 
     $stmt = $pdo->prepare("SELECT iduser, password, usertype FROM user WHERE iduser = :iduser");
     $stmt->bindParam(':iduser', $user_id, PDO::PARAM_INT);
@@ -37,7 +36,7 @@ function authenticate($user_type=null, $user_id=null, $user_password=null, $auto
         return null;
     }
 
-    return ["id" => $user_id, "password" => $user_password, "type" => $user_type];
+    return ["id" => $user_id, "password" => $user_password, "type" => $user['usertype']];
 }
 
 function handleAuthFailure($message, $response_code, $autostop) {
