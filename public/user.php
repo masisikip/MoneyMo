@@ -70,12 +70,12 @@
 
     <div class="flex-1 p-8">
         <div class="bg-white shadow p-4 rounded-lg mb-6 flex items-center justify-between">
-            <h1 class="text-2xl font-bold">User Management</h1>
             <h1 class="text-2xl font-bold flex items-center">
                 <span>User Management</span>
                 <span class="text-gray-500 mx-2">|</span>
                 <span class="text-gray-600 font-normal">Hello, admin Jamaica!</span>
             </h1>
+            <h1 class="text-2xl font-bold">User Management</h1>
             <button onclick="document.getElementById('addUserModal').style.display='flex'" class="bg-black text-white px-4 py-2 rounded flex items-center">
                 <span class="text-lg font-bold mr-2">+</span> Add User
             </button>
@@ -144,8 +144,6 @@
                 <div class="grid grid-cols-5 gap-4 mt-4">
                     <input type="email" placeholder="Email" class="border p-2 col-span-3 rounded" required>
                     <input type="text" placeholder="Phone Number" class="border p-2 col-span-2 rounded" required>
-                    <input type="email" placeholder="Student Number" class="border p-2 col-span-2 rounded" required>
-                    <input type="text" placeholder="Email" class="border p-2 col-span-3 rounded" required>
                 </div>
                 <div class="grid grid-cols-5 gap-4 mt-4">
                     <input type="text" placeholder="Program" class="border p-2 col-span-3 rounded" required>
