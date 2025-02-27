@@ -24,16 +24,49 @@ try {
         }
         .item-image {
             width: 100%;
-            height: 200px;
+            height: 150px; /* Adjusted height */
             object-fit: cover;
+        }
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+        .dropdown-menu {
+            display: none;
+        }
+        .sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar.show {
+            transform: translateX(0);
+        }
+        .content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .content.shifted {
+            margin-left: 16rem; /* Width of the sidebar */
         }
     </style>
 </head>
-<body class="flex h-screen bg-gray-100">
-    <aside class="w-64 bg-black text-white p-6 overflow-y-auto fixed h-full">
-        <div class="flex items-center mb-10 mt-6">
-            <img src="assets/logo.png" alt="MoneyMo Logo" class="h-8 w-8 mr-2">
-            <h2 class="text-xl font-bold">MoneyMo</h2>
+<body class="flex flex-col h-screen bg-gray-100">
+    <header class="bg-black text-white p-6 flex justify-between items-center">
+        <div class="flex items-center">
+            <button onclick="toggleSidebar()" class="text-white focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+            <span class="ml-4 text-3xl font-bold">Item Manager</span> <!-- Increased font size -->
+        </div>
+        <button class="text-black bg-white px-4 py-2 rounded flex items-center" onclick="toggleModal('addItemModal')">
+            <i class="fas fa-plus mr-2"></i> Add Item
+        </button>
+    </header>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-black text-white p-6 sidebar">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold">Menu</h2>
+            <button onclick="toggleSidebar()" class="text-white focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
         </div>
         <nav>
             <ul class="space-y-3">
@@ -66,18 +99,7 @@ try {
         </nav>
     </aside>
 
-    <div class="flex-1 p-8 ml-64">
-        <div class="bg-white shadow p-4 rounded-lg mb-6 flex items-center justify-between">
-            <h1 class="text-2xl font-bold flex items-center">
-                <span>Items </span>
-                <span class="text-gray-500 mx-2">|</span>
-                <span class="text-gray-600 font-normal">Hello, Admin!</span>
-            </h1>
-            <button class="ml-4 text-black flex items-center" onclick="toggleModal('addItemModal')">
-                <i class="fas fa-plus"></i>
-            </button>
-        </div>
-
+    <div id="content" class="flex-1 p-8 content">
         <!-- Item Grid -->
         <div class="grid justify-center w-full grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9">
             <?php foreach ($items as $item): ?>
@@ -85,34 +107,36 @@ try {
                     data-code="<?= $item['code'] ?>" data-name="<?= $item['name'] ?>"
                     data-value="<?= $item['value'] ?>"
                     data-image="data:image/jpeg;base64,<?= base64_encode($item['image']); ?>"
-                    class="cursor-pointer flex flex-col justify-center items-center relative bg-white border border-gray-300 rounded-lg hover:shadow-xl hover:scale-105 transition-transform duration-300 ease-in-out lg:min-h-[20rem] lg:min-w-[18rem] lg:max-w-[35rem] h-auto md:min-h-[10rem] md:min-w-[13rem] md:max-w-[20rem]">
+                    class="cursor-pointer flex flex-col justify-center items-center relative bg-white border border-gray-300 rounded-lg hover:scale-105 transition-transform duration-300 ease-in-out lg:min-h-[15rem] lg:min-w-[12rem] lg:max-w-[20rem] h-auto md:min-h-[10rem] md:min-w-[10rem] md:max-w-[15rem]">
 
                     <!-- Item Image -->
                     <?php if (!empty($item['image'])): ?>
                         <img src="data:image/jpeg;base64,<?php echo base64_encode($item['image']); ?>" alt="Item Image"
-                            class="object-cover w-full h-full rounded-lg">
+                            class="object-cover w-full h-full rounded-lg item-image">
                     <?php endif; ?>
 
                     <!-- Item Title Overlay -->
-                    <div class="absolute top-0 left-0 right-0 flex items-center justify-between h-16 px-3 text-white rounded-t-lg bg-gradient-to-b from-black to-transparent">
-                        <h3 class="text-xl" style="font-family: Arial, sans-serif;">
-                            <?php echo htmlspecialchars($item['name']); ?>
-                        </h3>
+                    <div class="absolute top-0 left-0 right-0 flex items-center justify-between h-16 px-3 text-black">
+                        <div class="flex rounded-full bg-[#ffffffa8] border border-zinc-700/60">
+                            <div onclick="openUpdateModal(<?= $item['iditem'] ?>)"
+                                class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 border-r rounded-l-full cursor-pointer border-r-gray-600 hover:bg-black">
+                                <i class="fa-solid fa-pen-to-square hover:text-gray-800"></i>
+                            </div>
+                            <div onclick="confirmDelete(<?= $item['iditem'] ?>)"
+                                class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 rounded-r-full cursor-pointer hover:bg-black">
+                                <i class="hover:text-gray-800 fa-solid fa-trash"></i>
+                            </div>
+                        </div>
                         <h3 class="text-xl" style="font-family: Arial, sans-serif;">
                             <?php echo htmlspecialchars($item['value']); ?>
                         </h3>
                     </div>
 
-                    <!-- Item Actions -->
-                    <div class="absolute flex rounded-full bottom-4 right-6 bg-[#ffffffa8] border border-zinc-700/60">
-                        <div onclick="openUpdateModal(<?= $item['iditem'] ?>)"
-                            class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 border-r rounded-l-full cursor-pointer border-r-gray-600 hover:bg-black">
-                            <i class="fa-solid fa-pen-to-square hover:text-gray-800"></i>
-                        </div>
-                        <div onclick="confirmDelete(<?= $item['iditem'] ?>)"
-                            class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 rounded-r-full cursor-pointer hover:bg-black">
-                            <i class="hover:text-gray-800 fa-solid fa-trash"></i>
-                        </div>
+                    <!-- Item Name -->
+                    <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center h-16 px-3 text-white rounded-b-lg bg-gradient-to-t from-black to-transparent">
+                        <h3 class="text-xl" style="font-family: Arial, sans-serif;">
+                            <?php echo htmlspecialchars($item['name']); ?>
+                        </h3>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -189,7 +213,7 @@ function toggleModal(modalId) {
 
 function confirmDelete(iditem) {
     if (confirm('Are you sure you want to delete this item?')) {
-        fetch('public/item/item_delete.php', {
+        fetch('views/logic/item_delete.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -208,7 +232,7 @@ function confirmDelete(iditem) {
 document.getElementById('addItemForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const formData = new FormData(this);
-    fetch('public/item/item_create.php', {
+    fetch('views/logic/item_create.php', {
         method: 'POST',
         body: formData
     })
@@ -233,7 +257,7 @@ function openUpdateModal(iditem) {
 document.getElementById('updateItemForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const formData = new FormData(this);
-    fetch('public/item/item_update.php', {
+    fetch('views/logic/item_update.php', {
         method: 'POST',
         body: formData
     })
@@ -245,5 +269,14 @@ document.getElementById('updateItemForm').addEventListener('submit', function(ev
     })
     .catch(error => console.error('Error:', error));
 });
+
+function toggleSidebar() {
+    let sidebar = document.getElementById('sidebar');
+    let content = document.getElementById('content');
+    if (sidebar && content) {
+        sidebar.classList.toggle("show");
+        content.classList.toggle("shifted");
+    }
+}
 </script>
 </html>
