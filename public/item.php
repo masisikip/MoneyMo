@@ -24,7 +24,7 @@ try {
         }
         .item-image {
             width: 100%;
-            height: 150px; /* Adjusted height */
+            height: 150px; 
             object-fit: cover;
         }
         .dropdown:hover .dropdown-menu {
@@ -46,6 +46,37 @@ try {
         .content.shifted {
             margin-left: 16rem; /* Width of the sidebar */
         }
+        .icon-button {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .icon-button:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        @media (max-width: 640px) {
+            .add-item-button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 2rem; 
+                height: 2rem;
+                padding: 0;
+            }
+            .add-item-button i {
+                margin-right: 0;
+            }
+            .add-item-button span {
+                display: none;
+            }
+            .modal-content {
+                width: 66.67%; 
+            }
+        }
+        @media (min-width: 641px) {
+            .modal-content {
+                width: 25%; 
+            }
+        }
     </style>
 </head>
 <body class="flex flex-col h-screen bg-gray-100">
@@ -56,8 +87,8 @@ try {
             </button>
             <span class="ml-4 text-3xl font-bold">Item Manager</span> <!-- Increased font size -->
         </div>
-        <button class="text-black bg-white px-4 py-2 rounded flex items-center" onclick="toggleModal('addItemModal')">
-            <i class="fas fa-plus mr-2"></i> Add Item
+        <button class="text-black bg-white px-4 py-2 rounded flex items-center add-item-button" onclick="toggleModal('addItemModal')">
+            <i class="fas fa-plus mr-2"></i> <span>Add Item</span>
         </button>
     </header>
 
@@ -145,28 +176,28 @@ try {
 
     <!-- Add Item Modal -->
     <div id="addItemModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-1/4 h-auto">
+        <div class="bg-white p-6 rounded-lg shadow-lg modal-content">
             <h2 class="text-xl font-bold mb-4">Add New Item</h2>
             <form id="addItemForm" action="views/logic/item_create.php" method="POST" enctype="multipart/form-data">
                 <div class="mb-4">
-                    <label for="code" class="block text-gray-700">Code</label>
+                    <label for="code" class="block text-gray-700">Code <span class="text-red-500">*</span></label>
                     <input type="text" id="code" name="code" class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="mb-4">
-                    <label for="name" class="block text-gray-700">Name</label>
+                    <label for="name" class="block text-gray-700">Name <span class="text-red-500">*</span></label>
                     <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="mb-4">
-                    <label for="value" class="block text-gray-700">Value</label>
+                    <label for="value" class="block text-gray-700">Value <span class="text-red-500">*</span></label>
                     <input type="number" id="value" name="value" class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="mb-4">
-                    <label for="image" class="block text-gray-700">Image</label>
-                    <input type="file" id="image" name="image" class="w-full p-2 border border-gray-300 rounded mt-1">
+                    <label for="image" class="block text-gray-700">Image <span class="text-red-500">*</span></label>
+                    <input type="file" id="image" name="image" class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-black text-white rounded mr-2" onclick="toggleModal('addItemModal')">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Add Item</button>
+                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2" onclick="toggleModal('addItemModal')">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
                 </div>
             </form>
         </div>
@@ -174,7 +205,7 @@ try {
 
     <!-- Update Item Modal -->
     <div id="updateItemModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-1/4 h-auto">
+        <div class="bg-white p-6 rounded-lg shadow-lg modal-content">
             <h2 class="text-xl font-bold mb-4">Update Item</h2>
             <form id="updateItemForm" action="views/logic/item_update.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="update_iditem" name="iditem">
@@ -195,8 +226,8 @@ try {
                     <input type="file" id="update_image" name="image" class="w-full p-2 border border-gray-300 rounded mt-1">
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-black text-white rounded mr-2" onclick="toggleModal('updateItemModal')">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Update Item</button>
+                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2" onclick="toggleModal('updateItemModal')">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
                 </div>
             </form>
         </div>
@@ -208,7 +239,33 @@ function toggleModal(modalId) {
     let modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.toggle("hidden");
+        if (modal.classList.contains("hidden")) {
+            clearModalInputs(modalId);
+        }
     }
+}
+
+document.querySelectorAll('.fixed.inset-0').forEach(modal => {
+    modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.classList.add('hidden');
+            clearModalInputs(modal.id);
+        }
+    });
+});
+
+function clearModalInputs(modalId) {
+    const modal = document.getElementById(modalId);
+    const inputs = modal.querySelectorAll('input');
+    inputs.forEach(input => {
+        if (input.type !== 'hidden') {
+            input.value = '';
+        }
+    });
+    const fileInputs = modal.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(fileInput => {
+        fileInput.value = '';
+    });
 }
 
 function confirmDelete(iditem) {
