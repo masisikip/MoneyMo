@@ -24,7 +24,7 @@ try {
         }
         .item-image {
             width: 100%;
-            height: 150px; /* Adjusted height */
+            height: 150px; 
             object-fit: cover;
         }
         .dropdown:hover .dropdown-menu {
@@ -58,8 +58,8 @@ try {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                width: 3rem;
-                height: 3rem;
+                width: 2rem; 
+                height: 2rem;
                 padding: 0;
             }
             .add-item-button i {
@@ -69,12 +69,12 @@ try {
                 display: none;
             }
             .modal-content {
-                width: 66.67%; /* 2/3 for mobile */
+                width: 66.67%; 
             }
         }
         @media (min-width: 641px) {
             .modal-content {
-                width: 25%; /* 1/4 for desktop */
+                width: 25%; 
             }
         }
     </style>
@@ -196,8 +196,8 @@ try {
                     <input type="file" id="image" name="image" class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-black text-white rounded mr-2" onclick="toggleModal('addItemModal')">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Add Item</button>
+                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2" onclick="toggleModal('addItemModal')">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
                 </div>
             </form>
         </div>
@@ -226,8 +226,8 @@ try {
                     <input type="file" id="update_image" name="image" class="w-full p-2 border border-gray-300 rounded mt-1">
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-black text-white rounded mr-2" onclick="toggleModal('updateItemModal')">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Update Item</button>
+                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2" onclick="toggleModal('updateItemModal')">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
                 </div>
             </form>
         </div>
@@ -244,6 +244,15 @@ function toggleModal(modalId) {
         }
     }
 }
+
+document.querySelectorAll('.fixed.inset-0').forEach(modal => {
+    modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.classList.add('hidden');
+            clearModalInputs(modal.id);
+        }
+    });
+});
 
 function clearModalInputs(modalId) {
     const modal = document.getElementById(modalId);
