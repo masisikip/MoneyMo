@@ -11,18 +11,6 @@ Please follow these guidelines to ensure smooth collaboration and maintain high-
 
 - Follow the **existing coding conventions** of the project to maintain consistency.
 - Ensure that all **tests** (if applicable) pass before submitting your pull request.
-- Make sure to **provide meaningful commit messages** describing what was changed and why.
-- **Use conventional commit messages** following the format:
-  - **feat**: A new feature
-  - **fix**: A bug fix
-  - **docs**: Documentation only changes
-  - **style**: Code style changes (e.g., formatting, missing semicolons)
-  - **refactor**: Code changes that neither fix a bug nor add a feature
-  - **perf**: Performance improvements
-  - **test**: Adding or modifying tests
-  - **Example**: 
-    - `[feat] Add user authentication page`
-    - `[fix] Resolve bug with disabled button styling`
 
 
 ## Pull Requests (PRs)
@@ -50,29 +38,26 @@ When submitting a PR, please follow these steps:
 3. **Add a Descriptive Description**
    - In your PR description, please include a detailed summary of the changes. Use the following template:
      ```
-     ### Description
-     - Provide a brief overview of the changes.
-     - Explain the problem being solved or the feature being added.
-     - Mention any important details or decisions made during development.
+     ### Pull Request Summary
 
-     ### Type of Change
-     - [ ] Bug fix
-     - [ ] New feature
-     - [ ] Documentation update
-     - [ ] Refactor
-     - [ ] Other (please specify)
+      This pull request includes several changes to [feature/module name], focusing on [briefly explain what the PR addresses]. The most important changes include [highlight the key changes in your PR, such as new features, fixes, or updates].
 
-     ### Related Issues
-     - Link to any relevant issues (e.g., Fixes #123).
+      ---
 
-     ### How to Test
-     - Provide instructions on how to test these changes (if applicable).
+      **Changes:**
 
-     ### Checklist
-     - [ ] Tests pass
-     - [ ] Documentation updated
-     - [ ] Code reviewed
-     - [ ] Assignee and reviewers set
+      - **[Feature/Module Name]**:
+         - **[File Name/Path]**: [Briefly explain the changes made in this file, such as adding a function, modifying a process, fixing a bug, etc.]
+         - **[File Name/Path]**: [Continue explaining any other related changes.]
+      
+      - **[Another Feature/Module Name]**:
+         - **[File Name/Path]**: [Explain the changes in this file.]
+
+      ---
+
+      These changes collectively [describe the broader effect of the PR, such as improving functionality, fixing bugs, or providing new features, etc.].
+
+      ---
      ```
 
 4. **Link to a Related Issue**
