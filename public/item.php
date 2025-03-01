@@ -150,12 +150,12 @@ try {
                     <div class="absolute top-0 left-0 right-0 flex items-center justify-between h-16 px-3 text-black">
                         <div class="flex rounded-full bg-[#ffffffa8] border border-zinc-700/60">
                             <div onclick="openUpdateModal(<?= $item['iditem'] ?>)"
-                                class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 border-r rounded-l-full cursor-pointer border-r-gray-600 hover:bg-black">
-                                <i class="fa-solid fa-pen-to-square hover:text-gray-800"></i>
+                                class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 border-r rounded-l-full cursor-pointer border-r-gray-600 icon-button">
+                                <i class="fa-solid fa-pen-to-square"></i>
                             </div>
                             <div onclick="confirmDelete(<?= $item['iditem'] ?>)"
-                                class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 rounded-r-full cursor-pointer hover:bg-black">
-                                <i class="hover:text-gray-800 fa-solid fa-trash"></i>
+                                class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 rounded-r-full cursor-pointer icon-button">
+                                <i class="fa-solid fa-trash"></i>
                             </div>
                         </div>
                         <h3 class="text-xl" style="font-family: Arial, sans-serif;">
