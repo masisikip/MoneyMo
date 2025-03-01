@@ -12,14 +12,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="flex flex-col md:flex-row h-screen bg-gray-100 overflow-hidden">
-    <div class="md:hidden bg-black text-white p-4 flex justify-between items-center">
+    <div class="md:hidden bg-black text-white p-4 flex justify-start items-center">
+        <button id="menuToggle" class="text-white focus:outline-none mr-4">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
         <div class="flex items-center">
             <img src="assets/logo.png" alt="MoneyMo Logo" class="h-8 w-8 mr-2">
             <h2 class="text-xl font-bold">MoneyMo</h2>
         </div>
-        <button id="menuToggle" class="text-white focus:outline-none">
-            <i class="fas fa-bars text-2xl"></i>
-        </button>
     </div>
 
     <aside id="sidebar" class="hidden md:block w-full md:w-64 bg-black text-white p-6 h-screen md:h-auto overflow-y-auto transition-all duration-300 ease-in-out">
@@ -115,40 +115,17 @@
             </table>
         </div>
     </div>
+<!--Pagination-->
+<div class="absolute bottom-10 left-0 w-full flex justify-center">
+    <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">Previous</button>
+    <div class="flex space-x-2 mx-4">
+        <button class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-500">1</button>
+        <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">2</button>
+        <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">3</button>
+    </div>
+    <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">Next</button>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-            
-            menuToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('hidden');
-                
-                if (!sidebar.classList.contains('hidden')) {
-                    sidebar.classList.add('fixed', 'top-16', 'left-0', 'right-0', 'z-50');
-                } else {
-                    sidebar.classList.remove('fixed', 'top-16', 'left-0', 'right-0', 'z-50');
-                }
-            });
-            
-            document.addEventListener('click', function(event) {
-                const isClickInsideSidebar = sidebar.contains(event.target);
-                const isClickOnMenuToggle = menuToggle.contains(event.target);
-                
-                if (!isClickInsideSidebar && !isClickOnMenuToggle && !sidebar.classList.contains('hidden') && window.innerWidth < 768) {
-                    sidebar.classList.add('hidden');
-                    sidebar.classList.remove('fixed', 'top-16', 'left-0', 'right-0', 'z-50');
-                }
-            });
-            
-            window.addEventListener('resize', function() {
-                if (window.innerWidth >= 768) {
-                    sidebar.classList.remove('hidden', 'fixed', 'top-16', 'left-0', 'right-0', 'z-50');
-                } else if (!menuToggle.classList.contains('active')) {
-                    sidebar.classList.add('hidden');
-                }
-            });
-        });
-    </script>
+
 </body>
 </html>
