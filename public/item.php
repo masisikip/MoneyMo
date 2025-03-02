@@ -88,6 +88,11 @@ try {
             justify-content: center;
             align-items: center;
         }
+        .price-container h3,
+        .item-name,
+        .item-stock {
+            font-family: Arial, sans-serif;
+        }
     </style>
 </head>
 <body class="flex flex-col h-screen bg-gray-100">
@@ -170,7 +175,7 @@ try {
                             </div>
                         </div>
                         <div class="price-container bg-black bg-opacity-50 border text-white border-zinc-700/60 rounded-full shadow-lg">
-                            <h3 class="text-l" style="font-family: Arial, sans-serif;">
+                            <h3 class="text-l">
                                 <?php echo htmlspecialchars($item['value']); ?>                   
                             </h3>
                         </div>
@@ -178,10 +183,10 @@ try {
 
                     <!-- Item Name -->
                     <div class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center h-20 px-3 text-white rounded-b-lg bg-gradient-to-t from-black to-transparent">
-                        <h3 class="text-xl font-bold" style="font-family: Arial, sans-serif;">
+                        <h3 class="text-xl font-bold item-name">
                             <?php echo htmlspecialchars($item['name']); ?>
                         </h3>
-                        <p class="text-base" style="font-family: Arial, sans-serif;">
+                        <p class="text-base item-stock">
                             In Stock &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; <?php echo htmlspecialchars($item['stock']); ?> Units
                         </p>
                     </div>
