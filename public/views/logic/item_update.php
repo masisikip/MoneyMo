@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/../../../api/includes/connect-db.php';
+include_once __DIR__ . '/../../includes/connect-db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $iditem = $_POST['iditem'];

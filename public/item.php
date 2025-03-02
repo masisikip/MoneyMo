@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '\..\api\includes\connect-db.php';
+include_once __DIR__ . '.\includes\connect-db.php';
 
 try {
     $stmt = $pdo->query("SELECT * FROM item");
