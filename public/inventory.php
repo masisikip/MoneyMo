@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="flex h-screen bg-gray-100">
-    <aside class="w-64 bg-black text-white p-6">
+    <!-- <aside class="w-64 bg-black text-white p-6">
         <div class="flex items-center mb-10 mt-6">
             <img src="assets/logo.png" alt="MoneyMo Logo" class="h-8 w-8 mr-2">
             <h2 class="text-xl font-bold">MoneyMo</h2>
@@ -46,26 +46,30 @@
                 </li>
             </ul>
         </nav>
-    </aside>
+    </aside> -->
 
     <div class="flex-1 p-8">
         <div class="bg-white shadow p-4 rounded-lg mb-6 flex items-center justify-between">
             <h1 class="text-2xl font-bold flex items-center">
                 <span>Inventory Records</span>
-                <span class="text-gray-500 mx-2">|</span>
+                <span class="text-gray-500 mx-3">|</span>
                 <span class="text-gray-600 font-normal">Hello, admin Jamaica!</span>
             </h1>
         </div>
 
 
-
         <div class="bg-white shadow rounded-lg p-6">
-            <div class="bg-white rounded-lg mb-6 flex items-center">
-            <input type="text" placeholder="Search inventory..." 
-                class="w-64 p-2 border border-gray-300 rounded-full  focus:outline-none focus:ring-2 focus:ring-black mr-4">
-                <button class="bg-black text-white px-4 py-2 rounded-xl hover:bg-gray-500 min-w-[100px]">Search</button>
 
-        </div>
+            <div class="bg-white flex items-center rounded-xl overflow-hidden shadow-lg mb-4 w-fit">
+                <span class="pl-3 pr-2 text-gray-500">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" placeholder="Search inventory..." 
+                class="p-2 w-56 border-gray-300 focus:ring-2 focus:outline-none focus:ring-white">
+                <button class="bg-black text-white px-4 py-2 rounded-r hover:bg-gray-500">Search</button>
+            </div>
+
+
             <table class="w-full border-collapse overflow-hidden rounded-lg">
                 <thead class="bg-gray-200 text-gray-700 rounded-t-lg">
                     <tr class="bg-gray-200 text-gray-700">
@@ -115,7 +119,8 @@
            
         
         <!-- Pagination -->         
-        <div class="flex justify-center space-x-2 items-center mt-6">
+         <div class="flex justify-center mt-6">
+            <div class="flex space-x-2">
             <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"><</button>
             <button class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-500">1</button>
             <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">2</button>
@@ -124,10 +129,9 @@
             <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">10</button>
             <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">></button>
         </div>
-        
 
-</div>
     </div>
+        </div>
 
 </body>
 </html>
