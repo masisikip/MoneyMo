@@ -1,24 +1,48 @@
 <?php
 session_start();
-include_once '..\api\includes\connect-db.php';
+include_once '../api/includes/connect-db.php';
 
-$usersPerPage = 3; 
+$usersPerPage = 3;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($currentPage - 1) * $usersPerPage;
 
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
 try {
-    $stmt = $pdo->query("SELECT COUNT(*) AS total FROM user");
-    $totalUsers = $stmt->fetch()['total'];
-    $totalPages = ceil($totalUsers / $usersPerPage);
+    if (!empty($search)) {
+        // Search across all pages (without pagination limit)
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE name LIKE :search OR email LIKE :search");
+        $stmt->bindValue(':search', "%$search%", PDO::PARAM_STR);
+        $stmt->execute();
+        $users = $stmt->fetchAll();
 
-    $stmt = $pdo->prepare("SELECT * FROM user LIMIT :offset, :limit");
-    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-    $stmt->bindParam(':limit', $usersPerPage, PDO::PARAM_INT);
-    $stmt->execute();
-    $users = $stmt->fetchAll();
+        // Get total search results count
+        $stmtCount = $pdo->prepare("SELECT COUNT(*) AS total FROM user WHERE name LIKE :search OR email LIKE :search");
+        $stmtCount->bindValue(':search', "%$search%", PDO::PARAM_STR);
+        $stmtCount->execute();
+        $totalSearchResults = $stmtCount->fetch()['total'];
+
+        // Set total pages to 1, as there are no pagination when searching
+        $totalPages = 1;
+    } else {
+        // Get total users count for pagination
+        $stmt = $pdo->query("SELECT COUNT(*) AS total FROM user");
+        $totalUsers = $stmt->fetch()['total'];
+
+        // Get paginated users
+        $stmt = $pdo->prepare("SELECT * FROM user LIMIT :offset, :usersPerPage");
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':usersPerPage', $usersPerPage, PDO::PARAM_INT);
+        $stmt->execute();
+        $users = $stmt->fetchAll();
+
+        // Calculate total pages for pagination
+        $totalPages = ceil($totalUsers / $usersPerPage);
+    }
 } catch (PDOException $e) {
     echo "Query failed: " . $e->getMessage();
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -33,11 +57,87 @@ try {
     <script>
         function toggleSidebar() {
             let sidebar = document.getElementById("sidebar");
-            let menuButton = document.getElementById("menuButton");
+            let mainContent = document.getElementById("mainContent");
 
             sidebar.classList.toggle("-translate-x-full");
-            menuButton.classList.toggle("hidden");
+            mainContent.classList.toggle("ml-64");
         }
+    </script>
+    <script>
+        function searchTable(inputId, tableClass) {
+            let input = document.getElementById(inputId);
+            let filter = input.value.toLowerCase();
+            let table = document.querySelector(tableClass);
+            let rows = table.getElementsByTagName("tr");
+
+            let found = false;
+            for (let i = 1; i < rows.length; i++) {  // Start from 1 to skip the header
+                let cells = rows[i].getElementsByTagName("td");
+                let match = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].innerText.toLowerCase().includes(filter)) {
+                        match = true;
+                        break;
+                    }
+                }
+
+                // Display or hide rows based on search match
+                rows[i].style.display = match ? "" : "none";
+                if (match) found = true;
+            }
+
+            // Show or hide "no results" message
+            if (!found) {
+                document.getElementById("noResultsMessage").style.display = "block";
+            } else {
+                document.getElementById("noResultsMessage").style.display = "none";
+            }
+        }
+
+
+        //for add modal cancel button
+        document.addEventListener("DOMContentLoaded", function () {
+            const cancelButton = document.querySelector("#addUserModal #cancelButton");
+            const modal = document.getElementById("addUserModal");
+
+            if (cancelButton && modal) {
+                cancelButton.addEventListener("click", function () {
+                    console.log("Cancel button clicked! Hiding modal...");
+                    modal.style.display = "none";
+                });
+            } else {
+                console.error("Cancel button or modal not found!");
+            }
+        });
+
+        //for edit modal
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    document.getElementById('edit_user_id').value = this.dataset.id;
+                    document.getElementById('edit_lname').value = this.dataset.lname;
+                    document.getElementById('edit_fname').value = this.dataset.fname;
+                    document.getElementById('edit_email').value = this.dataset.email;
+                    document.getElementById('edit_usertype').value = this.dataset.usertype === "1" ? "Admin" : "User";
+                    document.getElementById('editModal').classList.remove('hidden');
+                });
+            });
+            document.getElementById('closeModal').addEventListener('click', function () {
+                document.getElementById('editModal').classList.add('hidden');
+            });
+            document.getElementById('editModal').addEventListener('click', function (e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        });
+
+        function cancelForm() {
+            document.getElementById("addUserForm").reset(); 
+            document.getElementById("addUserModal").style.display = 'none'; 
+        }
+
     </script>
 </head>
 <body class="bg-gray-100 flex">
@@ -51,155 +151,156 @@ try {
     <aside id="sidebar"
         class="bg-black text-white w-64 h-screen p-6 absolute left-0 top-14 transform -translate-x-full transition-transform duration-300 z-40">
         <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center">
-                <img src="assets/logo.png" alt="MoneyMo Logo" class="h-8 w-8 mr-2">
-                <h2 class="text-xl font-bold">MoneyMo</h2>
-            </div>
+            <img src="assets/logo.png" alt="Logo" class="h-8 w-8">
+            <h2 class="text-xl font-bold">MoneyMo</h2>
             <button onclick="toggleSidebar()" class="text-white text-2xl">&times;</button>
         </div>
         <nav>
             <ul class="space-y-3">
-                <li>
-                    <a href="dashboard_admin.php" class="flex items-center p-3 hover:bg-[#545454] rounded">
-                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="inventory.php" class="flex items-center p-3 hover:bg-[#545454] rounded">
-                        <i class="fas fa-boxes mr-2"></i> Inventory
-                    </a>
-                </li>
-                <li>
-                    <a href="item.php" class="flex items-center p-3 hover:bg-[#545454] rounded">
-                        <i class="fas fa-cubes mr-2"></i> Item Management
-                    </a>
-                </li>
-                <li>
-                    <a href="user.php" class="flex items-center p-3 hover:bg-[#545454] rounded">
-                        <i class="fas fa-users-cog mr-2"></i> User Management
-                    </a>
-                </li>
-                <li>
-                    <a href="logout.php" class="flex items-center p-3 hover:bg-[#545454] rounded">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Log Out
-                    </a>
-                </li>
+                <li><a href="dashboard_admin.php" class="flex items-center p-3 hover:bg-gray-600 rounded"><i class="fas fa-tachometer-alt mr-2"></i> Dashboard</a></li>
+                <li><a href="inventory.php" class="flex items-center p-3 hover:bg-gray-600 rounded"><i class="fas fa-boxes mr-2"></i> Inventory</a></li>
+                <li><a href="item.php" class="flex items-center p-3 hover:bg-gray-600 rounded"><i class="fas fa-cubes mr-2"></i> Item Management</a></li>
+                <li><a href="user.php" class="flex items-center p-3 hover:bg-gray-600 rounded"><i class="fas fa-users-cog mr-2"></i> User Management</a></li>
+                <li><a href="logout.php" class="flex items-center p-3 hover:bg-gray-600 rounded"><i class="fas fa-sign-out-alt mr-2"></i> Log Out</a></li>
             </ul>
         </nav>
     </aside>
 
-    <button id="menuButton" onclick="toggleSidebar()" class="fixed left-2 top-4 bg-black text-white px-3 py-2 rounded">
-        <i class="fas fa-bars"></i>
-    </button>
-
     <main id="mainContent" class="mt-16 p-6 w-full transition-all duration-300">
-        <div class="flex items-center justify-between bg-white p-4 shadow rounded-lg">
-        <h1 class="text-2xl font-bold text-gray-800">Users</h1>
+       <div class="flex items-center justify-between bg-white p-4 shadow rounded-lg">
             <div class="flex items-center space-x-4">
+                <h1 class="text-3xl font-bold text-gray-900">Users</h1>
                 <div class="relative w-64">
-                    <input type="text" id="adminSearch" onkeyup="searchTable('adminSearch', '.admin-table')" 
+                    <input type="text" id="userSearch" onkeyup="searchTable('userSearch', '.user-table')" 
                         placeholder="Search Users"
                         class="border border-gray-300 p-2 pl-10 pr-4 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-black">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
-                <button onclick="document.getElementById('addUserModal').style.display='flex'"
-                    class="bg-black text-white px-5 py-2 rounded-lg flex items-center hover:bg-gray-800 transition">
-                    <i class="fas fa-user-plus text-lg mr-2"></i> Add User
-                </button>
             </div>
+            <button onclick="document.getElementById('addUserModal').style.display='flex'"
+                class="bg-black text-white px-5 py-2 rounded-lg flex items-center hover:bg-gray-800 transition">
+                <i class="fas fa-user-plus text-lg mr-2"></i> Add User
+            </button>
         </div>
 
-        <div class="mt-6 bg-white shadow rounded-lg p-4">
-            <table class="min-w-full bg-white user-table">
-            <thead>
-            <tr class="bg-gray-200">
-                <th class="px-6 py-3 text-left">Name</th>
-                <th class="px-6 py-3 text-left">User Role</th>
-                <th class="px-6 py-3 text-left">Email</th>
-                <th class="px-6 py-3 text-left">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
+        <div class="mt-6 bg-white shadow rounded-lg p-4 flex justify-center">
+            <table class="w-full mx-auto bg-white table-fixed border-collapse user-table">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="w-1/4 px-6 py-3 text-center">Name</th>
+                        <th class="w-1/4 px-6 py-3 text-center">User Role</th>
+                        <th class="w-1/4 px-6 py-3 text-center">Email</th>
+                        <th class="w-1/4 px-6 py-3 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($users)): ?>
+                        <?php foreach ($users as $userData): ?>
+                            <tr class="border-t">
+                                <td class="px-6 py-3 text-center"><?= htmlspecialchars($userData['f_name'] . ' ' . $userData['l_name']) ?></td>
+                                <td class="px-6 py-3 text-center">
+                                    <span class="<?= $userData['usertype'] == 1 ? 'bg-black' : 'bg-gray-400' ?> 
+                                                text-white px-4 py-2 rounded-full text-sm inline-block w-24 text-center">
+                                        <?= $userData['usertype'] == 1 ? "Admin" : "User" ?>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-3 text-center"><?= htmlspecialchars($userData['email']) ?></td>
+                                <td class="px-6 py-3 text-center">
+                                    <a href='#' class='edit-btn text-black-500'
+                                        data-id="<?= $userData['iduser'] ?>"
+                                        data-lname="<?= htmlspecialchars($userData['l_name']) ?>"
+                                        data-fname="<?= htmlspecialchars($userData['f_name']) ?>"
+                                        data-email="<?= htmlspecialchars($userData['email']) ?>"
+                                        data-usertype="<?= htmlspecialchars($userData['usertype']) ?>">
+                                        <i class='fas fa-edit'></i>
+                                    </a> | 
+                                    <a href="views/logic/user_delete.php?id=<?= $userData['iduser'] ?>" 
+                                    class="text-black-500" 
+                                    onclick="return confirm('Are you sure you want to delete this user?');">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr><td colspan="4" class="px-6 py-3 text-center text-gray-500">No users found.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+
         <?php
-        if (!empty($users)) {
-            foreach ($users as $userData) {
-                $fullName = $userData['f_name'] . ' ' . $userData['l_name'];
-                $userRole = $userData['usertype'] == 1 ? "Admin" : "User";
-
-                echo "<tr class='border-t'>";
-                echo "<td class='px-6 py-3'>{$fullName}</td>";
-                echo "<td class='px-6 py-3'>{$userRole}</td>";
-                echo "<td class='px-6 py-3'>{$userData['email']}</td>";
-                echo "<td class='px-6 py-3'>";
-
-                echo "<a href='#' class='edit-btn text-black-500'
-                    data-id='{$userData['iduser']}'
-                    data-fullname='{$fullName}'
-                    data-email='{$userData['email']}'
-                    data-usertype='{$userData['usertype']}'>
-                    <i class='fas fa-edit'></i>
-                </a>";
-                echo " | ";
-
-                echo "<a href='views/logic/user_delete.php?id={$userData['iduser']}' class='text-black-500' 
-                        onclick='return confirm(\"Are you sure you want to delete this user?\");'>
-                        <i class='fas fa-trash-alt'></i>
-                    </a>";
-                echo "</td>";
-                echo "</tr>";
-            }
-        } else {
-            echo "<tr><td colspan='4' class='px-6 py-3 text-center text-gray-500'>No users found.</td></tr>";
-        }
+        $range = 2;
         ?>
-        </tbody>
-    </table>
-    
-    <div class="flex justify-center mt-6">
-        <nav class="flex space-x-2">
-            <a href="?page=<?= max(1, $currentPage - 1) ?>" 
-               class="px-3 py-2 border rounded <?= ($currentPage == 1) ? 'bg-gray-300 cursor-not-allowed' : 'hover:bg-gray-200' ?>">
-                <i class="fas fa-chevron-left"></i>
-            </a>
+        <div class="flex justify-center mt-6">
+            <nav class="flex space-x-2">
+                <!-- Previous Button -->
+                <?php if ($currentPage > 1): ?>
+                    <a href="?page=<?= $currentPage - 1 ?>" class="px-3 py-2 border rounded hover:bg-gray-200">« Prev</a>
+                <?php endif; ?>
 
-        <?php if ($totalPages <= 5): ?>
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="?page=<?= $i ?>" 
+                <!-- First Page -->
+                <?php if ($currentPage > ($range + 1)): ?>
+                    <a href="?page=1" class="px-3 py-2 border rounded hover:bg-gray-200">1</a>
+                    <span class="px-3 py-2">...</span>
+                <?php endif; ?>
+
+                <!-- Middle Pages -->
+                <?php for ($i = max(1, $currentPage - $range); $i <= min($totalPages, $currentPage + $range); $i++): ?>
+                    <a href="?page=<?= $i ?>" 
                     class="px-3 py-2 border rounded <?= ($i == $currentPage) ? 'bg-black text-white' : 'hover:bg-gray-200' ?>">
                         <?= $i ?>
                     </a>
                 <?php endfor; ?>
-            <?php else: ?>
-                <a href="?page=1" class="px-3 py-2 border rounded <?= ($currentPage == 1) ? 'bg-black text-white' : 'hover:bg-gray-200' ?>">1</a>
-                <a href="?page=2" class="px-3 py-2 border rounded <?= ($currentPage == 2) ? 'bg-black text-white' : 'hover:bg-gray-200' ?>">2</a>
-                <span class="px-3 py-2 border rounded bg-gray-100">...</span>
-                <a href="?page=<?= $totalPages - 1 ?>" class="px-3 py-2 border rounded hover:bg-gray-200"><?= $totalPages - 1 ?></a>
-                <a href="?page=<?= $totalPages ?>" class="px-3 py-2 border rounded hover:bg-gray-200"><?= $totalPages ?></a>
-            <?php endif; ?>
 
-            <a href="?page=<?= min($totalPages, $currentPage + 1) ?>" 
-            class="px-3 py-2 border rounded <?= ($currentPage == $totalPages) ? 'bg-gray-300 cursor-not-allowed' : 'hover:bg-gray-200' ?>">
-                <i class="fas fa-chevron-right"></i>
-            </a>
-        </nav>
+                <!-- Last Page -->
+                <?php if ($currentPage < $totalPages - $range): ?>
+                    <span class="px-3 py-2">...</span>
+                    <a href="?page=<?= $totalPages ?>" class="px-3 py-2 border rounded hover:bg-gray-200"><?= $totalPages ?></a>
+                <?php endif; ?>
+
+                <!-- Next Button -->
+                <?php if ($currentPage < $totalPages): ?>
+                    <a href="?page=<?= $currentPage + 1 ?>" class="px-3 py-2 border rounded hover:bg-gray-200">Next »</a>
+                <?php endif; ?>
+            </nav>
+        </div>
+
+    </main>
+
+    <div id="addUserModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg w-96">
+            <h2 class="text-xl font-bold mb-4">Add User</h2>
+            <form id="addUserForm" action="views/logic/user_add.php" method="POST">
+                <input type="text" name="f_name" placeholder="First Name" required class="w-full p-2 border rounded mb-2">
+                <input type="text" name="l_name" placeholder="Last Name" required class="w-full p-2 border rounded mb-2">
+                <input type="email" name="email" placeholder="Email" required class="w-full p-2 border rounded mb-2">
+                <button type="submit" class="bg-black text-white w-full py-2 rounded">Add User</button>
+            </form>
+            <button onclick="cancelForm()" class="bg-gray-400 text-white w-full py-2 rounded mt-2">Cancel</button>
+        </div>
     </div>
-   
 
-    <script>
-        function toggleSidebar() {
-            let sidebar = document.getElementById("sidebar");
-            let menuButton = document.getElementById("menuButton");
-            let mainContent = document.getElementById("mainContent");
-
-            sidebar.classList.toggle("-translate-x-full");
-            menuButton.classList.toggle("hidden");
-
-            if (!sidebar.classList.contains("-translate-x-full")) {
-                mainContent.classList.add("ml-64");
-            } else {
-                mainContent.classList.remove("ml-64");
-            }
-        }
-    </script>
+    <!-- Edit User Modal -->
+    <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded shadow-lg w-96">
+            <h2 class="text-xl font-semibold mb-4">Edit User/Admin</h2>
+            <form id="editForm" method="POST" action="views/logic/user_admin_edit.php">
+                <input type="hidden" name="user_id" id="edit_user_id">
+                <label class="block text-gray-700">Last Name:</label>
+                <input type="text" name="l_name" id="edit_lname" class="border p-2 w-full rounded mb-2" required>
+                <label class="block text-gray-700">First Name:</label>
+                <input type="text" name="f_name" id="edit_fname" class="border p-2 w-full rounded mb-2" required>
+                <label class="block text-gray-700">Email:</label>
+                <input type="email" name="email" id="edit_email" class="border p-2 w-full rounded mb-2" required>
+                <label class="block text-gray-700">User Type:</label>
+                <input type="text" id="edit_usertype" class="border p-2 w-full rounded mb-4 bg-gray-200" readonly>
+                <div class="flex justify-end space-x-2">
+                    <button type="submit" name="update_user" class="bg-black text-white px-4 py-2 rounded">Update</button>
+                    <button type="button" id="closeModal" class="bg-black text-white px-4 py-2 rounded">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
