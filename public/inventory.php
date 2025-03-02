@@ -57,15 +57,15 @@
             </h1>
         </div>
 
-    <div class="bg-white shadow p-4 rounded-lg mb-6 flex items-center">
-        <input type="text" placeholder="Search inventory..." 
-            class="w-full p-2 border border-gray-300 rounded-full  focus:outline-none focus:ring-2 focus:ring-black mr-4">
-        <button class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-500">
-        Search
-        </button>
-    </div>
+
 
         <div class="bg-white shadow rounded-lg p-6">
+            <div class="bg-white rounded-lg mb-6 flex items-center">
+            <input type="text" placeholder="Search inventory..." 
+                class="w-64 p-2 border border-gray-300 rounded-full  focus:outline-none focus:ring-2 focus:ring-black mr-4">
+                <button class="bg-black text-white px-4 py-2 rounded-xl hover:bg-gray-500 min-w-[100px]">Search</button>
+
+        </div>
             <table class="w-full border-collapse overflow-hidden rounded-lg">
                 <thead class="bg-gray-200 text-gray-700 rounded-t-lg">
                     <tr class="bg-gray-200 text-gray-700">
@@ -90,7 +90,7 @@
                         <td class="py-3 px-4">De La Cruz, Juan</td>
                         <td class="py-3 px-4">02-23-25</td>
                         <td class="py-3 px-4">
-                            <button class="bg-gray-300 text-black px-4 py-1 rounded-full hover:bg-black hover:text-white">Claimed</button>
+                            <button class="bg-gray-300 text-black px-4 py-1 rounded-full hover:bg-black hover:text-white min-w-[105px]">Claimed</button>
                         </td>
                     </tr>
                     <tr class="border-b">
@@ -98,7 +98,7 @@
                         <td class="py-3 px-4">Ponce, Crishel</td>
                         <td class="py-3 px-4">02-24-25</td>
                         <td class="py-3 px-4">
-                            <button class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-500">Unclaimed</button>
+                            <button class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-500 min-w-[100px]">Unclaimed</button>
                         </td>
                     </tr>
                     <tr class="border-b">
@@ -106,22 +106,26 @@
                         <td class="py-3 px-4">Ala Christian</td>
                         <td class="py-3 px-4">02-24-25</td>
                         <td class="py-3 px-4">
-                            <button class="bg-gray-300 text-black px-4 py-1 rounded-full hover:bg-black hover:text-white">Claimed</button>
+                            <button class="bg-gray-300 text-black px-4 py-1 rounded-full hover:bg-black hover:text-white min-w-[105px]">Claimed</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-            <!-- Pagination -->
-    <div class="flex justify-between items-center mt-6">
-        <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">Previous</button>
-        <div class="space-x-2">
+           
+        
+        <!-- Pagination -->         
+        <div class="flex justify-center space-x-2 items-center mt-6">
+            <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"><</button>
             <button class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-500">1</button>
             <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">2</button>
-            <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">3</button>
+            <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">...</button>
+            <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">9</button>
+            <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">10</button>
+            <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">></button>
         </div>
-        <button class="bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400">Next</button>
-    </div>
+        
+
 </div>
     </div>
 
