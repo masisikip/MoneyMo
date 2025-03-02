@@ -73,53 +73,53 @@
                 <table class="w-full border-collapse">
                     <thead>
                         <tr class="bg-gray-200 text-gray-700">
-                            <th class="py-2 px-2 md:px-4 text-left text-xs md:text-sm cursor-pointer">
+                            <th class="py-2 px-2 md:px-4 text-left text-[10px] md:text-xs cursor-pointer">
                                 Student Name
                                 <i class="fas fa-chevron-down ml-1 text-gray-400"></i>
                             </th>
-                            <th class="py-2 px-2 md:px-4 text-left text-xs md:text-sm cursor-pointer">
+                            <th class="py-2 px-2 md:px-4 text-left text-[10px] md:text-xs cursor-pointer">
                                 Item Category
                                 <i class="fas fa-chevron-down ml-1 text-gray-400"></i>
                             </th>
-                            <th class="py-2 px-2 md:px-4 text-left text-xs md:text-sm cursor-pointer">
+                            <th class="py-2 px-2 md:px-4 text-left text-[10px] md:text-xs cursor-pointer">
                                 Price
                                 <i class="fas fa-chevron-down ml-1 text-gray-400"></i>
                             </th>
-                            <th class="py-3 px-4 text-left text-xs md:text-sm">
+                            <th class="py-3 px-4 text-left text-[10px] md:text-xs">
                                 Option
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="border-b">
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-base">Dela Cruz, Juan</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-base">Iphone 16</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-base">₱ 499.00</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4">
-                                <button class="bg-black text-white px-2 md:px-4 py-1 rounded-lg text-xs md:text-sm hover:bg-gray-700 transition duration-300 cursor-pointer">Print</button>
+                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Dela Cruz, Juan</td>
+                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Iphone 16</td>
+                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">₱ 499.00</td>
+                            <td class="py-2 md:py-3 px-2 md:px-4 flex justify-center">
+                                <button class="bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-gray-700 transition duration-300 cursor-pointer">print</button>
                             </td>
                         </tr>
                         <tr class="border-b">
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-base">Ponce, Crissel</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-base">Org Shirt</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-base">₱ 500.00</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4">
-                                <button class="bg-black text-white px-2 md:px-4 py-1 rounded-lg text-xs md:text-sm hover:bg-gray-700 transition duration-300 cursor-pointer">Print</button>
+                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Ponce, Crissel</td>
+                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Org Shirt</td>
+                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">₱ 500.00</td>
+                            <td class="py-2 md:py-3 px-2 md:px-4 flex justify-center">
+                                <button class="bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-gray-700 transition duration-300 cursor-pointer">print</button>
                             </td>
                         </tr>
                         <tr class="border-b">
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-base">Pineda, Jr. Fernando</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-base">Org Fee</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-base">₱ 150.00</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4">
-                                <button class="bg-black text-white px-2 md:px-4 py-1 rounded-lg text-xs md:text-sm hover:bg-gray-700 transition duration-300 cursor-pointer">Print</button>
+                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Pineda, Jr. Fernando</td>
+                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Org Fee</td>
+                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">₱ 150.00</td>
+                            <td class="py-2 md:py-3 px-2 md:px-4 flex justify-center">
+                                <button class="bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-gray-700 transition duration-300 cursor-pointer">print</button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
->
+
         <div class="mt-6 mb-6 w-full flex justify-center">
             <button class="bg-gray-300 text-black px-3 py-1 md:px-4 md:py-2 rounded-lg hover:bg-gray-500 transition duration-300 cursor-pointer hover:scale-105 text-xs md:text-sm">&lt;</button>
 
