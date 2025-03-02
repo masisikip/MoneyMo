@@ -81,6 +81,13 @@ try {
                 width: 25%; 
             }
         }
+        .price-container {
+            width: 3rem; 
+            height: 1.9rem; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 <body class="flex flex-col h-screen bg-gray-100">
@@ -162,9 +169,11 @@ try {
                                 <i class="fa-solid fa-trash"></i>
                             </div>
                         </div>
-                        <h3 class="text-xl" style="font-family: Arial, sans-serif;">
-                            <?php echo htmlspecialchars($item['value']); ?>
-                        </h3>
+                        <div class="price-container bg-black bg-opacity-50 border text-white border-zinc-700/60 rounded-full shadow-lg">
+                            <h3 class="text-l" style="font-family: Arial, sans-serif;">
+                                <?php echo htmlspecialchars($item['value']); ?>                   
+                            </h3>
+                        </div>
                     </div>
 
                     <!-- Item Name -->
