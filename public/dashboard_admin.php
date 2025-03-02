@@ -119,7 +119,7 @@
                 </table>
             </div>
         </div>
-
+        
         <div class="mt-6 mb-6 w-full flex justify-center">
             <button class="bg-gray-300 text-black px-3 py-1 md:px-4 md:py-2 rounded-lg hover:bg-gray-500 transition duration-300 cursor-pointer hover:scale-105 text-xs md:text-sm">&lt;</button>
 
