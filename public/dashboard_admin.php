@@ -12,7 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="flex flex-col md:flex-row h-screen bg-gray-100">
+<!-- <body class="flex flex-col md:flex-row h-screen bg-gray-100">
     <div class="md:hidden bg-black text-white p-4 flex justify-start items-center">
         <button id="mobileMenuToggle" class="text-white focus:outline-none mr-4">
             <i class="fas fa-bars text-2xl"></i>
@@ -57,7 +57,7 @@
                 </li>
             </ul>
         </nav>
-    </aside>
+    </aside> -->
 
     <div class="flex-1 p-4 md:p-8 overflow-y-auto w-full md:ml-0 pb-24">
         <div class="bg-white shadow p-4 rounded-lg mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between">
@@ -85,7 +85,7 @@
                                 Price
                                 <i class="fas fa-chevron-down ml-1 text-gray-400"></i>
                             </th>
-                            <th class="py-3 px-4 text-left text-[10px] md:text-xs">
+                            <th class="py-3 px-4 text-center text-[10px] md:text-xs">
                                 Option
                             </th>
                         </tr>
