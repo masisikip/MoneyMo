@@ -1,4 +1,47 @@
 <?php
+require_once '../includes/connect-db.php';
+require_once '../includes/token.php';
+session_start();
+
+global $pdo;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+
+    $stmt = $pdo->prepare('SELECT * FROM user WHERE email = ?');
+    $stmt->execute([$email]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user && password_verify($password, $user['password'])) {
+        // Create payload with user info
+        $payload = [
+            'user_id' => $user['iduser'],
+            'user_email' => $user['email'],
+            'user_type' => $user['usertype'],
+            'iat' => time(),              // Issued At
+        ];
+
+        // Generate encrypted token
+        $token = encryptToken($payload);
+
+        // Store token in a session or secure cookie
+        $_SESSION['auth_token'] = $token;
+
+        // Alternatively, use an HttpOnly cookie for better security
+        setcookie('auth_token', $token, [
+            'expires' => time() + 3600,
+            'httponly' => true,
+            'secure' => true,
+            'samesite' => 'Strict'
+        ]);
+
+        header("Location: ../user_dashboard.html");
+        exit();
+    } 
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -21,7 +64,7 @@
         <h1 class="text-3xl font-bold text-gray-800 mb-1">Login to Your Account</h1>
         <p class="text-gray-500 mb-8">Enter your credentials to continue</p>
 
-        <form class="space-y-6 flex flex-col items-center">
+        <form class="space-y-6 flex flex-col items-center" method='post' action="">
           <!-- Email Field -->
           <div class="w-full">
             <label for="email" class="block mb-2 text-sm font-medium text-gray-700"
