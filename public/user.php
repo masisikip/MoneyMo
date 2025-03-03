@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '..\api\includes\connect-db.php';
+include_once '.\includes\connect-db.php';
 
 try {
     $stmt = $pdo->query("SELECT * FROM user");
