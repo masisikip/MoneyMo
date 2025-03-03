@@ -31,13 +31,7 @@
         <div class="flex items-center space-x-2 md:space-x-4 w-full md:w-auto">
             <select class="p-2 border rounded-lg w-full md:w-auto">
                 <option>Filter by</option>
-                <option>Claimed</option>
                 <option>Unclaimed</option>
-            </select>
-            <select class="p-2 border rounded-lg w-full md:w-auto">
-                <option>Sort by</option>
-                <option>Name</option>
-                <option>Date</option>
             </select>
             <button class="text-gray-500 hover:text-black">
                 <i class="fas fa-sliders-h"></i>
