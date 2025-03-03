@@ -53,6 +53,10 @@ try {
             background-color: #000000;
             color: #ffffff;
         }
+        .icon-button:active {
+            background-color: #ffffff;
+            color: #000000;
+        }
         @media (max-width: 640px) {
             .add-item-button {
                 display: flex;
@@ -76,6 +80,18 @@ try {
             .modal-content {
                 width: 25%; 
             }
+        }
+        .price-container {
+            width: 3rem; 
+            height: 1.9rem; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .price-container h3,
+        .item-name,
+        .item-stock {
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
@@ -132,13 +148,13 @@ try {
 
     <div id="content" class="flex-1 p-8 content">
         <!-- Item Grid -->
-        <div class="grid justify-center w-full grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9">
+        <div class="grid justify-center w-full grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9 lg:justify-items-center xl:justify-items-center">
             <?php foreach ($items as $item): ?>
                 <div id="<?= $item['iditem'] ?>-item" data-iditem="<?= $item['iditem'] ?>"
                     data-code="<?= $item['code'] ?>" data-name="<?= $item['name'] ?>"
-                    data-value="<?= $item['value'] ?>"
+                    data-value="<?= $item['value'] ?>" data-stock="<?= $item['stock'] ?>"
                     data-image="data:image/jpeg;base64,<?= base64_encode($item['image']); ?>"
-                    class="cursor-pointer flex flex-col justify-center items-center relative bg-white border border-gray-300 rounded-lg hover:scale-105 transition-transform duration-300 ease-in-out lg:min-h-[15rem] lg:min-w-[12rem] lg:max-w-[20rem] h-auto md:min-h-[10rem] md:min-w-[10rem] md:max-w-[15rem]">
+                    class="cursor-pointer flex flex-col justify-center items-center relative bg-white border border-gray-300 rounded-lg hover:scale-105 transition-transform duration-300 ease-in-out lg:min-h-[15rem] lg:min-w-[15rem] lg:max-w-[15rem] h-auto md:min-h-[15rem] md:min-w-[15rem] md:max-w-[15rem]">
 
                     <!-- Item Image -->
                     <?php if (!empty($item['image'])): ?>
@@ -158,16 +174,21 @@ try {
                                 <i class="fa-solid fa-trash"></i>
                             </div>
                         </div>
-                        <h3 class="text-xl" style="font-family: Arial, sans-serif;">
-                            <?php echo htmlspecialchars($item['value']); ?>
-                        </h3>
+                        <div class="price-container bg-black bg-opacity-50 border text-white border-zinc-700/60 rounded-full shadow-lg">
+                            <h3 class="text-l">
+                                <?php echo htmlspecialchars($item['value']); ?>                   
+                            </h3>
+                        </div>
                     </div>
 
                     <!-- Item Name -->
-                    <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center h-16 px-3 text-white rounded-b-lg bg-gradient-to-t from-black to-transparent">
-                        <h3 class="text-xl" style="font-family: Arial, sans-serif;">
+                    <div class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center h-20 px-3 text-white rounded-b-lg bg-gradient-to-t from-black to-transparent">
+                        <h3 class="text-xl font-bold item-name">
                             <?php echo htmlspecialchars($item['name']); ?>
                         </h3>
+                        <p class="text-base item-stock">
+                            In Stock &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; <?php echo htmlspecialchars($item['stock']); ?> Units
+                        </p>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -190,6 +211,10 @@ try {
                 <div class="mb-4">
                     <label for="value" class="block text-gray-700">Value <span class="text-red-500">*</span></label>
                     <input type="number" id="value" name="value" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <div class="mb-4">
+                    <label for="stock" class="block text-gray-700">Stock <span class="text-red-500">*</span></label>
+                    <input type="number" id="stock" name="stock" class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="mb-4">
                     <label for="image" class="block text-gray-700">Image <span class="text-red-500">*</span></label>
@@ -220,6 +245,10 @@ try {
                 <div class="mb-4">
                     <label for="update_value" class="block text-gray-700">Value</label>
                     <input type="number" id="update_value" name="value" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                </div>
+                <div class="mb-4">
+                    <label for="update_stock" class="block text-gray-700">Stock</label>
+                    <input type="number" id="update_stock" name="stock" class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="mb-4">
                     <label for="update_image" class="block text-gray-700">Image</label>
@@ -308,6 +337,7 @@ function openUpdateModal(iditem) {
     document.getElementById('update_code').value = item.dataset.code;
     document.getElementById('update_name').value = item.dataset.name;
     document.getElementById('update_value').value = item.dataset.value;
+    document.getElementById('update_stock').value = item.dataset.stock;
     toggleModal('updateItemModal');
 }
 

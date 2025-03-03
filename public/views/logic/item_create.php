@@ -6,6 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $value = $_POST['value'];
     $image = $_FILES['image'];
+    $stock = $_POST['stock'];
 
     if (!empty($image['tmp_name'])) {
         $source = $image['tmp_name'];
@@ -33,11 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $img_content = ob_get_clean();
 
         try {
-            $stmt = $pdo->prepare("INSERT INTO item (code, name, value, image) VALUES (:code, :name, :value, :image)");
+            $stmt = $pdo->prepare("INSERT INTO item (code, name, value, image, stock) VALUES (:code, :name, :value, :image, :stock)");
             $stmt->bindParam(':code', $code);
             $stmt->bindParam(':name', $name);
             $stmt->bindParam(':value', $value);
             $stmt->bindParam(':image', $img_content, PDO::PARAM_LOB);
+            $stmt->bindParam(':stock', $stock);
             $stmt->execute();
             header("Location: ../../item.php");
             exit();
