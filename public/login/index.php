@@ -30,7 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Alternatively, use an HttpOnly cookie for better security
         setcookie('auth_token', $token, [
-            'expires' => time() + 3600,
+            'expires' => time() + (30 * 24 * 60 * 60),
+            'path' => '/',
             'httponly' => true,
             'secure' => true,
             'samesite' => 'Strict'

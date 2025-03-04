@@ -1,22 +1,22 @@
 <?php
-?>
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-<!DOCTYPE html>
-<html lang="en">
+// Clear all session data and destroy the session
+$_SESSION = [];
+session_unset();
+session_destroy();
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoneyMo | Logout</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="icon" href="../assets/favicon.ico" type="image/x-icon">
-</head>
+// Delete the persistent auth_token cookie
+setcookie('auth_token', '', [
+    'expires' => time() - 3600, // Expire in the past to delete
+    'path' => '/',              // Ensure site-wide deletion
+    'httponly' => true,         // Secure against XSS
+    'secure' => true,           // Only over HTTPS
+    'samesite' => 'Strict'      // Mitigate CSRF
+]);
 
-<body>
-
-    <script>
-
-    </script>
-</body>
-
-</html>
+// Redirect to the login page
+header("Location: ../login/");
+exit();
