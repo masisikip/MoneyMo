@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once 'C:\xampp\htdocs\masisikip\MoneyMo\api\includes\connect-db.php';
+include_once __DIR__ . '/../../../api/includes/connect-db.php';
 
 if (isset($_GET['id'])) {
     $userId = $_GET['id'];
