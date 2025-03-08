@@ -57,80 +57,6 @@ try {
             mainContent.classList.toggle("ml-64");
         }
     </script>
-    <script>
-        function searchTable(inputId, tableClass) {
-            let input = document.getElementById(inputId);
-            let filter = input.value.toLowerCase();
-            let table = document.querySelector(tableClass);
-            let rows = table.getElementsByTagName("tr");
-
-            let found = false;
-            for (let i = 1; i < rows.length; i++) { 
-                let cells = rows[i].getElementsByTagName("td");
-                let match = false;
-
-                for (let j = 0; j < cells.length; j++) {
-                    if (cells[j].innerText.toLowerCase().includes(filter)) {
-                        match = true;
-                        break;
-                    }
-                }
-                rows[i].style.display = match ? "" : "none";
-                if (match) found = true;
-            }
-
-            //no results message
-            if (!found) {
-                document.getElementById("noResultsMessage").style.display = "block";
-            } else {
-                document.getElementById("noResultsMessage").style.display = "none";
-            }
-        }
-
-
-        // cancel button
-        document.addEventListener("DOMContentLoaded", function () {
-            const cancelButton = document.querySelector("#addUserModal #cancelButton");
-            const modal = document.getElementById("addUserModal");
-
-            if (cancelButton && modal) {
-                cancelButton.addEventListener("click", function () {
-                    console.log("Cancel button clicked! Hiding modal...");
-                    modal.style.display = "none";
-                });
-            } else {
-                console.error("Cancel button or modal not found!");
-            }
-        });
-
-        //edit
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll('.edit-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    document.getElementById('edit_user_id').value = this.dataset.id;
-                    document.getElementById('edit_lname').value = this.dataset.lname;
-                    document.getElementById('edit_fname').value = this.dataset.fname;
-                    document.getElementById('edit_email').value = this.dataset.email;
-                    document.getElementById('edit_usertype').value = this.dataset.usertype === "1" ? "Admin" : "User";
-                    document.getElementById('editModal').classList.remove('hidden');
-                });
-            });
-            document.getElementById('closeModal').addEventListener('click', function () {
-                document.getElementById('editModal').classList.add('hidden');
-            });
-            document.getElementById('editModal').addEventListener('click', function (e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
-                }
-            });
-        });
-
-        function cancelForm() {
-            document.getElementById("addUserForm").reset(); 
-            document.getElementById("addUserModal").style.display = 'none'; 
-        }
-
-    </script>
 </head>
 <body class="bg-gray-100 flex overflow-x-hidden">
     <header class="bg-black text-white fixed top-0 left-0 w-full h-14 flex items-center px-4 shadow-md z-50 md:px-6">
@@ -273,7 +199,7 @@ try {
                 <input type="email" name="email" placeholder="Email" required class="w-full p-2 border rounded mb-2">
                 <button type="submit" class="bg-black text-white w-full py-2 rounded">Add User</button>
             </form>
-            <button onclick="cancelForm()" class="bg-gray-400 text-white w-full py-2 rounded mt-2">Cancel</button>
+            <button id="cancelButton" class="bg-gray-400 text-white w-full py-2 rounded mt-2">Cancel</button>
         </div>
     </div>
 
@@ -298,5 +224,93 @@ try {
             </form>
         </div>
     </div>
+    <script>
+        function searchTable(inputId, tableClass) {
+            let input = document.getElementById(inputId);
+            let filter = input.value.toLowerCase();
+            let table = document.querySelector(tableClass);
+            let rows = table.getElementsByTagName("tr");
+
+            let found = false;
+            for (let i = 1; i < rows.length; i++) { 
+                let cells = rows[i].getElementsByTagName("td");
+                let match = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].innerText.toLowerCase().includes(filter)) {
+                        match = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = match ? "" : "none";
+                if (match) found = true;
+            }
+
+            // No results message
+            document.getElementById("noResultsMessage").style.display = found ? "none" : "block";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("DOM fully loaded and parsed.");
+
+            const addUserModal = document.getElementById("addUserModal");
+            const editModal = document.getElementById("editModal");
+            const addUserForm = document.getElementById("addUserForm");
+            const cancelButton = document.getElementById("cancelButton");
+            const closeModal = document.getElementById("closeModal");
+
+            if (!addUserModal || !editModal) {
+                console.error("Modal elements not found in the DOM.");
+                return;
+            }
+
+            // Open Add User Modal
+            document.getElementById("openAddUserModal")?.addEventListener("click", function () {
+                console.log("Open Add User Modal clicked.");
+                addUserModal.style.display = "none";
+            });
+
+            // Close Add User Modal (Cancel Button)
+            cancelButton?.addEventListener("click", function () {
+                console.log("Cancel button clicked. Hiding modal...");
+                addUserForm?.reset();
+                addUserModal.style.display = "none";
+            });
+
+            // Open Edit Modal
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    console.log("Edit button clicked for ID:", this.dataset.id);
+                    document.getElementById('edit_user_id').value = this.dataset.id;
+                    document.getElementById('edit_lname').value = this.dataset.lname;
+                    document.getElementById('edit_fname').value = this.dataset.fname;
+                    document.getElementById('edit_email').value = this.dataset.email;
+                    document.getElementById('edit_usertype').value = this.dataset.usertype === "1" ? "Admin" : "User";
+                    editModal.classList.remove('hidden');
+                });
+            });
+
+            // Close Edit Modal (Cancel Button)
+            closeModal?.addEventListener("click", function () {
+                console.log("Close Edit Modal clicked.");
+                editModal.classList.add("hidden");
+            });
+
+            // Close modal when clicking outside the modal content
+            window.addEventListener("click", (event) => {
+                if (event.target === addUserModal) {
+                    console.log("Clicked outside Add User Modal. Closing...");
+                    addUserForm?.reset();
+                    addUserModal.style.display = "none";
+                }
+                if (event.target === editModal) {
+                    console.log("Clicked outside Edit Modal. Closing...");
+                    editModal.classList.add("hidden");
+                }
+            });
+        });
+    </script>
+
+
 </body>
 </html>
