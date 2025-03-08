@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once __DIR__ . '/../../../api/includes/connect-db.php';
+include_once '/../../includes/connect-db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
     $user_id = $_POST['user_id'];

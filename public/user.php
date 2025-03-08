@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '../api/includes/connect-db.php';
+include_once '.\includes\connect-db.php';
 
 $usersPerPage = 3;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -203,7 +203,6 @@ try {
         </div>
     </div>
 
-    <!-- Edit User Modal -->
     <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded shadow-lg w-96">
             <h2 class="text-xl font-semibold mb-4">Edit User/Admin</h2>
@@ -246,7 +245,6 @@ try {
                 if (match) found = true;
             }
 
-            // No results message
             document.getElementById("noResultsMessage").style.display = found ? "none" : "block";
         }
 
@@ -264,20 +262,17 @@ try {
                 return;
             }
 
-            // Open Add User Modal
             document.getElementById("openAddUserModal")?.addEventListener("click", function () {
                 console.log("Open Add User Modal clicked.");
                 addUserModal.style.display = "none";
             });
 
-            // Close Add User Modal (Cancel Button)
             cancelButton?.addEventListener("click", function () {
                 console.log("Cancel button clicked. Hiding modal...");
                 addUserForm?.reset();
                 addUserModal.style.display = "none";
             });
 
-            // Open Edit Modal
             document.querySelectorAll('.edit-btn').forEach(button => {
                 button.addEventListener('click', function () {
                     console.log("Edit button clicked for ID:", this.dataset.id);
@@ -290,13 +285,11 @@ try {
                 });
             });
 
-            // Close Edit Modal (Cancel Button)
             closeModal?.addEventListener("click", function () {
                 console.log("Close Edit Modal clicked.");
                 editModal.classList.add("hidden");
             });
 
-            // Close modal when clicking outside the modal content
             window.addEventListener("click", (event) => {
                 if (event.target === addUserModal) {
                     console.log("Clicked outside Add User Modal. Closing...");

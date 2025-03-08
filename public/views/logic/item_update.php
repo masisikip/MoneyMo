@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/../../../api/includes/connect-db.php';
+include_once __DIR__ . '/../../includes/connect-db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $iditem = $_POST['iditem'];
@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $value = $_POST['value'];
     $image = $_FILES['image'];
+    $stock = $_POST['stock'];
 
     if (!empty($image['tmp_name'])) {
         $source = $image['tmp_name'];
@@ -34,11 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $img_content = ob_get_clean();
 
         try {
-            $stmt = $pdo->prepare("UPDATE item SET code = :code, name = :name, value = :value, image = :image WHERE iditem = :iditem");
+            $stmt = $pdo->prepare("UPDATE item SET code = :code, name = :name, value = :value, image = :image, stock = :stock WHERE iditem = :iditem");
             $stmt->bindParam(':code', $code);
             $stmt->bindParam(':name', $name);
             $stmt->bindParam(':value', $value);
             $stmt->bindParam(':image', $img_content, PDO::PARAM_LOB);
+            $stmt->bindParam(':stock', $stock);
             $stmt->bindParam(':iditem', $iditem);
             $stmt->execute();
             echo json_encode(["message" => "Item updated successfully"]);
@@ -47,10 +49,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     } else {
         try {
-            $stmt = $pdo->prepare("UPDATE item SET code = :code, name = :name, value = :value WHERE iditem = :iditem");
+            $stmt = $pdo->prepare("UPDATE item SET code = :code, name = :name, value = :value, stock = :stock WHERE iditem = :iditem");
             $stmt->bindParam(':code', $code);
             $stmt->bindParam(':name', $name);
             $stmt->bindParam(':value', $value);
+            $stmt->bindParam(':stock', $stock);
             $stmt->bindParam(':iditem', $iditem);
             $stmt->execute();
             echo json_encode(["message" => "Item updated successfully"]);
