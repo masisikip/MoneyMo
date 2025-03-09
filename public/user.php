@@ -103,19 +103,20 @@ try {
         </div>
 
 
-        <div class="mt-6 bg-white shadow rounded-lg p-4">
+        <div class="mt-6 bg-white shadow rounded-lg p-4 hidden md:block">
             <div class="overflow-x-auto">
-                <table class="table-auto w-full border-collapse border border-gray-300">
-                    <thead>
-                        <tr class="bg-gray-200">
-                            <th class="w-1/4 px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-base">Name</th>
-                            <th class="w-1/4 px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-base">User Role</th>
-                            <th class="w-1/4 px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-base">Email</th>
-                            <th class="w-1/4 px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-base">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($users)): ?>
+                <?php if (!empty($users)): ?>
+                    <!-- Desktop View (Table) -->
+                    <table class="hidden md:table w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Name</th>
+                                <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">User Type</th>
+                                <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Email</th>
+                                <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             <?php foreach ($users as $userData): ?>
                                 <tr class="border-t">
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-base">
@@ -123,7 +124,8 @@ try {
                                     </td>
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left">
                                         <span class="<?= $userData['usertype'] == 1 ? 'bg-black' : 'bg-gray-400' ?> 
-                                                    text-white px-3 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm inline-block w-20 md:w-24 text-center">
+                                            text-white px-3 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm inline-block 
+                                            w-16 md:w-24 text-center text-[10px] md:text-sm">
                                             <?= $userData['usertype'] == 1 ? "Admin" : "User" ?>
                                         </span>
                                     </td>
@@ -148,13 +150,50 @@ try {
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr><td colspan="4" class="px-2 md:px-6 py-3 text-center text-gray-500 text-xs md:text-base">No users found.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p class="text-center text-gray-500 text-xs md:text-base">No users found.</p>
+                <?php endif; ?>
             </div>
         </div>
+
+        <?php if (!empty($users)): ?>
+            <div class="md:hidden space-y-4 mt-4">
+                <?php foreach ($users as $userData): ?>
+                    <div class="bg-white shadow-md border border-gray-200 rounded-lg p-5 flex justify-between items-center">
+                        <div>
+                            <!-- User Role -->
+                            <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>">
+                                <?= $userData['usertype'] == 1 ? "Admin" : "User" ?>
+                            </p>
+                            <!-- User Name -->
+                            <p class="text-black-700 font-medium"><?= htmlspecialchars($userData['f_name'] . ' ' . $userData['l_name']) ?></p>
+                            <!-- User Email -->
+                            <p class="text-gray-500 text-sm"><?= htmlspecialchars($userData['email']) ?></p>
+                        </div>
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-3">
+                            <a href="#" class="edit-btn text-black text-xs md:text-base"
+                                data-id="<?= $userData['iduser'] ?>"
+                                data-lname="<?= htmlspecialchars($userData['l_name']) ?>"
+                                data-fname="<?= htmlspecialchars($userData['f_name']) ?>"
+                                data-email="<?= htmlspecialchars($userData['email']) ?>"
+                                data-usertype="<?= htmlspecialchars($userData['usertype']) ?>">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="views/logic/user_delete.php?id=<?= $userData['iduser'] ?>" 
+                                class="text-black text-xs md:text-base"
+                                onclick="return confirm('Are you sure you want to delete this user?');">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <p class="text-center text-gray-500 text-xs md:text-base">No users found.</p>
+        <?php endif; ?>
 
         <?php
         $range = 2;
@@ -218,7 +257,7 @@ try {
                 <input type="text" id="edit_usertype" class="border p-2 w-full rounded mb-4 bg-gray-200" readonly>
                 <div class="flex justify-end space-x-2">
                     <button type="submit" name="update_user" class="bg-black text-white px-4 py-2 rounded">Update</button>
-                    <button type="button" id="closeModal" class="bg-black text-white px-4 py-2 rounded">Cancel</button>
+                    <button type="button" id="closeModal" class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
                 </div>
             </form>
         </div>
