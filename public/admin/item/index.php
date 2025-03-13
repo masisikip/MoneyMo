@@ -11,6 +11,7 @@ try {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,76 +19,95 @@ try {
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/YOUR-FONT-AWESOME-KEY.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .modal {
             z-index: 50;
         }
+
         .item-image {
             width: 100%;
-            height: 150px; 
+            height: 150px;
             object-fit: cover;
         }
+
         .dropdown:hover .dropdown-menu {
             display: block;
         }
+
         .dropdown-menu {
             display: none;
         }
+
         .sidebar {
             transform: translateX(-100%);
             transition: transform 0.3s ease-in-out;
         }
+
         .sidebar.show {
             transform: translateX(0);
         }
+
         .content {
             transition: margin-left 0.3s ease-in-out;
         }
+
         .content.shifted {
-            margin-left: 16rem; /* Width of the sidebar */
+            margin-left: 16rem;
+            /* Width of the sidebar */
         }
+
         .icon-button {
             transition: background-color 0.3s, color 0.3s;
         }
+
         .icon-button:hover {
             background-color: #000000;
             color: #ffffff;
         }
+
         .icon-button:active {
             background-color: #ffffff;
             color: #000000;
         }
+
         @media (max-width: 640px) {
             .add-item-button {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                width: 2rem; 
+                width: 2rem;
                 height: 2rem;
                 padding: 0;
             }
+
             .add-item-button i {
                 margin-right: 0;
             }
+
             .add-item-button span {
                 display: none;
             }
+
             .modal-content {
-                width: 66.67%; 
+                width: 66.67%;
             }
         }
+
         @media (min-width: 641px) {
             .modal-content {
-                width: 25%; 
+                width: 25%;
             }
         }
+
         .price-container {
-            width: 3rem; 
-            height: 1.9rem; 
+            width: 3rem;
+            height: 1.9rem;
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
         .price-container h3,
         .item-name,
         .item-stock {
@@ -95,64 +115,26 @@ try {
         }
     </style>
 </head>
+
 <body class="flex flex-col h-screen bg-gray-100">
-    <header class="bg-black text-white p-6 flex justify-between items-center">
-        <div class="flex items-center">
-            <button onclick="toggleSidebar()" class="text-white focus:outline-none">
-                <i class="fas fa-bars text-2xl"></i>
-            </button>
-            <span class="ml-4 text-3xl font-bold">Item Manager</span> <!-- Increased font size -->
-        </div>
-        <button class="text-black bg-white px-4 py-2 rounded flex items-center add-item-button" onclick="toggleModal('addItemModal')">
+    <?php include_once '../../includes/partial.php' ?>
+
+
+    <div class="w-full flex justify-end mt-5 mr-20 pr-10">
+
+        <button class="text-white  bg-black px-4 py-2 rounded flex items-center add-item-button"
+            onclick="toggleModal('addItemModal')">
             <i class="fas fa-plus mr-2"></i> <span>Add Item</span>
         </button>
-    </header>
-
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-black text-white p-6 sidebar">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold">Menu</h2>
-            <button onclick="toggleSidebar()" class="text-white focus:outline-none">
-                <i class="fas fa-bars text-2xl"></i>
-            </button>
-        </div>
-        <nav>
-            <ul class="space-y-3">
-                <li>
-                    <a href="dashboard_admin.php" class="flex items-center p-3 hover:bg-[#545454] rounded">
-                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="inventory.php" class="flex items-center p-3 hover:bg-[#545454] rounded">
-                        <i class="fas fa-boxes mr-2"></i> Inventory
-                    </a>
-                </li>
-                <li>
-                    <a href="item.php" class="flex items-center p-3 hover:bg-[#545454] rounded">
-                        <i class="fas fa-cubes mr-2"></i> Item Management
-                    </a>
-                </li>
-                <li>
-                    <a href="user.php" class="flex items-center p-3 hover:bg-[#545454] rounded">
-                        <i class="fas fa-users-cog mr-2"></i> User Management
-                    </a>
-                </li>
-                <li>
-                    <a href="logout.php" class="flex items-center p-3 hover:bg-[#545454] rounded">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Log Out
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
+    </div>
 
     <div id="content" class="flex-1 p-8 content">
         <!-- Item Grid -->
-        <div class="grid justify-center w-full grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9 lg:justify-items-center xl:justify-items-center">
+        <div
+            class="grid justify-center w-full grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9 lg:justify-items-center xl:justify-items-center">
             <?php foreach ($items as $item): ?>
-                <div id="<?= $item['iditem'] ?>-item" data-iditem="<?= $item['iditem'] ?>"
-                    data-code="<?= $item['code'] ?>" data-name="<?= $item['name'] ?>"
-                    data-value="<?= $item['value'] ?>" data-stock="<?= $item['stock'] ?>"
+                <div id="<?= $item['iditem'] ?>-item" data-iditem="<?= $item['iditem'] ?>" data-code="<?= $item['code'] ?>"
+                    data-name="<?= $item['name'] ?>" data-value="<?= $item['value'] ?>" data-stock="<?= $item['stock'] ?>"
                     data-image="data:image/jpeg;base64,<?= base64_encode($item['image']); ?>"
                     class="cursor-pointer flex flex-col justify-center items-center relative bg-white border border-gray-300 rounded-lg hover:scale-105 transition-transform duration-300 ease-in-out lg:min-h-[15rem] lg:min-w-[15rem] lg:max-w-[15rem] h-auto md:min-h-[15rem] md:min-w-[15rem] md:max-w-[15rem]">
 
@@ -174,20 +156,23 @@ try {
                                 <i class="fa-solid fa-trash"></i>
                             </div>
                         </div>
-                        <div class="price-container bg-black bg-opacity-50 border text-white border-zinc-700/60 rounded-full shadow-lg">
+                        <div
+                            class="price-container bg-black bg-opacity-50 border text-white border-zinc-700/60 rounded-full shadow-lg">
                             <h3 class="text-l">
-                                <?php echo htmlspecialchars($item['value']); ?>                   
+                                <?php echo htmlspecialchars($item['value']); ?>
                             </h3>
                         </div>
                     </div>
 
                     <!-- Item Name -->
-                    <div class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center h-20 px-3 text-white rounded-b-lg bg-gradient-to-t from-black to-transparent">
+                    <div
+                        class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center h-20 px-3 text-white rounded-b-lg bg-gradient-to-t from-black to-transparent">
                         <h3 class="text-xl font-bold item-name">
                             <?php echo htmlspecialchars($item['name']); ?>
                         </h3>
                         <p class="text-base item-stock">
-                            In Stock &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; <?php echo htmlspecialchars($item['stock']); ?> Units
+                            In Stock &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; <?php echo htmlspecialchars($item['stock']); ?>
+                            Units
                         </p>
                     </div>
                 </div>
@@ -202,26 +187,32 @@ try {
             <form id="addItemForm" action="logic/item_create.php" method="POST" enctype="multipart/form-data">
                 <div class="mb-4">
                     <label for="code" class="block text-gray-700">Code <span class="text-red-500">*</span></label>
-                    <input type="text" id="code" name="code" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    <input type="text" id="code" name="code" class="w-full p-2 border border-gray-300 rounded mt-1"
+                        required>
                 </div>
                 <div class="mb-4">
                     <label for="name" class="block text-gray-700">Name <span class="text-red-500">*</span></label>
-                    <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded mt-1"
+                        required>
                 </div>
                 <div class="mb-4">
                     <label for="value" class="block text-gray-700">Value <span class="text-red-500">*</span></label>
-                    <input type="number" id="value" name="value" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    <input type="number" id="value" name="value" class="w-full p-2 border border-gray-300 rounded mt-1"
+                        required>
                 </div>
                 <div class="mb-4">
                     <label for="stock" class="block text-gray-700">Stock <span class="text-red-500">*</span></label>
-                    <input type="number" id="stock" name="stock" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    <input type="number" id="stock" name="stock" class="w-full p-2 border border-gray-300 rounded mt-1"
+                        required>
                 </div>
                 <div class="mb-4">
                     <label for="image" class="block text-gray-700">Image <span class="text-red-500">*</span></label>
-                    <input type="file" id="image" name="image" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    <input type="file" id="image" name="image" class="w-full p-2 border border-gray-300 rounded mt-1"
+                        required>
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2" onclick="toggleModal('addItemModal')">Cancel</button>
+                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2"
+                        onclick="toggleModal('addItemModal')">Cancel</button>
                     <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
                 </div>
             </form>
@@ -236,26 +227,32 @@ try {
                 <input type="hidden" id="update_iditem" name="iditem">
                 <div class="mb-4">
                     <label for="update_code" class="block text-gray-700">Code</label>
-                    <input type="text" id="update_code" name="code" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    <input type="text" id="update_code" name="code"
+                        class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="mb-4">
                     <label for="update_name" class="block text-gray-700">Name</label>
-                    <input type="text" id="update_name" name="name" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    <input type="text" id="update_name" name="name"
+                        class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="mb-4">
                     <label for="update_value" class="block text-gray-700">Value</label>
-                    <input type="number" id="update_value" name="value" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    <input type="number" id="update_value" name="value"
+                        class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="mb-4">
                     <label for="update_stock" class="block text-gray-700">Stock</label>
-                    <input type="number" id="update_stock" name="stock" class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    <input type="number" id="update_stock" name="stock"
+                        class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="mb-4">
                     <label for="update_image" class="block text-gray-700">Image</label>
-                    <input type="file" id="update_image" name="image" class="w-full p-2 border border-gray-300 rounded mt-1">
+                    <input type="file" id="update_image" name="image"
+                        class="w-full p-2 border border-gray-300 rounded mt-1">
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2" onclick="toggleModal('updateItemModal')">Cancel</button>
+                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2"
+                        onclick="toggleModal('updateItemModal')">Cancel</button>
                     <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
                 </div>
             </form>
@@ -264,106 +261,107 @@ try {
 
 </body>
 <script>
-function toggleModal(modalId) {
-    let modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.toggle("hidden");
-        if (modal.classList.contains("hidden")) {
-            clearModalInputs(modalId);
+    function toggleModal(modalId) {
+        let modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.toggle("hidden");
+            if (modal.classList.contains("hidden")) {
+                clearModalInputs(modalId);
+            }
         }
     }
-}
 
-document.querySelectorAll('.fixed.inset-0').forEach(modal => {
-    modal.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            modal.classList.add('hidden');
-            clearModalInputs(modal.id);
+    document.querySelectorAll('.fixed.inset-0').forEach(modal => {
+        modal.addEventListener('click', function (event) {
+            if (event.target === modal) {
+                modal.classList.add('hidden');
+                clearModalInputs(modal.id);
+            }
+        });
+    });
+
+    function clearModalInputs(modalId) {
+        const modal = document.getElementById(modalId);
+        const inputs = modal.querySelectorAll('input');
+        inputs.forEach(input => {
+            if (input.type !== 'hidden') {
+                input.value = '';
+            }
+        });
+        const fileInputs = modal.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(fileInput => {
+            fileInput.value = '';
+        });
+    }
+
+    function confirmDelete(iditem) {
+        if (confirm('Are you sure you want to delete this item?')) {
+            fetch('logic/item_delete.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `iditem=${iditem}`
+            })
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data);
+                    location.reload();
+                })
+                .catch(error => console.error('Error:', error));
         }
-    });
-});
+    }
 
-function clearModalInputs(modalId) {
-    const modal = document.getElementById(modalId);
-    const inputs = modal.querySelectorAll('input');
-    inputs.forEach(input => {
-        if (input.type !== 'hidden') {
-            input.value = '';
-        }
-    });
-    const fileInputs = modal.querySelectorAll('input[type="file"]');
-    fileInputs.forEach(fileInput => {
-        fileInput.value = '';
-    });
-}
-
-function confirmDelete(iditem) {
-    if (confirm('Are you sure you want to delete this item?')) {
-        fetch('logic/item_delete.php', {
+    document.getElementById('addItemForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch('logic/item_create.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `iditem=${iditem}`
+            body: formData
         })
-        .then(response => response.text())
-        .then(data => {
-            console.log(data);
-            location.reload();
-        })
-        .catch(error => console.error('Error:', error));
-    }
-}
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+                toggleModal('addItemModal');
+                location.reload();
+            })
+            .catch(error => console.error('Error:', error));
+    });
 
-document.getElementById('addItemForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const formData = new FormData(this);
-    fetch('logic/item_create.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-        console.log(data);
-        toggleModal('addItemModal');
-        location.reload();
-    })
-    .catch(error => console.error('Error:', error));
-});
-
-function openUpdateModal(iditem) {
-    const item = document.getElementById(`${iditem}-item`);
-    document.getElementById('update_iditem').value = item.dataset.iditem;
-    document.getElementById('update_code').value = item.dataset.code;
-    document.getElementById('update_name').value = item.dataset.name;
-    document.getElementById('update_value').value = item.dataset.value;
-    document.getElementById('update_stock').value = item.dataset.stock;
-    toggleModal('updateItemModal');
-}
-
-document.getElementById('updateItemForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const formData = new FormData(this);
-    fetch('logic/item_update.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-        console.log(data);
+    function openUpdateModal(iditem) {
+        const item = document.getElementById(`${iditem}-item`);
+        document.getElementById('update_iditem').value = item.dataset.iditem;
+        document.getElementById('update_code').value = item.dataset.code;
+        document.getElementById('update_name').value = item.dataset.name;
+        document.getElementById('update_value').value = item.dataset.value;
+        document.getElementById('update_stock').value = item.dataset.stock;
         toggleModal('updateItemModal');
-        location.reload();
-    })
-    .catch(error => console.error('Error:', error));
-});
-
-function toggleSidebar() {
-    let sidebar = document.getElementById('sidebar');
-    let content = document.getElementById('content');
-    if (sidebar && content) {
-        sidebar.classList.toggle("show");
-        content.classList.toggle("shifted");
     }
-}
+
+    document.getElementById('updateItemForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch('logic/item_update.php', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+                toggleModal('updateItemModal');
+                location.reload();
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    function toggleSidebar() {
+        let sidebar = document.getElementById('sidebar');
+        let content = document.getElementById('content');
+        if (sidebar && content) {
+            sidebar.classList.toggle("show");
+            content.classList.toggle("shifted");
+        }
+    }
 </script>
+
 </html>

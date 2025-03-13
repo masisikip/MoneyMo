@@ -10,30 +10,14 @@
   <title>MoneyMo</title>
   <link rel="stylesheet" href="../css/styles.css" />
   <link rel="icon" href="./assets/favicon.ico" type="image/x-icon" />
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="js/user_dashboard.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body class="bg-[#d9d9d9]">
-  <!-- Title part -->
-  <div class="p-8 flex">
-    <div class="flex items-center space-x-4">
-      <!-- First Block -->
-      <div class="px-2 pr-2 w-fit border-r-1 border-black">
-        <h1 class="text-xl font-bold text-black sm:text-2xl lg:text-xl xl:text-4xl mr-4">
-          DASHBOARD
-        </h1>
-      </div>
 
-      <!-- Second Block -->
-      <div class="px-2 w-fit">
-        <h3 class="text-xl text-black sm:text-2xl lg:text-xl xl:text-2xl">
-          Hello, User
-        </h3>
-      </div>
-    </div>
-  </div>
+  <?php include_once '../includes/partial.php' ?>
+
 
   <!--Receipts-->
   <div class="flex flex-wrap justify-center mt-3">

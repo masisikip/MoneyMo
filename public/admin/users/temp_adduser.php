@@ -1,11 +1,11 @@
 <?php
-require 'includes/connect-db.php'; 
+require '../../includes/connect-db.php'; 
 
-$f_name = 'John';
+$f_name = 'Masikip';
 $l_name = 'Doe';
-$usertype = 0;  // 0 = normal user; 1 = admin
-$email = '202280110@psu.palawan.edu.ph';
-$password = '12345678';
+$usertype = 1;  // 0 = normal user; 1 = admin
+$email = 'admin';
+$password = 'admin';
 
 $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
