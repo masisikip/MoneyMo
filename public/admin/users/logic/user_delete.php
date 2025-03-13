@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '../../includes/connect-db.php';
+include_once '../../../includes/connect-db.php';
 
 if (isset($_GET['id'])) {
     $userId = $_GET['id'];
@@ -25,6 +25,6 @@ if (isset($_GET['id'])) {
     $_SESSION['message_type'] = "error";
 }
 
-header("Location: ../../user.php");
+header("Location: ../../users");
 exit();
 

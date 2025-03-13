@@ -1,5 +1,5 @@
 <?php
-include_once '.\includes\connect-db.php';
+include_once '../../includes/connect-db.php';
 
 try {
     $stmt = $pdo->query("SELECT * FROM item");
@@ -199,7 +199,7 @@ try {
     <div id="addItemModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg modal-content">
             <h2 class="text-xl font-bold mb-4">Add New Item</h2>
-            <form id="addItemForm" action="views/logic/item_create.php" method="POST" enctype="multipart/form-data">
+            <form id="addItemForm" action="logic/item_create.php" method="POST" enctype="multipart/form-data">
                 <div class="mb-4">
                     <label for="code" class="block text-gray-700">Code <span class="text-red-500">*</span></label>
                     <input type="text" id="code" name="code" class="w-full p-2 border border-gray-300 rounded mt-1" required>
@@ -232,7 +232,7 @@ try {
     <div id="updateItemModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg modal-content">
             <h2 class="text-xl font-bold mb-4">Update Item</h2>
-            <form id="updateItemForm" action="views/logic/item_update.php" method="POST" enctype="multipart/form-data">
+            <form id="updateItemForm" action="logic/item_update.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="update_iditem" name="iditem">
                 <div class="mb-4">
                     <label for="update_code" class="block text-gray-700">Code</label>
@@ -299,7 +299,7 @@ function clearModalInputs(modalId) {
 
 function confirmDelete(iditem) {
     if (confirm('Are you sure you want to delete this item?')) {
-        fetch('views/logic/item_delete.php', {
+        fetch('logic/item_delete.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -318,7 +318,7 @@ function confirmDelete(iditem) {
 document.getElementById('addItemForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const formData = new FormData(this);
-    fetch('views/logic/item_create.php', {
+    fetch('logic/item_create.php', {
         method: 'POST',
         body: formData
     })
@@ -344,7 +344,7 @@ function openUpdateModal(iditem) {
 document.getElementById('updateItemForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const formData = new FormData(this);
-    fetch('views/logic/item_update.php', {
+    fetch('logic/item_update.php', {
         method: 'POST',
         body: formData
     })

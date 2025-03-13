@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '.\includes\connect-db.php';
+include_once '../../includes/connect-db.php';
 
 $usersPerPage = 3;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -142,7 +142,7 @@ try {
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <span class="text-gray-400 mx-1">|</span>
-                                        <a href="views/logic/user_delete.php?id=<?= $userData['iduser'] ?>" 
+                                        <a href="logic/user_delete.php?id=<?= $userData['iduser'] ?>" 
                                             class="text-black-500 text-xs md:text-base mx-1 inline-flex items-center" 
                                             onclick="return confirm('Are you sure you want to delete this user?');">
                                             <i class="fas fa-trash-alt"></i>
@@ -182,7 +182,7 @@ try {
                                 data-usertype="<?= htmlspecialchars($userData['usertype']) ?>">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="views/logic/user_delete.php?id=<?= $userData['iduser'] ?>" 
+                            <a href="logic/user_delete.php?id=<?= $userData['iduser'] ?>" 
                                 class="text-black text-xs md:text-base"
                                 onclick="return confirm('Are you sure you want to delete this user?');">
                                 <i class="fas fa-trash-alt"></i>
@@ -232,7 +232,7 @@ try {
     <div id="addUserModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded-lg w-96">
             <h2 class="text-xl font-bold mb-4">Add User</h2>
-            <form id="addUserForm" action="views/logic/user_add.php" method="POST">
+            <form id="addUserForm" action="logic/user_add.php" method="POST">
                 <input type="text" name="f_name" placeholder="First Name" required class="w-full p-2 border rounded mb-2">
                 <input type="text" name="l_name" placeholder="Last Name" required class="w-full p-2 border rounded mb-2">
                 <input type="email" name="email" placeholder="Email" required class="w-full p-2 border rounded mb-2">
@@ -245,7 +245,7 @@ try {
     <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded shadow-lg w-96">
             <h2 class="text-xl font-semibold mb-4">Edit User/Admin</h2>
-            <form id="editForm" method="POST" action="views/logic/user_admin_edit.php">
+            <form id="editForm" method="POST" action="logic/user_admin_edit.php">
                 <input type="hidden" name="user_id" id="edit_user_id">
                 <label class="block text-gray-700">Last Name:</label>
                 <input type="text" name="l_name" id="edit_lname" class="border p-2 w-full rounded mb-2" required>
