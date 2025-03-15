@@ -69,7 +69,7 @@ try {
     <aside id="sidebar"
         class="bg-black text-white w-64 h-screen fixed left-0 top-0 transform -translate-x-full transition-transform duration-300 z-50">
         <div class="flex items-center justify-between mb-6 p-4">
-            <img src="assets/logo.png" alt="Logo" class="h-8 w-8">
+            <img src="../../../assets/logo.png" alt="Logo" class="h-8 w-8">
             <h2 class="text-xl font-bold">MoneyMo</h2>
             <button onclick="toggleSidebar()" class="text-white text-2xl">&times;</button>
         </div>

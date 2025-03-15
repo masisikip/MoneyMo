@@ -79,7 +79,7 @@ if (isset($_SESSION['auth_token'])) {
                         class="fas fa-barcode"></i> <span>QR Code</span></a></li>
             <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/admin/item" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
                         class="fas fa-list"></i> <span>Items Management</span></a></li>
-            <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/admin/user" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
+            <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/admin/users" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
                         class="fas fa-users"></i> <span>Users Management</span></a></li>
             <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/logout.php" class="flex items-center space-x-2 hover:bg-red-500 p-2 rounded"><i
                         class="fas fa-sign-out-alt"></i> <span>Log out</span></a></li>
