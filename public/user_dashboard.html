@@ -39,7 +39,7 @@
     <!--Receipts-->
     <div class="flex flex-wrap justify-center mt-3">
       <!-- card 1 -->
-      <div class="clickable-div p-4 max-w-sm cursor-pointer">
+      <div class="clickable-div m-4 max-w-sm cursor-pointer">
         <div
           class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl"
         >
@@ -88,7 +88,7 @@
       </div>
 
       <!-- card 2-->
-      <div class="clickable-div p-4 max-w-sm cursor-pointer">
+      <div class="clickable-div m-4 max-w-sm cursor-pointer">
         <div
           class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl"
         >
@@ -137,7 +137,7 @@
       </div>
 
       <!-- card 3-->
-      <div class="clickable-div p-4 max-w-sm cursor-pointer">
+      <div class="clickable-div m-4 max-w-sm cursor-pointer">
         <div
           class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl"
         >
@@ -186,7 +186,7 @@
       </div>
 
       <!-- card 4-->
-      <div class="clickable-div p-4 max-w-sm cursor-pointer">
+      <div class="clickable-div m-4 max-w-sm cursor-pointer">
         <div
           class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl"
         >
@@ -235,6 +235,9 @@
       </div>
     </div>
 
+    <script src="https://superal.github.io/canvas2image/canvas2image.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
     <!-- Receipt Modal -->
     <div
       id="myModal"
@@ -246,7 +249,7 @@
       ></div>
 
       <div
-        class="modal-container h-auto bg-white w-11/12 md:max-w-md mx-auto shadow-lg z-50 overflow-y-auto"
+        class="modal-container h-auto bg-white w-11/12 md:max-w-md my-10 mx-auto shadow-lg z-50 overflow-y-auto"
       >
         <div class="bg-black grid grid-cols-2 gap-x-4">
           <p class="text-white font-medium ml-3 p-2">MoneyMo</p>
@@ -308,7 +311,8 @@
           <p class="pt-1 pb-1">This is a cutomer's copy. Thank You!</p>
           <div class="mt-4 flex justify-center">
             <button
-              class="px-20 bg-black p-3 ml-3 rounded-lg text-white hover:bg-white hover:border-1 hover:text-black hover:shadow-2xl hover:font-bold"
+              id="downloadButton"
+              class="px-20 bg-black p-3 ml-3 rounded-lg text-white hover:bg-white border-1 hover:border-1 hover:text-black hover:shadow-2xl"
             >
               Download
             </button>
@@ -316,5 +320,17 @@
         </div>
       </div>
     </div>
+    <script>
+      document
+        .querySelector("#downloadButton")
+        .addEventListener("click", function () {
+          html2canvas(document.querySelector(".modal-container"), {
+            onrendered: function (canvas) {
+              // document.body.appendChild(canvas);
+              return Canvas2Image.saveAsPNG(canvas);
+            },
+          });
+        });
+    </script>
   </body>
 </html>
