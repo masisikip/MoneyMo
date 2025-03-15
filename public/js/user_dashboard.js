@@ -1,11 +1,17 @@
 $(document).ready(function () {
+  // Show modal when button is clicked
   $(".clickable-div").click(function () {
-    $("#myModal").addClass("flex").removeClass("hidden");
+    $("#myModal").removeClass("hidden").addClass("flex");
   });
-});
 
-$(document).ready(function () {
+  // Hide modal when close button is clicked
   $("#closeModal").click(function () {
     $("#myModal").addClass("hidden").removeClass("flex");
   });
 });
+//
+//$(document).ready(function () {
+//  $("#modalOverlay").click(function () {
+//    $("#myModal").addClass("hidden").removeClass("flex");
+//  });
+//});

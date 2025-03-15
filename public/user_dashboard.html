@@ -245,6 +245,7 @@
     >
       <!-- hoverlay  -->
       <div
+        id="modalOverlay"
         class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"
       ></div>
 
@@ -331,6 +332,13 @@
             },
           });
         });
+
+      $(document).ready(function () {
+        $(document).on("click", "#modalOverlay", function () {
+          console.log("Overlay clicked!"); // Debugging
+          $("#myModal").addClass("hidden").removeClass("flex");
+        });
+      });
     </script>
   </body>
 </html>
