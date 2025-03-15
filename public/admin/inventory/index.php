@@ -16,12 +16,8 @@
 
 </head>
 
-<body class="p-6">
+<body class="">
     <?php include_once '../../includes/partial.php' ?>
-
-
-
-
 
     <div
         class="mt-5 bg-white  flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0">

@@ -1,5 +1,4 @@
 <?php
-session_start();
 include_once '../../includes/connect-db.php';
 
 $usersPerPage = 3;
@@ -45,46 +44,15 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+    <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/YOUR-FONT-AWESOME-KEY.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        function toggleSidebar() {
-            let sidebar = document.getElementById("sidebar");
-            let mainContent = document.getElementById("mainContent");
-
-            sidebar.classList.toggle("-translate-x-full");
-            mainContent.classList.toggle("ml-64");
-        }
-    </script>
 </head>
-<body class="bg-gray-100 flex overflow-x-hidden">
-    <header class="bg-black text-white fixed top-0 left-0 w-full h-14 flex items-center px-4 shadow-md z-50 md:px-6">
-        <button id="menuButton" onclick="toggleSidebar()" class="text-white text-2xl mr-4">
-            <i class="fas fa-bars"></i>
-        </button>
-        <h1 class="text-lg font-semibold">Users Management</h1>
-    </header>
+<body class="">
+    <?php include_once '../../includes/partial.php' ?>
 
-    <aside id="sidebar"
-        class="bg-black text-white w-64 h-screen fixed left-0 top-0 transform -translate-x-full transition-transform duration-300 z-50">
-        <div class="flex items-center justify-between mb-6 p-4">
-            <img src="../../../assets/logo.png" alt="Logo" class="h-8 w-8">
-            <h2 class="text-xl font-bold">MoneyMo</h2>
-            <button onclick="toggleSidebar()" class="text-white text-2xl">&times;</button>
-        </div>
-        <nav>
-            <ul class="space-y-3">
-                <li><a href="dashboard_admin.php" class="flex items-center p-3 hover:bg-gray-600 rounded"><i class="fas fa-tachometer-alt mr-2"></i> Dashboard</a></li>
-                <li><a href="inventory.php" class="flex items-center p-3 hover:bg-gray-600 rounded"><i class="fas fa-boxes mr-2"></i> Inventory</a></li>
-                <li><a href="item.php" class="flex items-center p-3 hover:bg-gray-600 rounded"><i class="fas fa-cubes mr-2"></i> Item Management</a></li>
-                <li><a href="user.php" class="flex items-center p-3 hover:bg-gray-600 rounded"><i class="fas fa-users-cog mr-2"></i> User Management</a></li>
-                <li><a href="logout.php" class="flex items-center p-3 hover:bg-gray-600 rounded"><i class="fas fa-sign-out-alt mr-2"></i> Log Out</a></li>
-            </ul>
-        </nav>
-    </aside>
-
-    <main id="mainContent" class="mt-16 p-6 w-full max-w-full transition-all duration-300">
+    <main id="mainContent" class="mt-5 p-6 w-full max-w-full transition-all duration-300">
         <div class="flex items-center justify-between bg-white p-4 shadow rounded-lg gap-2">
             <div class="flex items-center gap-3 w-full">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Users</h1>
@@ -125,7 +93,7 @@ try {
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left">
                                         <span class="<?= $userData['usertype'] == 1 ? 'bg-black' : 'bg-gray-400' ?> 
                                             text-white px-3 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm inline-block 
-                                            w-16 md:w-24 text-center text-[10px] md:text-sm">
+                                            w-16 md:w-24 text-center text-[10px]">
                                             <?= $userData['usertype'] == 1 ? "Admin" : "User" ?>
                                         </span>
                                     </td>
@@ -229,7 +197,7 @@ try {
 
     </main>
 
-    <div id="addUserModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div id="addUserModal" class="fixed inset-0 flex items-center justify-center bg-[#00000078] hidden">
         <div class="bg-white p-6 rounded-lg w-96">
             <h2 class="text-xl font-bold mb-4">Add User</h2>
             <form id="addUserForm" action="logic/user_add.php" method="POST">
@@ -242,7 +210,7 @@ try {
         </div>
     </div>
 
-    <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-[#00000078] hidden">
         <div class="bg-white p-6 rounded shadow-lg w-96">
             <h2 class="text-xl font-semibold mb-4">Edit User/Admin</h2>
             <form id="editForm" method="POST" action="logic/user_admin_edit.php">
