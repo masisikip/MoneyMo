@@ -18,5 +18,5 @@ setcookie('auth_token', '', [
 ]);
 
 // Redirect to the login page
-header("Location: ../login/");
+header("Location: index.php");
 exit();
