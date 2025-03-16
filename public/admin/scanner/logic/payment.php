@@ -15,7 +15,6 @@ if (isset($_SESSION['auth_token'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $student_id = $_POST['student_id'] ?? '';
 
-    // Validate student ID
     $stmt1 = $pdo->prepare('SELECT * FROM user WHERE student_id = ?');
     $stmt1->execute([$student_id]);
     $user = $stmt1->fetch();
@@ -24,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die('Invalid student ID.');
     }
 
-    // Fetch the current inventory count
     $stmt2 = $pdo->prepare('SELECT COUNT(*) AS inv_count FROM inventory');
     $stmt2->execute();
     $num = $stmt2->fetch();
@@ -35,12 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $amount = 0;
 
-    // Check for items
     if (!isset($_POST['iditem']) || empty($_POST['iditem'])) {
         die('No items selected.');
     }
 
-    $pdo->beginTransaction(); // Start transaction
+    $pdo->beginTransaction();
 
     foreach ($_POST['iditem'] as $item) {
         $stmt3 = $pdo->prepare('SELECT * FROM item WHERE iditem = ?');
@@ -51,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $receipt_no = str_pad($val, 4, '0', STR_PAD_LEFT);
 
         if (!$cur_item) {
-            continue; // Skip invalid item
+            continue; 
         }
 
         $reference_no = "ACS-" . $cur_item['code'] . "-" . date("Ymd") . "-" . $receipt_no;
@@ -68,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $amount += $cur_item['value'];
     }
 
-    $pdo->commit(); // Commit transaction
+    $pdo->commit(); 
 }
 ?>
 
