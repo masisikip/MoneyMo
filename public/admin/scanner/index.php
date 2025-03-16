@@ -48,28 +48,30 @@ try {
             <form id="item-form" action="logic/payment.php" method="POST"
                 class="w-full flex flex-col mt-6 items-center">
                 <div id="item-grid" class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    <?php foreach ($items as $item): ?>
-                        <div class="w-30 h-30 border border-gray-300 bg-white rounded-md flex justify-center items-center relative cursor-pointer item-card"
-                            onclick="selectItem(this)">
-                            <input type="checkbox" name="iditem[]" value="<?= $item['iditem'] ?>" class="hidden">
-                            <div class="h-3/4">
-                                <img src="data:image/jpeg;base64,<?= base64_encode($item['image']) ?>"
-                                    class="w-full h-full object-cover">
-                            </div>
+                    <?php foreach ($items as $item):
+                        if ($item['stock'] > 0):
+                            ?>
+                            <div class="w-30 h-30 border border-gray-300 bg-white rounded-md flex justify-center items-center relative cursor-pointer item-card"
+                                onclick="selectItem(this)">
+                                <input type="checkbox" name="iditem[]" value="<?= $item['iditem'] ?>" class="hidden">
+                                <div class="h-3/4">
+                                    <img src="data:image/jpeg;base64,<?= base64_encode($item['image']) ?>"
+                                        class="w-full h-full object-cover">
+                                </div>
 
-                            <!-- Overlay Price -->
-                            <div class="w-full absolute top-0 left-0 text-end text-gray-700 pt-1 px-2 text-xs rounded-t-md">
-                                P <?= $item['value'] ?></div>
-                            <div
-                                class="w-full h-16 absolute bottom-0 left-0 bg-linear-to-t from-[#000000b1] to-transparent text-white text-xs flex justify-center items-end pb-2 rounded-b-md font-semibold">
-                                <?= $item['name'] ?>
+                                <!-- Overlay Price -->
+                                <div class="w-full absolute top-0 left-0 text-end text-gray-700 pt-1 px-2 text-xs rounded-t-md">
+                                    P <?= $item['value'] ?></div>
+                                <div
+                                    class="w-full h-16 absolute bottom-0 left-0 bg-linear-to-t from-[#000000b1] to-transparent text-white text-xs flex justify-center items-end pb-2 rounded-b-md font-semibold">
+                                    <?= $item['name'] ?>
+                                </div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endif; endforeach; ?>
                 </div>
                 <input type="hidden" id="student_id" name="student_id">
                 <button onclick="processPayment(event)"
-                    class="w-20 p-1 bg-black rounded-md text-white cursor-pointer hover:bg-zinc-700 mt-4">Submit</button>
+                    class="w-20 p-1 bg-black rounded-md text-white cursor-pointer hover:bg-zinc-700 mt-4">Confirm</button>
             </form>
         </div>
     </div>
