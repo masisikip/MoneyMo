@@ -60,9 +60,12 @@
 
     <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:w-10/12 gap-4 place-items-center">
       <?php foreach ($purchases as $purchase): ?>
-        <div class="clickable-div w-[16rem] cursor-pointer h-full"   data-reference="<?= $purchase['reference_no'] ?>"
-          data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
-          data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
+        <div class="clickable-div w-[16rem] cursor-pointer"   
+          data-reference="<?= $purchase['reference_no'] ?>"
+          data-date="<?= $purchase['date'] ?>" 
+          data-quantity="<?= $purchase['quantity'] ?>"
+          data-item="<?= $purchase['name'] ?>" 
+          data-amount="<?= $purchase['value'] ?>"
           data-inventory="<?= $purchase['idinventory'] ?>"
           data-mode="<?= $purchase['payment_type'] ?>">
 
