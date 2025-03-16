@@ -30,7 +30,7 @@ try {
     <main class="w-full h-full flex flex-col items-center">
         <div class="font-bold text-2xl mt-5">Scan QR</div>
         <!-- QR Code Scanner -->
-        <div id="qr-reader" class="mt-5 w-[25rem] border-4 border-transparent transition-colors"></div>
+        <div id="qr-reader" class="mt-5 w-[23rem] border-4 border-transparent transition-colors"></div>
 
     </main>
 
