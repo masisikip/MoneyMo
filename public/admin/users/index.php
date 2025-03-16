@@ -1,7 +1,7 @@
 <?php
 include_once '../../includes/connect-db.php';
 
-$usersPerPage = 8;
+$usersPerPage = 8;  
 $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($currentPage - 1) * $usersPerPage;
 
@@ -57,7 +57,7 @@ try {
 
     <main id="mainContent" class="mt-5 p-6 w-full max-w-full transition-all duration-300">
         <div class="flex items-center justify-between bg-white p-4 shadow rounded-lg gap-2">
-            <div class="flex items-center gap-3 w-full">
+            <div class="flex items-center gap-3 flex-grow">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Users</h1>
                 <div class="relative w-full max-w-[180px] md:max-w-xs">
                     <input type="text" id="userSearch" onkeyup="searchTable('userSearch', '.user-table')"
@@ -67,7 +67,7 @@ try {
                 </div>
             </div>
             <button onclick="document.getElementById('addUserModal').style.display='flex'"
-                class="bg-black text-white p-3 rounded-lg flex items-center hover:bg-gray-800 transition w-12 h-12 md:w-auto md:px-4 md:py-2 md:gap-2 justify-center">
+                class="bg-black text-white p-3 rounded-lg flex items-center hover:bg-gray-800 transition md:px-4 md:py-2 md:gap-2 justify-center">
                 <i class="fas fa-user-plus text-xl"></i>
                 <span class="hidden md:block text-sm font-medium">Add User</span>
             </button>
