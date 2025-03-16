@@ -160,7 +160,7 @@ try {
 
         Html5Qrcode.getCameras().then(function (cameras) {
             if (cameras.length > 0) {
-                const cameraId = cameras[0].id;
+                const cameraId = cameras[1].id;
                 qrScanner.start(cameraId, { fps: 10, qrbox: { width: 250, height: 250 } }, onScanSuccess, onScanFailure)
                     .then(() => console.log("Camera started successfully"))
                     .catch(err => alert("Error starting camera: " + err));
