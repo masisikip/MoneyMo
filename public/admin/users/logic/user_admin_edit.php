@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
     $l_name = trim($_POST['l_name']);
     $f_name = trim($_POST['f_name']);
     $email = trim($_POST['email']);
+    $student_id = trim($_POST['student_id']);
 
     try {
         $stmt = $pdo->prepare("SELECT usertype FROM user WHERE iduser = ?");
@@ -14,8 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
         $row = $stmt->fetch();
         $usertype = $row['usertype'];
 
-        $stmt = $pdo->prepare("UPDATE user SET l_name = ?, f_name = ?, email = ? WHERE iduser = ?");
-        $stmt->execute([$l_name, $f_name, $email, $user_id]);
+        $stmt = $pdo->prepare("UPDATE user SET l_name = ?, f_name = ?, email = ?, student_id=? WHERE iduser = ?");
+        $stmt->execute([$l_name, $f_name, $email,$student_id, $user_id]);
 
         $_SESSION['message'] = "User updated successfully!";
         $_SESSION['message_type'] = "success";

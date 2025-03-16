@@ -67,10 +67,38 @@ try {
                         </div>
                     <?php endforeach; ?>
                 </div>
+                <input type="hidden" id="student_id" name="student_id">
                 <button
                     class="w-20 p-1 bg-black rounded-md text-white cursor-pointer hover:bg-zinc-700 mt-4">Submit</button>
             </form>
         </div>
+    </div>
+
+    <!-- Receipt Section -->
+    <div id="receipt" class="w-full h-full flex fixed top-0 left-0 justify-center items-center bg-gray-700/50">
+        <div id="receipt-main" class="w-[24rem] py-8 flex flex-col items-center bg-white rounded-lg shadow">
+            <div class="border-b border-gray-300 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-circle-check text-black text-[6rem] mb-2"></i>
+                <p class="font-semibold text-2xl">Thank You</p>
+                <span class="text-gray-500 text-wrap w-2/3 my-2 text-center text-sm">Your payment has been successfully processed</span>
+            </div>
+            <div class="mt-4 flex flex-col items-center">
+                <span class="text-gray-500 text-sm font-bold">ACCOUNT NAME</span>
+                <span class="text-xl font-bold">USER NAME</span>
+            </div>
+            <div class="mt-4 flex flex-col items-center">
+                <span class="text-gray-500 text-sm font-bold">TOTAL AMOUNT</span>
+                <span class="text-xl font-bold">P 700.00</span>
+            </div>
+            <button class="w-30 p-1 text-white bg-black rounded mt-6 hover:bg-gray-800 cursor-pointer">Back to Home</button>
+        </div>
+    </div>
+
+    <!-- Screen Loader -->
+    <div id="loader" class="w-full h-full fixed flex items-center justify-center top-0 left-0 bg-gray-700/50 hidden">
+        <div
+    class="w-16 h-16 border-4 border-t-black border-gray-300 rounded-full animate-spin"
+    ></div>
     </div>
 </body>
 
@@ -90,6 +118,20 @@ try {
         }
     }
 
+    function processPayment() {
+        let form = new FormData('#item-form');
+        $('#loader').removeClass('hidden');
+        $.ajax({
+            url: 'logic/payment.php',
+            method:'POST',
+            dataType: 'json',
+            data: form,
+            success: function(response) {
+                $('R')
+            }
+        })
+    }
+
     $(document).ready(function () {
         $('#select-all').on('change', function () {
             if ($(this).prop('checked')) {
@@ -101,15 +143,12 @@ try {
             }
         });
 
-        const resultElement = $("#result");
         const qrReader = $("#qr-reader");
-
         function onScanSuccess(decodedText) {
-            resultElement.text(decodedText);
-
+            $('#student_id').val(decodedText);
             // Add green border effect
             qrReader.addClass("border-green-500").removeClass('border-transparent');
-            setTimeout(() => qrReader.removeClass("border-green-500").addClass('border-transparent'), 1000); // Remove after 1 second
+            setTimeout(() => qrReader.removeClass("border-green-500").addClass('border-transparent'), 500); // Remove after 1 second
             $('#items').removeClass('hidden').addClass('flex');
         }
 

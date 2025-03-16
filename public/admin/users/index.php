@@ -79,7 +79,7 @@ try {
                         <thead>
                             <tr class="bg-gray-100">
                                 <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Name</th>
-                                <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">User Type</th>
+                                <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Student ID</th>
                                 <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Email</th>
                                 <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Actions</th>
                             </tr>
@@ -91,11 +91,7 @@ try {
                                         <?= htmlspecialchars($userData['f_name'] . ' ' . $userData['l_name']) ?>
                                     </td>
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left">
-                                        <span class="<?= $userData['usertype'] == 1 ? 'bg-black' : 'bg-gray-400' ?> 
-                                            text-white px-3 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm inline-block 
-                                            w-16 md:w-24 text-center text-[10px]">
-                                            <?= $userData['usertype'] == 1 ? "Admin" : "User" ?>
-                                        </span>
+                                        <?= $userData['student_id'] ?>
                                     </td>
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-base">
                                         <?= htmlspecialchars($userData['email']) ?>
@@ -106,11 +102,12 @@ try {
                                             data-lname="<?= htmlspecialchars($userData['l_name']) ?>"
                                             data-fname="<?= htmlspecialchars($userData['f_name']) ?>"
                                             data-email="<?= htmlspecialchars($userData['email']) ?>"
-                                            data-usertype="<?= htmlspecialchars($userData['usertype']) ?>">
+                                            data-usertype="<?= htmlspecialchars($userData['usertype']) ?>"
+                                            data-student_id="<?= htmlspecialchars($userData['student_id']) ?>">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <span class="text-gray-400 mx-1">|</span>
-                                        <a href="logic/user_delete.php?id=<?= $userData['iduser'] ?>" 
+                                        <a href="./logic/user_delete.php?id=<?= $userData['iduser'] ?>" 
                                             class="text-black-500 text-xs md:text-base mx-1 inline-flex items-center" 
                                             onclick="return confirm('Are you sure you want to delete this user?');">
                                             <i class="fas fa-trash-alt"></i>
@@ -131,12 +128,12 @@ try {
                 <?php foreach ($users as $userData): ?>
                     <div class="bg-white shadow-md border border-gray-200 rounded-lg p-5 flex justify-between items-center">
                         <div>
-                            <!-- User Role -->
-                            <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>">
-                                <?= $userData['usertype'] == 1 ? "Admin" : "User" ?>
-                            </p>
                             <!-- User Name -->
                             <p class="text-black-700 font-medium"><?= htmlspecialchars($userData['f_name'] . ' ' . $userData['l_name']) ?></p>
+                            <!-- User Student_id -->
+                            <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>">
+                                <?= $userData['student_id'] ?>
+                            </p>
                             <!-- User Email -->
                             <p class="text-gray-500 text-sm"><?= htmlspecialchars($userData['email']) ?></p>
                         </div>
@@ -200,10 +197,11 @@ try {
     <div id="addUserModal" class="fixed inset-0 flex items-center justify-center bg-[#00000078] hidden">
         <div class="bg-white p-6 rounded-lg w-96">
             <h2 class="text-xl font-bold mb-4">Add User</h2>
-            <form id="addUserForm" action="logic/user_add.php" method="POST">
+            <form id="addUserForm" action="./logic/user_add.php" method="POST">
                 <input type="text" name="f_name" placeholder="First Name" required class="w-full p-2 border rounded mb-2">
                 <input type="text" name="l_name" placeholder="Last Name" required class="w-full p-2 border rounded mb-2">
                 <input type="email" name="email" placeholder="Email" required class="w-full p-2 border rounded mb-2">
+                <input type="text" name="student_id" placeholder="Student ID" required class="w-full p-2 border rounded mb-2">
                 <button type="submit" class="bg-black text-white w-full py-2 rounded">Add User</button>
             </form>
             <button id="cancelButton" class="bg-gray-400 text-white w-full py-2 rounded mt-2">Cancel</button>
@@ -213,7 +211,7 @@ try {
     <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-[#00000078] hidden">
         <div class="bg-white p-6 rounded shadow-lg w-96">
             <h2 class="text-xl font-semibold mb-4">Edit User/Admin</h2>
-            <form id="editForm" method="POST" action="logic/user_admin_edit.php">
+            <form id="editForm" method="POST" action="./logic/user_admin_edit.php">
                 <input type="hidden" name="user_id" id="edit_user_id">
                 <label class="block text-gray-700">Last Name:</label>
                 <input type="text" name="l_name" id="edit_lname" class="border p-2 w-full rounded mb-2" required>
@@ -221,6 +219,8 @@ try {
                 <input type="text" name="f_name" id="edit_fname" class="border p-2 w-full rounded mb-2" required>
                 <label class="block text-gray-700">Email:</label>
                 <input type="email" name="email" id="edit_email" class="border p-2 w-full rounded mb-2" required>
+                <label for="edit_student_id" class="block text-gray-700">Student ID:</label>
+                <input id="edit_student_id" name="student_id" placeholder="Student ID" required class="w-full p-2 border rounded mb-2">
                 <label class="block text-gray-700">User Type:</label>
                 <input type="text" id="edit_usertype" class="border p-2 w-full rounded mb-4 bg-gray-200" readonly>
                 <div class="flex justify-end space-x-2">
@@ -286,6 +286,7 @@ try {
                     document.getElementById('edit_user_id').value = this.dataset.id;
                     document.getElementById('edit_lname').value = this.dataset.lname;
                     document.getElementById('edit_fname').value = this.dataset.fname;
+                    document.getElementById('edit_student_id').value = this.dataset.student_id;
                     document.getElementById('edit_email').value = this.dataset.email;
                     document.getElementById('edit_usertype').value = this.dataset.usertype === "1" ? "Admin" : "User";
                     editModal.classList.remove('hidden');
