@@ -16,7 +16,10 @@
 
 <body class="h-screen bg-gray-100">
 
-    <?php include_once '../includes/partial.php' ?>
+    <?php
+    include_once '../includes/partial.php';
+    include_once '../includes/connect-db.php';
+    ?>
 
 
 
@@ -46,33 +49,51 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="border-b">
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Dela Cruz, Juan</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Iphone 16</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">₱ 499.00</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 flex justify-center">
-                                <button
-                                    class="bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-gray-700 transition duration-300 cursor-pointer">print</button>
-                            </td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Ponce, Crissel</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Org Shirt</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">₱ 500.00</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 flex justify-center">
-                                <button
-                                    class="bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-gray-700 transition duration-300 cursor-pointer">print</button>
-                            </td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Pineda, Jr. Fernando</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">Org Fee</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">₱ 150.00</td>
-                            <td class="py-2 md:py-3 px-2 md:px-4 flex justify-center">
-                                <button
-                                    class="bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-gray-700 transition duration-300 cursor-pointer">print</button>
-                            </td>
-                        </tr>
+                        <?php
+                        $stmt = $pdo->prepare("
+                            SELECT 
+                            reference_no,
+                            date(date) AS date,
+                            CONCAT(f_name, ' ', l_name) AS username,
+                            quantity,
+                            name as itemname,
+                            value,
+                            idinventory,
+                            CASE 
+                            WHEN payment_type = 0 THEN 'Cash'
+                                WHEN payment_type = 1 THEN 'Gcash'
+                                ELSE 'unknown'
+                            END AS 	payment_type
+                        FROM inventory
+                        INNER JOIN item on inventory.iditem = item.iditem
+                        INNER JOIN user ON inventory.iduser = user.iduser
+                        ORDER BY date desc    
+                        ");
+
+                        $stmt->execute();
+                        $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                        ?>
+                        <?php foreach ($purchases as $purchase): ?>
+
+                            <tr class="border-b" 
+                                data-reference="<?= $purchase['reference_no'] ?>"
+                                data-date="<?= $purchase['date'] ?>" 
+                                data-quantity="<?= $purchase['quantity'] ?>"
+                                data-item="<?= $purchase['itemname'] ?>" 
+                                data-amount="<?= $purchase['value'] ?>"
+                                data-inventory="<?= $purchase['idinventory'] ?>"
+                                data-mode="<?= $purchase['payment_type'] ?>">
+
+                                <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs"><?= $purchase['username'] ?></td><td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs"><?= $purchase['itemname'] ?></td>
+                                <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">₱ <?= $purchase['value'] ?></td>
+                                <td class="py-2 md:py-3 px-2 md:px-4 flex justify-center">
+                                    <button
+                                        class="bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-gray-700 transition duration-300 cursor-pointer">Print</button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+
                     </tbody>
                 </table>
             </div>
