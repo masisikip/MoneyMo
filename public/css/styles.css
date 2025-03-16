@@ -300,6 +300,9 @@
   .mt-6 {
     margin-top: calc(var(--spacing) * 6);
   }
+  .mt-10 {
+    margin-top: calc(var(--spacing) * 10);
+  }
   .mt-auto {
     margin-top: auto;
   }
@@ -1319,6 +1322,11 @@
   .md\:w-1\/4 {
     @media (width >= 48rem) {
       width: calc(1/4 * 100%);
+    }
+  }
+  .md\:w-\[30rem\] {
+    @media (width >= 48rem) {
+      width: 30rem;
     }
   }
   .md\:w-auto {

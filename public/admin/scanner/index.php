@@ -36,7 +36,7 @@ try {
     <!-- Items section -->
     <div id="items" class="fixed w-full h-full bg-gray-500/50 top-0 left-0 justify-center items-center hidden">
         <div id="items-main"
-            class="mt-4 w-[30rem] h-[30rem] rounded-md flex flex-col bg-white p-4 overflow-y-auto items-center">
+            class="mt-4 w-[20rem] md:w-[30rem] h-[30rem] rounded-md flex flex-col bg-white p-4 overflow-y-auto items-center">
             <div class="w-full items-center flex justify-between">
                 <span class="text-xl">Select Items to Avail</span>
                 <div class="flex items-center px-1">
@@ -71,7 +71,7 @@ try {
                 </div>
                 <input type="hidden" id="student_id" name="student_id">
                 <button onclick="processPayment(event)"
-                    class="w-20 p-1 bg-black rounded-md text-white cursor-pointer hover:bg-zinc-700 mt-4">Confirm</button>
+                    class="w-20 p-1 bg-black rounded-md text-white cursor-pointer hover:bg-zinc-700 mt-10">Confirm</button>
             </form>
         </div>
     </div>
