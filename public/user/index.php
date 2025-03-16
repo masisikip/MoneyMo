@@ -15,14 +15,31 @@
 </head>
 
 <body class="bg-[#d9d9d9]">
-
   <?php include_once '../includes/partial.php' ?>
 
+  <!-- Title part -->
+  <div class="p-8 flex">
+    <div class="flex items-center space-x-4">
+      <!-- First Block -->
+      <div class="px-2 pr-2 w-fit border-r-1 border-black">
+        <h1 class="text-xl font-bold text-black sm:text-2xl lg:text-xl xl:text-4xl mr-4">
+          DASHBOARD
+        </h1>
+      </div>
+
+      <!-- Second Block -->
+      <div class="px-2 w-fit">
+        <h3 class="text-xl text-black sm:text-2xl lg:text-xl xl:text-2xl">
+          Hello, User
+        </h3>
+      </div>
+    </div>
+  </div>
 
   <!--Receipts-->
   <div class="flex flex-wrap justify-center mt-3">
     <!-- card 1 -->
-    <div class="clickable-div p-4 max-w-sm cursor-pointer">
+    <div class="clickable-div m-4 max-w-sm cursor-pointer">
       <div class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl">
         <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
           <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
@@ -57,7 +74,7 @@
     </div>
 
     <!-- card 2-->
-    <div class="clickable-div p-4 max-w-sm cursor-pointer">
+    <div class="clickable-div m-4 max-w-sm cursor-pointer">
       <div class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl">
         <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
           <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
@@ -92,7 +109,7 @@
     </div>
 
     <!-- card 3-->
-    <div class="clickable-div p-4 max-w-sm cursor-pointer">
+    <div class="clickable-div m-4 max-w-sm cursor-pointer">
       <div class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl">
         <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
           <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
@@ -127,7 +144,7 @@
     </div>
 
     <!-- card 4-->
-    <div class="clickable-div p-4 max-w-sm cursor-pointer">
+    <div class="clickable-div m-4 max-w-sm cursor-pointer">
       <div class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl">
         <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
           <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
@@ -162,15 +179,19 @@
     </div>
   </div>
 
+  <script src="https://superal.github.io/canvas2image/canvas2image.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
   <!-- Receipt Modal -->
   <div id="myModal" class="modal fixed w-full h-full top-0 left-0 hidden items-center justify-center">
     <!-- hoverlay  -->
-    <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+    <div id="modalOverlay" class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
 
-    <div class="modal-container h-auto bg-white w-11/12 md:max-w-md mx-auto shadow-lg z-50 overflow-y-auto">
+    <div class="modal-container h-auto bg-white w-11/12 md:max-w-md my-10 mx-auto shadow-lg z-50 overflow-y-auto">
       <div class="bg-black grid grid-cols-2 gap-x-4">
         <p class="text-white font-medium ml-3 p-2">MoneyMo</p>
-        <button type="button" id="closeModal" class="text-white hover:bg-white hover:text-black px-4 py-2 ml-auto">
+        <button type="button" id="closeModal"
+          class="text-white hover:bg-white hover:text-black px-4 py-2 ml-auto cursor-pointer">
           X
         </button>
       </div>
@@ -221,24 +242,38 @@
         </div>
         <p class="pt-1 pb-1">This is a cutomer's copy. Thank You!</p>
         <div class="mt-4 flex justify-center">
-          <button
-            class="px-20 bg-black p-3 ml-3 rounded-lg text-white hover:bg-white hover:border-1 hover:text-black hover:shadow-2xl hover:font-bold">
+          <button id="downloadButton"
+            class="px-20 bg-black p-3 ml-3 rounded-lg text-white hover:bg-white border-1 hover:border-1 hover:text-black hover:shadow-2xl cursor-pointer">
             Download
           </button>
         </div>
       </div>
     </div>
   </div>
-
-
   <script>
-    $(document).ready(function () {
-      $(".clickable-div").click(function () {
-        $("#myModal").addClass("flex").removeClass("hidden");
+    document
+      .querySelector("#downloadButton")
+      .addEventListener("click", function () {
+        html2canvas(document.querySelector(".modal-container"), {
+          onrendered: function (canvas) {
+            // document.body.appendChild(canvas);
+            return Canvas2Image.saveAsPNG(canvas);
+          },
+        });
       });
-    });
 
     $(document).ready(function () {
+      $(document).on("click", "#modalOverlay", function () {
+        console.log("Overlay clicked!"); // Debugging
+        $("#myModal").addClass("hidden").removeClass("flex");
+      });
+
+      // Show modal when button is clicked
+      $(".clickable-div").click(function () {
+        $("#myModal").removeClass("hidden").addClass("flex");
+      });
+
+      // Hide modal when close button is clicked
       $("#closeModal").click(function () {
         $("#myModal").addClass("hidden").removeClass("flex");
       });
