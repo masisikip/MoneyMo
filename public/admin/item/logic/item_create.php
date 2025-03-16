@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/../../includes/connect-db.php';
+include_once __DIR__ . '/../../../includes/connect-db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $code = $_POST['code'];
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } elseif ($info['mime'] == 'image/png') {
             $img_resource = imagecreatefrompng($source);
         } else {
-            header("Location: ../../item.php?error=1");
+            header("Location: ../../item/index.php?error=1");
             exit();
         }
 
@@ -41,14 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':image', $img_content, PDO::PARAM_LOB);
             $stmt->bindParam(':stock', $stock);
             $stmt->execute();
-            header("Location: ../../item.php");
+            header("Location: ../../item/index.php");
             exit();
         } catch (PDOException $e) {
-            header("Location: ../../item.php?error=1");
+            header("Location: ../../item/index.php?error=1");
             exit();
         }
     } else {
-        header("Location: ../../item.php?error=1");
+        header("Location: ../../item/index.php?error=1");
         exit();
     }
 }
