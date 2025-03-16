@@ -9,6 +9,14 @@ if (isset($_SESSION['auth_token'])) {
         $usertype = $payload['user_type'];
     }
 }
+
+$host = $_SERVER['HTTP_HOST'];
+
+if ($host === 'localhost') {
+    $path = $_SERVER['REQUEST_SCHEME'] . '://' . $host . '/MoneyMo/public/';
+} else {
+    $path = $_SERVER['REQUEST_SCHEME'] . '://' . $host . '/';
+}
 ?>
 
 <header
@@ -36,21 +44,18 @@ if (isset($_SESSION['auth_token'])) {
                 </button>
 
                 <div id="menuDropdown" class="hidden absolute bg-white shadow-lg right-0 mt-2 w-40 rounded-lg">
-                    <a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/user/"
-                        class="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg">
+                    <a href="<?= $path . 'user/"' ?>
+                        class=" block px-4 py-2 text-black hover:bg-gray-200 rounded-lg">
                         <i class="fas fa-house"></i> Home
                     </a>
-                    <a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/user/qr"
-                        class="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg">
+                    <a href="<?= $path . 'user/qr' ?>" class="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg">
                         <i class="fas fa-qrcode"></i> QR Code
                     </a>
-                    <a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/user/profile"
-                        class="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg">
+                    <a href="<?= $path . 'user/profile' ?>" class="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg">
                         <i class="fas fa-user"></i> Profile
                     </a>
 
-                    <a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/logout.php"
-                         class="block px-4 py-2 hover:bg-gray-200 text-red-500 rounded-lg">
+                    <a href="<?= $path . 'logout.php' ?>" class="block px-4 py-2 hover:bg-gray-200 text-red-500 rounded-lg">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
                 </div>
@@ -67,22 +72,30 @@ if (isset($_SESSION['auth_token'])) {
     <h2 class="text-2xl font-bold mb-6">MoneyMo</h2>
     <nav>
         <ul class="space-y-4">
-            <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/admin/" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
-                        class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/admin/profile" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
-                        class="fas fa-user"></i> <span>Profile</span></a></li>
-            <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/admin/inventory" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
-                        class="fas fa-box"></i> <span>Inventory</span></a></li>
-            <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/admin/scanner" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
-                        class="fas fa-qrcode"></i> <span>QR Scanner</span></a></li>
-            <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/admin/code" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
-                        class="fas fa-barcode"></i> <span>QR Code</span></a></li>
-            <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/admin/item" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
-                        class="fas fa-list"></i> <span>Items Management</span></a></li>
-            <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/admin/users" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
-                        class="fas fa-users"></i> <span>Users Management</span></a></li>
-            <li><a href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/logout.php" class="flex items-center space-x-2 hover:bg-red-500 p-2 rounded"><i
-                        class="fas fa-sign-out-alt"></i> <span>Log out</span></a></li>
+            <li><a href="<?= $path . 'admin/' ?>"
+                    class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-home"></i>
+                    <span>Dashboard</span></a></li>
+            <li><a href="<?= $path . 'admin/profile' ?>"
+                    class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-user"></i>
+                    <span>Profile</span></a></li>
+            <li><a href="<?= $path . 'admin/inventory' ?>"
+                    class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-box"></i>
+                    <span>Inventory</span></a></li>
+            <li><a href="<?= $path . 'admin/scanner' ?>"
+                    class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-qrcode"></i>
+                    <span>QR Scanner</span></a></li>
+            <li><a href="<?= $path . 'admin/code' ?>"
+                    class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-barcode"></i>
+                    <span>QR Code</span></a></li>
+            <li><a href="<?= $path . 'admin/item' ?>"
+                    class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-list"></i>
+                    <span>Items Management</span></a></li>
+            <li><a href="<?= $path . 'admin/users' ?>"
+                    class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-users"></i>
+                    <span>Users Management</span></a></li>
+            <li><a href="<?= $path . 'logout.php' ?>"
+                    class="flex items-center space-x-2 hover:bg-red-500 p-2 rounded"><i class="fas fa-sign-out-alt"></i>
+                    <span>Log out</span></a></li>
         </ul>
     </nav>
 </aside>
