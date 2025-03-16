@@ -53,10 +53,6 @@ if ($host === 'localhost') {
                     <a href="<?= $path . 'user/qr' ?>" class="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg">
                         <i class="fas fa-qrcode"></i> QR Code
                     </a>
-                    <a href="<?= $path . 'user/profile' ?>" class="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg">
-                        <i class="fas fa-user"></i> Profile
-                    </a>
-
                     <a href="<?= $path . 'logout.php' ?>" class="block px-4 py-2 hover:bg-gray-200 text-red-500 rounded-lg">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
@@ -77,9 +73,6 @@ if ($host === 'localhost') {
             <li><a href="<?= $path . 'admin/' ?>"
                     class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-home"></i>
                     <span>Dashboard</span></a></li>
-            <li><a href="<?= $path . 'admin/profile' ?>"
-                    class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-user"></i>
-                    <span>Profile</span></a></li>
             <li><a href="<?= $path . 'admin/inventory' ?>"
                     class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-box"></i>
                     <span>Inventory</span></a></li>
