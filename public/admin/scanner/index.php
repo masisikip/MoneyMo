@@ -30,7 +30,7 @@ try {
         <div class="font-semibold text-xl mt-5">Scan Student</div>
         <!-- QR Code Scanner -->
         <div id="qr-reader" class="mt-5 w-80 border-4 border-transparent transition-colors"></div>
-        <!-- <p>Scanned Result: <span id="result">None</span></p> -->
+        <p>Scanned Result: <span id="result">None</span></p>
 
     </main>
 
@@ -46,7 +46,7 @@ try {
                 </div>
             </div>
 
-            <form id="item-form" action="" class="w-full flex flex-col mt-6 items-center">
+            <form id="item-form" action="logic/payment.php" method="POST" class="w-full flex flex-col mt-6 items-center">
                 <div id="item-grid" class="grid grid-cols-2 md:grid-cols-3 gap-2">
                     <?php foreach ($items as $item): ?>
                         <div class="w-30 h-30 border border-gray-300 bg-white rounded-md flex justify-center items-center relative cursor-pointer item-card"
@@ -68,34 +68,16 @@ try {
                     <?php endforeach; ?>
                 </div>
                 <input type="hidden" id="student_id" name="student_id">
-                <button
+                <button onclick="processPayment(event)"
                     class="w-20 p-1 bg-black rounded-md text-white cursor-pointer hover:bg-zinc-700 mt-4">Submit</button>
             </form>
         </div>
     </div>
 
     <!-- Receipt Section -->
-    <div id="receipt" class="w-full h-full flex fixed top-0 left-0 justify-center items-center bg-gray-700/50">
-        <div id="receipt-main" class="w-[24rem] py-8 flex flex-col items-center bg-white rounded-lg shadow">
-            <div class="border-b border-gray-300 flex flex-col items-center justify-center">
-                <i class="fa-solid fa-circle-check text-black text-[6rem] mb-2"></i>
-                <p class="font-semibold text-2xl">Thank You</p>
-                <span class="text-gray-500 text-wrap w-2/3 my-2 text-center text-sm">Your payment has been successfully processed</span>
-            </div>
-            <div class="mt-4 flex flex-col items-center">
-                <span class="text-gray-500 text-sm font-bold">ACCOUNT NAME</span>
-                <span class="text-xl font-bold">USER NAME</span>
-            </div>
-            <div class="mt-4 flex flex-col items-center">
-                <span class="text-gray-500 text-sm font-bold">TOTAL AMOUNT</span>
-                <span class="text-xl font-bold">P 700.00</span>
-            </div>
-            <button class="w-30 p-1 text-white bg-black rounded mt-6 hover:bg-gray-800 cursor-pointer">Back to Home</button>
-        </div>
-    </div>
 
     <!-- Screen Loader -->
-    <div id="loader" class="w-full h-full fixed flex items-center justify-center top-0 left-0 bg-gray-700/50 hidden">
+    <div id="loader" class="w-full h-full fixed items-center justify-center top-0 left-0 bg-gray-700/50 hidden">
         <div
     class="w-16 h-16 border-4 border-t-black border-gray-300 rounded-full animate-spin"
     ></div>
@@ -118,18 +100,32 @@ try {
         }
     }
 
-    function processPayment() {
-        let form = new FormData('#item-form');
-        $('#loader').removeClass('hidden');
+    function processPayment(event) {
+        event.preventDefault(); 
+
+        let form = new FormData($('#item-form')[0]);
+
+        $('#loader').removeClass('hidden').addClass('flex');
+
         $.ajax({
-            url: 'logic/payment.php',
-            method:'POST',
-            dataType: 'json',
+            url: "logic/payment.php",
+            method: 'POST',
             data: form,
-            success: function(response) {
-                $('R')
+            processData: false, 
+            contentType: false, 
+            success: function (response) {
+                $('#loader').addClass('hidden').removeClass('flex');
+                $('#items').addClass('hidden'); 
+                $('body').append(response); 
+                $('#item-form').reset();
+            },
+            error: function (xhr, status, error) {
+                $('#loader').addClass('hidden').removeClass('flex');
+                console.error("AJAX Error: ", error);
+                console.error("Status: ", status);
+                console.error("Response Text: ", xhr.responseText);
             }
-        })
+        });
     }
 
     $(document).ready(function () {
@@ -145,8 +141,13 @@ try {
 
         const qrReader = $("#qr-reader");
         function onScanSuccess(decodedText) {
-            $('#student_id').val(decodedText);
-            // Add green border effect
+            let data = decodedText;
+            if (decodedText.length > 15) {
+                let qrData = decodedText.split(' ~ ');
+                
+                data = qrData[0].trim();
+            } 
+            $('#student_id').val(data);
             qrReader.addClass("border-green-500").removeClass('border-transparent');
             setTimeout(() => qrReader.removeClass("border-green-500").addClass('border-transparent'), 500); // Remove after 1 second
             $('#items').removeClass('hidden').addClass('flex');
@@ -170,6 +171,12 @@ try {
         }).catch(function(err) {
             alert("Error accessing cameras: " + err);
         });
+
+        $(document).on('click', function (event) {
+            if (!$(event.target).closest('#items-main').length && $(event.target).closest('#items').length) {
+                $('#items').addClass('hidden').removeClass('flex');
+            }
+        })
 
     })
 </script>
