@@ -45,32 +45,43 @@ if (isset($_GET['download']) && isset($_GET['url'])) {
 
         <!-- QR Code -->
         <div id="qr-container" class="mt-5">
-            <?php 
+            <?php
+            $qrCodeUrl = '';
+
             if (isset($_SESSION['auth_token'])) {
                 $payload = decryptToken($_SESSION['auth_token']);
                 if ($payload && isset($payload['user_type'])) {
                     $iduser = $payload['user_id'];
-                        
+
                     $stmt = $pdo->prepare('SELECT * FROM user WHERE iduser=?');
                     $stmt->execute([$iduser]);
                     $user = $stmt->fetch();
-                    
-                    $qrData = $user['student_id'];
-                    $student_num = urlencode($qrData);
-                    $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data={$student_num}&size=300x300";
 
-                    echo '<img id="qr-image" src="' . htmlspecialchars($qrCodeUrl) . '" alt="User QR Code" class="mx-auto w-60 h-60">';
+                    if (!empty($user['student_id'])) {
+                        $qrData = $user['student_id'];
+                        $student_num = urlencode($qrData);
+                        $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data={$student_num}&size=300x300";
+
+                        echo '<img id="qr-image" src="' . htmlspecialchars($qrCodeUrl) . '" alt="User QR Code" class="mx-auto w-60 h-60">';
+                    } else {
+                        echo '<p class="text-red-500 font-bold">Error: No student number found.</p>';
+                    }
+                } else {
+                    echo '<p class="text-red-500 font-bold">Error: Invalid user session.</p>';
                 }
+            } else {
+                echo '<p class="text-red-500 font-bold">Error: No user authentication detected.</p>';
             }
             ?>
         </div>
 
+
         <div class="flex flex-col my-10 items-center">
-            <span class="text-xl font-bold"><?=$user['f_name']?> <?=$user['l_name']?></span>
-            <span class="text-gray-700 font-semibold"><?=$user['student_id']?></span>
-            <span class="text-gray-700"><?=$user['email']?></span>
+            <span class="text-xl font-bold"><?= $user['f_name'] ?> <?= $user['l_name'] ?></span>
+            <span class="text-gray-700 font-semibold"><?= $user['student_id'] ?></span>
+            <span class="text-gray-700"><?= $user['email'] ?></span>
         </div>
-        
+
         <div class="w-full flex justify-center">
             <!-- Download Button -->
             <?php if (!empty($qrCodeUrl)): ?>

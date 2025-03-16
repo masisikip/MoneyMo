@@ -15,10 +15,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO user (l_name, f_name, email, usertype) VALUES (:l_name, :f_name, :email, 0)");
+        $stmt = $pdo->prepare("INSERT INTO user (l_name, f_name, email, student_id, usertype) VALUES (:l_name, :f_name, :email, :student_id, 0)");
         $stmt->bindParam(':l_name', $l_name);
         $stmt->bindParam(':f_name', $f_name);
         $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':student_id', $student_id);
 
         if ($stmt->execute()) {
             $_SESSION['message'] = "User added successfully!";
