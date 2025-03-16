@@ -129,15 +129,15 @@
             Association of Computer Scientists
           </p>
         </div>
-        <div class="flex justify-center items-center pb-2 border-b-1 border-gray-400">
+        <div class="flex justify-center items-center pb-2">
           <p class="text-2xl font-bold mt-1">PAYMENT RECEIPT</p>
+        </div>
+        <div class="flex py-1 gap-2 w-full border-b-1 border-gray-400">
+          <p class="text-xs font-bold text-gray-600">REF</p>
+          <p id="reference" class="text-xs font-bold">131231231231</p>
         </div>
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
-            <p class="font-semibold text-gray-400">Reference no.</p>
-            <p id="reference" class="font-semibold">131231231231</p>
-
-
             <p class="font-semibold text-gray-400">Date</p>
             <p id="date" class="font-semibold">01/01/2025</p>
 
@@ -168,7 +168,7 @@
             <p id="total" class="font-bold">P 100.00</p>
           </div>
         </div>
-        <p class="pt-1 pb-1">This is a cutomer's copy. Thank You!</p>
+        <p class="pt-1 pb-1 text-center">This is a cutomer's copy. Thank You!</p>
         <div class="mt-4 flex justify-center">
           <button id="downloadButton"
             class="px-20 bg-black p-3 ml-3 rounded-lg text-white hover:bg-white border-1 hover:border-1 hover:text-black hover:shadow-2xl cursor-pointer">
