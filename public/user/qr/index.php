@@ -1,51 +1,95 @@
+<?php
+
+include_once '../../includes/connect-db.php';
+require_once '../../includes/token.php';
+
+if (isset($_GET['download']) && isset($_GET['url'])) {
+    $qrCodeUrl = urldecode($_GET['url']);
+    $fileName = 'user_qrcode.png';
+
+    $qrImage = file_get_contents($qrCodeUrl);
+
+    if ($qrImage !== false) {
+        header('Content-Type: image/png');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Content-Length: ' . strlen($qrImage));
+        echo $qrImage;
+        exit;
+    } else {
+        die('Error fetching QR code.');
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MoneyMo</title>
-  <link rel="stylesheet" href="../../css/styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
-  <link rel="icon" href="./assets/favicon.ico" type="image/x-icon" />
-  <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/styles.css">
 </head>
 
-<body class="bg-[#d9d9d9]">
+<body class="bg-gray-100 w-screen min-h-screen flex flex-col">
 
-  <?php include_once '../../includes/partial.php' ?>
+    <?php include_once '../../includes/partial.php'; ?>
 
-  <div class="modal  w-full h-full top-0 left-0 flex items-center justify-center">
-    <div class="modal-container h-auto bg-white w-11/12 md:max-w-md mx-auto shadow-lg z-50 overflow-y-auto rounded-lg">
-      <!-- Add modal content here -->
-      <div class="modal-content py-4 text-left px-15">
-        <div class="grid grid-cols-2 justify-center items-center pb-2 border-b-2 border-gray-400 px-5">
-          <div class="flex justify-center">
-            <img class="rounded-full w-20 h-20 border-1" src="../../assets/default.jpg" alt="image description" />
-          </div>
-          <div class="">
-            <p class="font-bold">TIMOSA, JOVAN P.</p>
-            <p>2022-8-0218</p>
-            <p class="text-sm">Year 3 Block 1</p>
-          </div>
-        </div>
-        <div class="border-gray-400 text-black pt-1 pb-1">
-          <p class="flex justify-center font-bold mb-1">My QR Code</p>
-          <div class="flex justify-center">
-            <img class="w-50 h-50" src="../../assets/default_qr.jpg" alt="image description" />
-          </div>
+    <div class="mt-4 p-8 rounded-lg text-center">
+        <h1 class="text-2xl font-semibold">Your QR Code</h1>
+
+        <!-- QR Code -->
+        <div id="qr-container" class="mt-5">
+            <?php
+            $qrCodeUrl = '';
+
+            if (isset($_SESSION['auth_token'])) {
+                $payload = decryptToken($_SESSION['auth_token']);
+                if ($payload && isset($payload['user_type'])) {
+                    $iduser = $payload['user_id'];
+
+                    $stmt = $pdo->prepare('SELECT * FROM user WHERE iduser=?');
+                    $stmt->execute([$iduser]);
+                    $user = $stmt->fetch();
+
+                    if (!empty($user['student_id'])) {
+                        $qrData = $user['student_id'];
+                        $student_num = urlencode($qrData);
+                        $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data={$student_num}&size=300x300";
+
+                        echo '<img id="qr-image" src="' . htmlspecialchars($qrCodeUrl) . '" alt="User QR Code" class="mx-auto w-60 h-60">';
+                    } else {
+                        echo '<p class="text-red-500 font-bold">Error: No student number found.</p>';
+                    }
+                } else {
+                    echo '<p class="text-red-500 font-bold">Error: Invalid user session.</p>';
+                }
+            } else {
+                echo '<p class="text-red-500 font-bold">Error: No user authentication detected.</p>';
+            }
+            ?>
         </div>
 
-        <div class="mt-4 flex justify-center">
-          <button
-            class="px-20 bg-black p-3 ml-3 rounded-lg text-white hover:bg-white hover:border-1 hover:text-black hover:shadow-2xl hover:font-bold">
-            Download
-          </button>
+
+        <div class="flex flex-col my-10 items-center">
+            <span class="text-xl font-bold"><?= $user['f_name'] ?> <?= $user['l_name'] ?></span>
+            <span class="text-gray-700 font-semibold"><?= $user['student_id'] ?></span>
+            <span class="text-gray-700"><?= $user['email'] ?></span>
         </div>
-      </div>
+
+        <div class="w-full flex justify-center">
+            <!-- Download Button -->
+            <?php if (!empty($qrCodeUrl)): ?>
+                <a id="download-btn" href="?download=1&url=<?= urlencode($qrCodeUrl) ?>" download="user_qrcode.png"
+                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                    Download QR Code
+                </a>
+            <?php endif; ?>
+        </div>
     </div>
-  </div>
-  <script></script>
+
 </body>
 
 </html>

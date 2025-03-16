@@ -23,9 +23,11 @@ if ($host === 'localhost') {
     class="<?php echo ($usertype == 1) ? 'bg-white text-black' : 'bg-black text-white'; ?> shadow-md p-4 flex justify-between items-center">
     <div class="flex items-center space-x-4 ">
 
+    <?php if ($usertype == 1) { ?>
         <button id="toggleSidebar" class="p-2 focus:outline-none cursor-pointer">
             <i class="fas fa-bars text-2xl"></i>
         </button>
+    <?php } ?>
 
 
         <div class="flex items-center space-x-2">
