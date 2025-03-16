@@ -15,168 +15,90 @@
 </head>
 
 <body class="bg-[#d9d9d9]">
-  <?php include_once '../includes/partial.php' ?>
+  <?php
+  include_once '../includes/partial.php';
+  include_once '../includes/connect-db.php';
+  include_once '../includes/token.php';
 
-  <!-- Title part -->
-  <div class="p-8 flex">
-    <div class="flex items-center space-x-4">
-      <!-- First Block -->
-      <div class="px-2 pr-2 w-fit border-r-1 border-black">
-        <h1 class="text-xl font-bold text-black sm:text-2xl lg:text-xl xl:text-4xl mr-4">
-          DASHBOARD
-        </h1>
-      </div>
 
-      <!-- Second Block -->
-      <div class="px-2 w-fit">
-        <h3 class="text-xl text-black sm:text-2xl lg:text-xl xl:text-2xl">
-          Hello, User
-        </h3>
-      </div>
-    </div>
-  </div>
+  if (isset($_SESSION['auth_token'])) {
+    $payload = decryptToken($_SESSION['auth_token']);
+    if ($payload && isset($payload['user_type'])) {
+      $iduser = $payload['user_id'];
+    }
+  }
+
+  ?>
+
 
   <!--Receipts-->
   <div class="flex flex-wrap justify-center mt-3">
-    <!-- card 1 -->
-    <div class="clickable-div m-4 max-w-sm cursor-pointer">
-      <div class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl">
-        <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
-          <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
-          <div class="w-8 h-8 mr-3 inline-flex items-center justify-center flex-shrink-0 ml-auto bg-amber-200">
-            <svg class="w-6 h-6 text-black mt-3 text-blackinline-flex items-center" aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3" />
-            </svg>
+    <?php
+    $stmt = $pdo->prepare("
+        SELECT 
+        reference_no,
+          date(date) AS date,
+          quantity,
+          name,
+          value,
+          CASE 
+          WHEN payment_type = 0 THEN 'Cash'
+              WHEN payment_type = 1 THEN 'Gcash'
+              ELSE 'unknown'
+        END AS 	payment_type
+      FROM inventory
+      INNER JOIN item on inventory.iditem = item.iditem
+      WHERE iduser = ?
+      ORDER BY date desc    ");
+
+    $stmt->execute([$iduser]);
+    $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    ?>
+
+    <?php foreach ($purchases as $purchase): ?>
+      <div class="clickable-div m-4 max-w-sm cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>"
+        data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
+        data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
+        data-mode="<?= $purchase['payment_type'] ?>">
+
+        <div class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl">
+          <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
+            <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
+            <div class="w-8 h-8 mr-3 inline-flex items-center justify-center flex-shrink-0 ml-auto">
+              <svg class="w-6 h-6 text-black mt-3 text-blackinline-flex items-center" aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3" />
+              </svg>
+            </div>
           </div>
-        </div>
 
-        <div class="pb-3 border-b border-black text-black">
-          <div class="grid grid-cols-2 gap-x-4">
-            <p>Item:</p>
-            <p class="text-right font-bold">Org fee</p>
+          <div class="pb-3 border-b border-black text-black">
+            <div class="grid grid-cols-2 gap-x-4">
+              <p>Date:</p>
+              <p class="text-right font-bold"><?= $purchase['date'] ?></p>
 
-            <p>Mode:</p>
-            <p class="text-right font-bold">Gcash</p>
+              <p>Item:</p>
+              <p class="text-right font-bold"><?= $purchase['name'] ?></p>
 
-            <p>Paid:</p>
-            <p class="text-right font-bold">P 100.00</p>
+              <p>Mode:</p>
+              <p class="text-right font-bold"><?= $purchase['payment_type'] ?></p>
+
+              <p>Paid:</p>
+              <p class="text-right font-bold">P <?= $purchase['value'] ?></p>
+            </div>
           </div>
-        </div>
 
-        <div class="flex flex-col justify-between flex-grow text-center">
-          <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
-            Tap to see full details
-          </p>
+          <div class="flex flex-col justify-between flex-grow text-center">
+            <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
+              Tap to see full details
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    <?php endforeach; ?>
 
-    <!-- card 2-->
-    <div class="clickable-div m-4 max-w-sm cursor-pointer">
-      <div class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl">
-        <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
-          <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
-          <div class="w-8 h-8 mr-3 inline-flex items-center justify-center text-white flex-shrink-0 ml-auto">
-            <svg class="w-6 h-6 text-black mt-3 text-blackinline-flex items-center" aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3" />
-            </svg>
-          </div>
-        </div>
-
-        <div class="pb-3 border-b border-black text-black">
-          <div class="grid grid-cols-2 gap-x-4">
-            <p>Item:</p>
-            <p class="text-right font-bold">Org Shirt</p>
-
-            <p>Mode:</p>
-            <p class="text-right font-bold">Gcash</p>
-
-            <p>Paid:</p>
-            <p class="text-right font-bold">P 500.00</p>
-          </div>
-        </div>
-
-        <div class="flex flex-col justify-between flex-grow text-center">
-          <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
-            Tap to see full details
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- card 3-->
-    <div class="clickable-div m-4 max-w-sm cursor-pointer">
-      <div class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl">
-        <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
-          <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
-          <div class="w-8 h-8 mr-3 inline-flex items-center justify-center text-white flex-shrink-0 ml-auto">
-            <svg class="w-6 h-6 text-black mt-3 text-blackinline-flex items-center" aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3" />
-            </svg>
-          </div>
-        </div>
-
-        <div class="pb-3 border-b border-black text-black">
-          <div class="grid grid-cols-2 gap-x-4">
-            <p>Item:</p>
-            <p class="text-right font-bold">Org ID Lace</p>
-
-            <p>Mode:</p>
-            <p class="text-right font-bold">Gcash</p>
-
-            <p>Paid:</p>
-            <p class="text-right font-bold">P 200.00</p>
-          </div>
-        </div>
-
-        <div class="flex flex-col justify-between flex-grow text-center">
-          <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
-            Tap to see full details
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- card 4-->
-    <div class="clickable-div m-4 max-w-sm cursor-pointer">
-      <div class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl">
-        <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
-          <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
-          <div class="w-8 h-8 mr-3 inline-flex items-center justify-center text-white flex-shrink-0 ml-auto">
-            <svg class="w-6 h-6 text-black mt-3 text-blackinline-flex items-center" aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3" />
-            </svg>
-          </div>
-        </div>
-
-        <div class="pb-3 border-b border-black text-black">
-          <div class="grid grid-cols-2 gap-x-4">
-            <p>Item:</p>
-            <p class="text-right font-bold">Night Gala</p>
-
-            <p>Mode:</p>
-            <p class="text-right font-bold">Gcash</p>
-
-            <p>Paid:</p>
-            <p class="text-right font-bold">P 550.00</p>
-          </div>
-        </div>
-
-        <div class="flex flex-col justify-between flex-grow text-center">
-          <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
-            Tap to see full details
-          </p>
-        </div>
-      </div>
-    </div>
   </div>
 
   <script src="https://superal.github.io/canvas2image/canvas2image.js"></script>
@@ -210,24 +132,28 @@
         </div>
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
-            <p class="font-semibold text-gray-400">Merchant</p>
-            <p class="font-semibold">ACS</p>
+            <p class="font-semibold text-gray-400">Reference no.</p>
+            <p id="reference" class="font-semibold">131231231231</p>
+
 
             <p class="font-semibold text-gray-400">Date</p>
-            <p class="font-semibold">01/01/2025</p>
+            <p id="date" class="font-semibold">01/01/2025</p>
 
             <p class="font-semibold text-gray-400">Payment Method</p>
-            <p class="font-semibold">Gcash</p>
+            <p id="mode" class="font-semibold">Gcash</p>
 
             <p class="font-semibold text-gray-400">Item</p>
-            <p class="font-semibold">Org Fee</p>
+            <p id="item" class="font-semibold">Org Fee</p>
+
+            <p class="font-semibold text-gray-400">Quantity</p>
+            <p id="quantity" class="font-semibold">ACS</p>
           </div>
         </div>
 
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
             <p class="font-semibold text-gray-400">Product Price</p>
-            <p class="font-semibold">100.00</p>
+            <p id="amount" class="font-semibold">100.00</p>
 
             <p class="font-semibold text-gray-400">Discount</p>
             <p class="font-semibold">0.00</p>
@@ -237,7 +163,7 @@
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
             <p class="font-bold">Total</p>
-            <p class="font-bold">P 100.00</p>
+            <p id="total" class="font-bold">P 100.00</p>
           </div>
         </div>
         <p class="pt-1 pb-1">This is a cutomer's copy. Thank You!</p>
@@ -263,9 +189,23 @@
       });
 
     $(document).ready(function () {
-      $(document).on("click", "#modalOverlay", function () {
-        console.log("Overlay clicked!"); // Debugging
-        $("#myModal").addClass("hidden").removeClass("flex");
+      $(document).on("click", ".clickable-div", function () {
+        let reference = $(this).data("reference");
+        let date = $(this).data("date");
+        let quantity = $(this).data("quantity");
+        let item = $(this).data("item");
+        let amount = $(this).data("amount");
+        let mode = $(this).data("mode");
+
+
+        $("#reference").text(reference);
+        $("#date").text(date);
+        $("#quantity").text(quantity);
+        $("#item").text(item);
+        $("#amount").text("P " + amount);
+        $("#mode").text(mode);
+        $("#total").text("P " + amount);
+
       });
 
       // Show modal when button is clicked
