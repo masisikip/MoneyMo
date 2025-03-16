@@ -50,6 +50,16 @@
                     </thead>
                     <tbody>
                         <?php
+                        $limit = 10; // Number of records per page
+                        $page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
+                        $offset = ($page - 1) * $limit;
+
+                        // Get total count
+                        $stmt = $pdo->query("SELECT COUNT(*) FROM inventory");
+                        $total_records = $stmt->fetchColumn();
+                        $total_pages = ceil($total_records / $limit);
+
+                        // Fetch paginated data
                         $stmt = $pdo->prepare("
                             SELECT 
                             reference_no,
@@ -67,26 +77,30 @@
                         FROM inventory
                         INNER JOIN item on inventory.iditem = item.iditem
                         INNER JOIN user ON inventory.iduser = user.iduser
-                        ORDER BY date desc    
+                        ORDER BY date desc   
+                         LIMIT :limit OFFSET :offset 
                         ");
 
+                        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+                        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
                         $stmt->execute();
                         $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         ?>
                         <?php foreach ($purchases as $purchase): ?>
 
-                            <tr class="border-b" 
-                                data-reference="<?= $purchase['reference_no'] ?>"
-                                data-date="<?= $purchase['date'] ?>" 
-                                data-quantity="<?= $purchase['quantity'] ?>"
-                                data-item="<?= $purchase['itemname'] ?>" 
-                                data-amount="<?= $purchase['value'] ?>"
+                            <tr class="border-b" data-reference="<?= $purchase['reference_no'] ?>"
+                                data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
+                                data-item="<?= $purchase['itemname'] ?>" data-amount="<?= $purchase['value'] ?>"
                                 data-inventory="<?= $purchase['idinventory'] ?>"
                                 data-mode="<?= $purchase['payment_type'] ?>">
 
-                                <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs"><?= $purchase['username'] ?></td><td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs"><?= $purchase['itemname'] ?></td>
-                                <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">₱ <?= $purchase['value'] ?></td>
+                                <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs"><?= $purchase['username'] ?>
+                                </td>
+                                <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs"><?= $purchase['itemname'] ?>
+                                </td>
+                                <td class="py-2 md:py-3 px-2 md:px-4 text-[10px] md:text-xs">₱ <?= $purchase['value'] ?>
+                                </td>
                                 <td class="py-2 md:py-3 px-2 md:px-4 flex justify-center">
                                     <button
                                         class="bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-gray-700 transition duration-300 cursor-pointer">Print</button>
@@ -99,30 +113,28 @@
             </div>
         </div>
 
-        <div class="mt-6 mb-6 w-full flex justify-center">
-            <button
-                class="bg-gray-300 text-black px-3 py-1 md:px-4 md:py-2 rounded-lg hover:bg-gray-500 transition duration-300 cursor-pointer hover:scale-105 text-xs md:text-sm">&lt;</button>
+        <!-- Pagination -->
+        <div class="flex justify-center my-4 ">
+            <div class="flex items-center space-x-2">
+                <?php if ($page > 1): ?>
+                    <a href="?page=<?= $page - 1 ?>"
+                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&lt;</a>
+                <?php endif; ?>
 
-            <div class="flex space-x-1 md:space-x-2 mx-2 md:mx-4">
-                <button
-                    class="bg-black text-white px-3 py-1 md:px-4 md:py-2 rounded-lg hover:bg-gray-700 transition duration-300 cursor-pointer hover:scale-105 text-xs md:text-sm">1</button>
-                <button
-                    class="bg-gray-300 text-black px-3 py-1 md:px-4 md:py-2 rounded-lg hover:bg-gray-400 transition duration-300 cursor-pointer hover:scale-105 text-xs md:text-sm">2</button>
-                <button
-                    class="bg-gray-300 text-black px-3 py-1 md:px-4 md:py-2 rounded-lg hover:bg-gray-400 transition duration-300 cursor-pointer hover:scale-105 text-xs md:text-sm">3</button>
-                <button
-                    class="hidden sm:block bg-gray-300 text-black px-3 py-1 md:px-4 md:py-2 rounded-lg hover:bg-gray-400 transition duration-300 cursor-pointer hover:scale-105 text-xs md:text-sm">...</button>
-                <button
-                    class="hidden sm:block bg-gray-300 text-black px-3 py-1 md:px-4 md:py-2 rounded-lg hover:bg-gray-400 transition duration-300 cursor-pointer hover:scale-105 text-xs md:text-sm">9</button>
-                <button
-                    class="bg-gray-300 text-black px-3 py-1 md:px-4 md:py-2 rounded-lg hover:bg-gray-400 transition duration-300 cursor-pointer hover:scale-105 text-xs md:text-sm">10</button>
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <a href="?page=<?= $i ?>"
+                        class="px-3 py-2 rounded-lg <?= $i == $page ? 'bg-black text-white' : 'bg-gray-300 text-black hover:bg-gray-400' ?>">
+                        <?= $i ?>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($page < $total_pages): ?>
+                    <a href="?page=<?= $page + 1 ?>"
+                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&gt;</a>
+                <?php endif; ?>
             </div>
-
-            <button
-                class="bg-gray-300 text-black px-3 py-1 md:px-4 md:py-2 rounded-lg hover:bg-gray-500 transition duration-300 cursor-pointer hover:scale-105 text-xs md:text-sm">&gt;</button>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const mobileMenuToggle = document.getElementById('mobileMenuToggle');
