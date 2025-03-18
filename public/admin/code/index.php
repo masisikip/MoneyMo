@@ -4,12 +4,15 @@ include_once '../../includes/connect-db.php';
 require_once '../../includes/token.php';
 
 if (isset($_GET['download']) && isset($_GET['url'])) {
+    // Force download logic
     $qrCodeUrl = urldecode($_GET['url']);
     $fileName = 'user_qrcode.png';
 
+    // Fetch the QR code image content
     $qrImage = file_get_contents($qrCodeUrl);
 
     if ($qrImage !== false) {
+        // Set headers for download
         header('Content-Type: image/png');
         header('Content-Disposition: attachment; filename="' . $fileName . '"');
         header('Content-Length: ' . strlen($qrImage));
