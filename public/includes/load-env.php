@@ -16,5 +16,5 @@ function loadEnv($path)
     }
 }
 
-$envPath = __DIR__ . '/../../.env';
+$envPath = __DIR__ . '/../.env';
 loadEnv($envPath);
