@@ -80,26 +80,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>MoneyMo - Login</title>
 </head>
 
-<body class="bg-gray-50">
+<body class="bg-white">
   <!-- Container -->
   <div class="flex min-h-screen">
     <!-- Left side: Login form -->
-    <div class="flex flex-col justify-center w-full px-8 py-12 lg:px-24">
-      <div class="max-w-md mx-auto w-full">
-        <h1 class="text-3xl font-bold text-gray-800 mb-1">Login to Your Account</h1>
-        <p class="text-gray-500 mb-8">Enter your credentials to continue</p>
+    <div class="flex flex-col relative justify-center w-full px-8 py-12 lg:px-24">
+      <!-- LOGO -->
+      <div class="absolute top-0 left-0 flex justify-center items-center gap-4 px-6 py-4">
+        <img src="assets/logo.png" alt="MoneyMo Logo" class="max-h-16 w-auto">
+        <span class="text-3xl font-bold">MoneyMo</span>
+      </div>
 
-        <form class="space-y-6 flex flex-col items-center" method='post' action="">
+      <div class="flex flex-col justify-center items-center mx-auto w-full">
+        <h1 class="text-4xl font-bold mb-1">Login to Your Account</h1>
+        <p class="text-lg text-[#545454] mb-8">Enter your credentials to continue</p>
+
+        <form class="space-y-4 flex flex-col items-center w-lg" method='post' action="">
           <!-- Email Field -->
           <div class="w-full">
-            <label for="email" class="block mb-2 text-sm font-medium text-gray-700">Email</label>
-            <input type="text" id="email" name="email" placeholder="Enter your email" required
-              class="block w-full px-4 py-2 text-gray-700 bg-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-500" value="<?php if ($_SERVER['REQUEST_METHOD'] === 'POST') echo $email ?>" />
+            <!-- <label for="email" class="block mb-2 text-sm font-medium text-gray-700">Email</label> -->
+            <input type="text" id="email" name="email" placeholder="Enter your email..." required
+              class="block w-full px-6 py-4 text-[#262626] bg-[#d9d9d9] rounded-full focus:outline-none focus:ring-1 focus:ring-[#545454]" value="<?php if ($_SERVER['REQUEST_METHOD'] === 'POST') echo $email ?>" />
             <?php
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               if (!$user) {
             ?>
-                <span class="block text-red-500 font-medium text-sm ml-2 mt-1">Unrecognized email. Please use your corporate student email.</span>
+                <span class="block text-red-500 font-medium text-xs ml-6 mt-1">Unrecognized email. Please use your corporate student email.</span>
             <?php
               }
             }
@@ -108,14 +114,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
           <!-- Password Field -->
           <div class="w-full">
-            <label for="password" class="block mb-2 text-sm font-medium text-gray-700">Password</label>
-            <input type="password" id="password" name="password" placeholder="Enter your password" required
-              class="block w-full px-4 py-2 text-gray-700 bg-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-500" />
+            <!-- <label for="password" class="block mb-2 text-sm font-medium text-gray-700">Password</label> -->
+            <input type="password" id="password" name="password" placeholder="Enter your password..." required
+              class="block w-full px-6 py-4 text-[#262626] bg-[#d9d9d9] rounded-full focus:outline-none focus:ring-1 focus:ring-[#545454]" />
             <?php
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               if ($user && !$password_is_verified) {
             ?>
-                <span class="block text-red-500 font-medium text-sm ml-2 mt-1">Incorrect password. Please try again.</span>
+                <span class="block text-red-500 font-medium text-xs ml-6 mt-1">Incorrect password. Please try again.</span>
             <?php
               }
             }
@@ -124,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
           <!-- Sign In Button -->
           <button type="submit"
-            class="w-40 py-2 bg-black text-white font-semibold rounded-full hover:bg-gray-500 transition-colors">
+            class="w-40 mt-2 px-5 py-2.5 bg-black text-white font-bold rounded-2xl hover:bg-gray-500 transition-colors">
             Sign In
           </button>
         </form>
@@ -132,12 +138,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Right side: Branding (hidden on small screens) -->
-    <div class="hidden md:flex md:w-1/4 items-center justify-center bg-black text-white p-8">
-      <div class="text-center">
+    <div class="hidden md:flex md:w-1/3 items-center justify-center bg-black text-white p-8">
+      <div class="text-left pl-4">
         <!-- You could add a logo here if desired -->
         <!-- <img src="your_logo.png" alt="MoneyMo Logo" class="mx-auto mb-4 w-20 h-20"> -->
-        <h2 class="text-3xl font-bold mb-2">MoneyMo</h2>
-        <p class="text-gray-300">effortless transaction</p>
+        <h2 class="text-4xl font-bold mb-2">Welcome back!</h2>
+        <p class="text-2xl pl-4">You can sign in to access
+          your existing account.</p>
       </div>
     </div>
   </div>
