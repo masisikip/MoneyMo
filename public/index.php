@@ -86,16 +86,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Left side: Login form -->
     <div class="flex flex-col relative justify-center w-full px-8 py-12 lg:px-24">
       <!-- LOGO -->
-      <div class="absolute top-0 left-0 flex justify-center items-center gap-4 px-6 py-4">
+      <a href="" class="absolute top-0 left-0 flex justify-center items-center gap-4 px-6 py-4">
         <img src="assets/logo.png" alt="MoneyMo Logo" class="max-h-16 w-auto">
         <span class="text-3xl font-bold">MoneyMo</span>
-      </div>
+      </a>
 
       <div class="flex flex-col justify-center items-center mx-auto w-full">
         <h1 class="text-4xl font-bold mb-1">Login to Your Account</h1>
         <p class="text-lg text-[#545454] mb-8">Enter your credentials to continue</p>
 
-        <form class="space-y-4 flex flex-col items-center w-lg" method='post' action="">
+        <form class="space-y-4 flex flex-col items-center w-md md:w-lg" method='post' action="">
           <!-- Email Field -->
           <div class="w-full">
             <!-- <label for="email" class="block mb-2 text-sm font-medium text-gray-700">Email</label> -->
@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
           <!-- Sign In Button -->
           <button type="submit"
-            class="w-40 mt-2 px-5 py-2.5 bg-black text-white font-bold rounded-2xl hover:bg-gray-500 transition-colors">
+            class="w-40 mt-2 px-5 py-2.5 bg-black text-white font-bold rounded-2xl hover:bg-[#262626] transition-colors">
             Sign In
           </button>
         </form>
@@ -138,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Right side: Branding (hidden on small screens) -->
-    <div class="hidden md:flex md:w-1/3 items-center justify-center bg-black text-white p-8">
+    <div class="hidden lg:flex lg:w-1/3 items-center justify-center bg-black text-white p-8">
       <div class="text-left pl-4">
         <!-- You could add a logo here if desired -->
         <!-- <img src="your_logo.png" alt="MoneyMo Logo" class="mx-auto mb-4 w-20 h-20"> -->
