@@ -122,26 +122,25 @@
         <form method="get" class="w-full px-4">
             <div
                 class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full max-w-5xl mx-auto">
-                <div class="flex items-center w-full md:max-w-2xl">
-                    <span class="pl-3 pr-2 text-gray-500">
+                <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
+                    <div class="px-3 py-1 text-white border rounded-l-lg bg-zinc-700">
                         <i class="fas fa-search"></i>
-                    </span>
+                    </div>
                     <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
                         placeholder="Search inventory..."
-                        class="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:outline-none focus:ring-blue-400">
+                        class="px-2 w-full focus:outline-none py-0">
                 </div>
-                <div class="flex items-center space-x-2 md:space-x-4 w-full md:w-auto">
-                    <select name="filter" class="p-2 border rounded-lg w-full md:w-auto">
+                <div class="flex items-center border border-gray-300 rounded-lg w-full md:w-auto">
+                    <button type="submit" class="text-white border bg-zinc-700 rounded-l-lg py-1 px-3">
+                        <i class="fas fa-sliders-h"></i>
+                    </button>
+                    <select name="filter" class="px-2 focus:outline-none w-full md:w-auto">
                         <option value="" <?= (($_GET['filter'] ?? '') === '') ? 'selected' : '' ?>>All</option>
                         <option value="unclaimed" <?= (($_GET['filter'] ?? '') === 'unclaimed') ? 'selected' : '' ?>>
                             Unclaimed</option>
                         <option value="claimed" <?= (($_GET['filter'] ?? '') === 'claimed') ? 'selected' : '' ?>>Claimed
                         </option>
                     </select>
-
-                    <button type="submit" class="text-gray-500 hover:text-black">
-                        <i class="fas fa-sliders-h"></i>
-                    </button>
                 </div>
             </div>
         </form>
