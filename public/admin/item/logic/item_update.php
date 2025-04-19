@@ -9,6 +9,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $image = $_FILES['image'];
     $stock = $_POST['stock'];
 
+    $stmt1 = $pdo->prepare("SELECT COUNT(*) FROM item WHERE code = ?");
+    $stmt1->execute([$code]);
+    $exists = $stmt1->fetchColumn();
+
+    $code = strtoupper($code);
+
+    if ($exists == 0) {
+        // safe to insert
+    } else {
+        echo "Item already exists!";
+        exit();
+    }
+
     if (!empty($image['tmp_name'])) {
         $source = $image['tmp_name'];
         list($width, $height) = getimagesize($source);
