@@ -1,7 +1,7 @@
 <?php
 include_once '../../includes/connect-db.php';
 
-$usersPerPage = 8;  
+$usersPerPage = 8;
 $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($currentPage - 1) * $usersPerPage;
 
@@ -101,7 +101,7 @@ try {
                                         <?= htmlspecialchars($userData['email']) ?>
                                     </td>
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-base">
-                                    <?= htmlspecialchars($userData['usertype'] == 1 ? 'Officer' : 'Student') ?>
+                                        <?= htmlspecialchars($userData['usertype'] == 1 ? 'Officer' : 'Student') ?>
                                     </td>
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left whitespace-nowrap">
                                         <a href="#"
@@ -212,10 +212,10 @@ try {
                     class="w-full p-2 border rounded mb-2">
                 <input type="text" name="l_name" placeholder="Last Name" required
                     class="w-full p-2 border rounded mb-2">
-                <input type="email" name="email" placeholder="Email" required class="w-full p-2 border rounded mb-2">
-                <input type="text" name="student_id" placeholder="Student ID" required
-                    class="w-full p-2 border rounded mb-2">
-                <input type="password" name="password" placeholder="Password" required
+                <input type="email" name="email" placeholder="Email" pattern=".*@psu.palawan.edu.ph" title="Email should be a PSU corporate one." required class="w-full p-2 border rounded mb-2">
+                <input type="text" name="student_id" placeholder="Student ID"
+                    pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?"
+                    title="Format: 20##-#-#### or 20##-#-####XX" required
                     class="w-full p-2 border rounded mb-2">
                 <label class="flex items-center space-x-2">
                     <input type="checkbox" name="is_admin" value="1">
@@ -241,10 +241,11 @@ try {
                 <input type="text" name="f_name" id="edit_fname" class="border p-2 w-full rounded mb-2" required>
 
                 <label class="block text-gray-700">Email:</label>
-                <input type="email" name="email" id="edit_email" class="border p-2 w-full rounded mb-2" required>
+                <input type="email" name="email" id="edit_email" class="border p-2 w-full rounded mb-2" pattern=".*@psu.palawan.edu.ph" title="Email should be a PSU corporate one." required>
 
                 <label class="block text-gray-700">Student ID:</label>
-                <input id="edit_student_id" name="student_id" class="w-full p-2 border rounded mb-2" required>
+                <input id="edit_student_id" name="student_id" class="w-full p-2 border rounded mb-2" pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?"
+                title="Format: 20##-#-#### or 20##-#-####XX" required>
 
                 <label class="block text-gray-700">New Password (leave blank to keep current):</label>
                 <input type="password" name="password" id="edit_password" class="border p-2 w-full rounded mb-2">
