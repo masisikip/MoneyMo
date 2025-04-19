@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $stmt1 = $pdo->prepare('SELECT COUNT(*) FROM user WHERE student_id = ? OR email = ?');
     $stmt1->execute([$student_id, $email]);
-    $users = $stmt1->fetchAll(PDO::FETCH_COLUMN);
+    $users = $stmt1->fetchColumn();
 
     if ($users != 0) {
         echo 'User already exists';
