@@ -34,61 +34,117 @@
     include_once '../../includes/partial.php';
     include_once '../../includes/connect-db.php';
 
-    $limit = 10; // Number of records per page
-    $page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
+    $limit = $_GET['limit'] ?? 10;
+    $page = $_GET['page'] ?? 1;
     $offset = ($page - 1) * $limit;
+    $search = $_GET['search'] ?? '';
+    $filter = $_GET['filter'] ?? '';
 
-    // Get total count
-    $stmt = $pdo->query("SELECT COUNT(*) FROM inventory");
-    $total_records = $stmt->fetchColumn();
+    // Build base WHERE conditions
+    $whereClause = "WHERE 1 = 1";
+
+    if (!empty($search)) {
+        $whereClause .= " AND (item.name LIKE :search1 OR f_name LIKE :search2 OR l_name LIKE :search3)";
+    }
+    if ($filter === 'claimed') {
+        $whereClause .= " AND is_received = 1";
+    }
+    if ($filter === 'unclaimed') {
+        $whereClause .= " AND is_received = 0";
+    }
+
+    // ========================
+// 1. Get total records first
+// ========================
+    $countQuery = "
+    SELECT COUNT(*) 
+    FROM inventory
+    INNER JOIN item ON inventory.iditem = item.iditem
+    INNER JOIN user ON inventory.iduser = user.iduser
+    $whereClause
+";
+
+    $countStmt = $pdo->prepare($countQuery);
+
+    if (!empty($search)) {
+        $searchTerm = "%$search%";
+        $countStmt->bindValue(':search1', $searchTerm);
+        $countStmt->bindValue(':search2', $searchTerm);
+        $countStmt->bindValue(':search3', $searchTerm);
+    }
+
+    $countStmt->execute();
+    $total_records = $countStmt->fetchColumn(); // <<< Now we have the total
+    
     $total_pages = ceil($total_records / $limit);
 
-    // Fetch paginated data
-    $stmt = $pdo->prepare("
-        SELECT 
-            idinventory,
-            DATE(date) AS date,
-            item.name AS itemname,
-            CONCAT(f_name, ' ', l_name) AS username,
-            is_received,
-            CASE 
-                WHEN is_received = 0 THEN 'Claimed'
-                WHEN is_received = 1 THEN 'Claim'
-                ELSE 'Unknown'
-            END AS claim_button
-        FROM inventory
-        INNER JOIN item ON inventory.iditem = item.iditem
-        INNER JOIN user ON inventory.iduser = user.iduser
-        ORDER BY date DESC
-        LIMIT :limit OFFSET :offset
-    ");
+    // ========================
+// 2. Then fetch paginated data
+// ========================
+    $query = "
+    SELECT 
+        idinventory,
+        DATE(date) AS date,
+        item.name AS itemname,
+        CONCAT(f_name, ' ', l_name) AS username,
+        is_received,
+        CASE 
+            WHEN is_received = 1 THEN 'Claimed'
+            WHEN is_received = 0 THEN 'Claim'
+            ELSE 'Unknown'
+        END AS claim_button
+    FROM inventory
+    INNER JOIN item ON inventory.iditem = item.iditem
+    INNER JOIN user ON inventory.iduser = user.iduser
+    $whereClause
+    ORDER BY date DESC
+    LIMIT :limit OFFSET :offset
+";
+
+    $stmt = $pdo->prepare($query);
+
+    if (!empty($search)) {
+        $stmt->bindValue(':search1', $searchTerm);
+        $stmt->bindValue(':search2', $searchTerm);
+        $stmt->bindValue(':search3', $searchTerm);
+    }
 
     $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
     $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
     $stmt->execute();
+
     $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
     ?>
 
+
     <div class="flex flex-wrap justify-center mt-3 w-full px-4">
-        <div
-            class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full max-w-5xl">
-            <div class="flex items-center w-full md:max-w-2xl">
-                <span class="pl-3 pr-2 text-gray-500">
-                    <i class="fas fa-search"></i>
-                </span>
-                <input type="text" placeholder="Search inventory..."
-                    class="p-2 w-full border-gray-300 focus:ring-2 focus:outline-none focus:ring-white">
+        <form method="get" class="w-full px-4">
+            <div
+                class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full max-w-5xl mx-auto">
+                <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
+                    <div class="px-3 py-1 text-white border rounded-l-lg bg-zinc-700">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
+                        placeholder="Search inventory..."
+                        class="px-2 w-full focus:outline-none py-0">
+                </div>
+                <div class="flex items-center border border-gray-300 rounded-lg w-full md:w-auto">
+                    <button type="submit" class="text-white border bg-zinc-700 rounded-l-lg py-1 px-3">
+                        <i class="fas fa-sliders-h"></i>
+                    </button>
+                    <select name="filter" class="px-2 focus:outline-none w-full md:w-auto">
+                        <option value="" <?= (($_GET['filter'] ?? '') === '') ? 'selected' : '' ?>>All</option>
+                        <option value="unclaimed" <?= (($_GET['filter'] ?? '') === 'unclaimed') ? 'selected' : '' ?>>
+                            Unclaimed</option>
+                        <option value="claimed" <?= (($_GET['filter'] ?? '') === 'claimed') ? 'selected' : '' ?>>Claimed
+                        </option>
+                    </select>
+                </div>
             </div>
-            <div class="flex items-center space-x-2 md:space-x-4 w-full md:w-auto">
-                <select class="p-2 border rounded-lg w-full md:w-auto">
-                    <option>Filter by</option>
-                    <option>Unclaimed</option>
-                </select>
-                <button class="text-gray-500 hover:text-black">
-                    <i class="fas fa-sliders-h"></i>
-                </button>
-            </div>
-        </div>
+        </form>
+
 
         <!-- Desktop View -->
         <div class="hidden md:block bg-white shadow rounded-lg p-6 mb-4 overflow-x-auto w-full max-w-5xl">
@@ -159,23 +215,29 @@
         </div>
     </div>
 
+    <?php
+    $queryParams = $_GET;
+    unset($queryParams['page']);
+    $base_url = $_SERVER['PHP_SELF'] . '?' . http_build_query($queryParams);
+    ?>
+
     <!-- Pagination -->
     <div class="flex justify-center my-4 ">
         <div class="flex items-center space-x-2">
             <?php if ($page > 1): ?>
-                <a href="?page=<?= $page - 1 ?>"
+                <a href="<?= $base_url ?>&page=<?= $page - 1 ?>"
                     class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&lt;</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <a href="?page=<?= $i ?>"
+                <a href="<?= $base_url ?>&page=<?= $i ?>"
                     class="px-3 py-2 rounded-lg <?= $i == $page ? 'bg-black text-white' : 'bg-gray-300 text-black hover:bg-gray-400' ?>">
                     <?= $i ?>
                 </a>
             <?php endfor; ?>
 
             <?php if ($page < $total_pages): ?>
-                <a href="?page=<?= $page + 1 ?>"
+                <a href="<?= $base_url ?>&page=<?= $page + 1 ?>"
                     class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&gt;</a>
             <?php endif; ?>
         </div>
@@ -183,7 +245,7 @@
 
 
 
-    <!-- Confirmation Modal -->
+
     <div id="confirmModal" class="fixed inset-0 bg-gray-300/50 hidden flex justify-center items-center">
         <div class="bg-white p-6 rounded-lg shadow-lg w-96">
             <p id="confirmText" class="text-lg mb-4"></p>
@@ -229,7 +291,7 @@
             type: "POST",
             data: { idinventory: idinventory },
             success: function (response) {
-                $("#loadingOverlay").addClass("hidden"); 
+                $("#loadingOverlay").addClass("hidden");
                 if (response.trim() === "success") {
                     location.reload();
                 } else {
@@ -237,11 +299,48 @@
                 }
             },
             error: function () {
-                $("#loadingOverlay").addClass("hidden"); 
+                $("#loadingOverlay").addClass("hidden");
                 alert("An error occurred while processing the request.");
             }
         });
     }
+
+
+
+    $(document).ready(function () {
+        function showLoading() {
+            $('#loadingOverlay').removeClass('hidden');
+        }
+
+        $('select[name="filter"]').on('change', function () {
+            showLoading();
+            $(this).closest('form').submit();
+        });
+
+        let typingTimer;
+        const doneTypingInterval = 300;
+        const $searchInput = $('input[name="search"]');
+
+        $searchInput.on('keyup', function () {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                showLoading();
+                $(this).closest('form').submit();
+            }, doneTypingInterval);
+        });
+
+        $searchInput.on('keydown', function () {
+            clearTimeout(typingTimer);
+        });
+
+        $searchInput.on('keypress', function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                showLoading();
+                $(this).closest('form').submit();
+            }
+        });
+    });
 
 </script>
 
