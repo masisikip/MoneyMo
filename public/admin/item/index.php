@@ -187,11 +187,6 @@ try {
             <h2 class="text-xl font-bold mb-4">Add New Item</h2>
             <form id="addItemForm" action="logic/item_create.php" method="POST" enctype="multipart/form-data">
                 <div class="mb-4">
-                    <label for="code" class="block text-gray-700">Code <span class="text-red-500">*</span></label>
-                    <input type="text" id="code" name="code" class="w-full p-2 border border-gray-300 rounded mt-1"
-                        required>
-                </div>
-                <div class="mb-4">
                     <label for="name" class="block text-gray-700">Name <span class="text-red-500">*</span></label>
                     <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded mt-1"
                         required>
