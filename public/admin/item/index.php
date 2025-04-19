@@ -132,12 +132,12 @@ try {
     <div id="content" class="flex-1 p-8 content">
         <!-- Item Grid -->
         <div
-            class="grid justify-center w-full grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9 lg:justify-items-center xl:justify-items-center">
+            class="grid justify-center w-full place-items-center grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9 lg:justify-items-center xl:justify-items-center">
             <?php foreach ($items as $item): ?>
                 <div id="<?= $item['iditem'] ?>-item" data-iditem="<?= $item['iditem'] ?>" data-code="<?= $item['code'] ?>"
                     data-name="<?= $item['name'] ?>" data-value="<?= $item['value'] ?>" data-stock="<?= $item['stock'] ?>"
                     data-image="data:image/jpeg;base64,<?= base64_encode($item['image']); ?>"
-                    class="cursor-pointer flex flex-col justify-center items-center relative bg-white border border-gray-300 rounded-lg hover:scale-105 transition-transform duration-300 ease-in-out lg:min-h-[15rem] lg:min-w-[15rem] lg:max-w-[15rem] h-auto md:min-h-[15rem] md:min-w-[15rem] md:max-w-[15rem]">
+                    class="cursor-pointer flex flex-col justify-center items-center relative bg-white border border-gray-300 rounded-lg hover:scale-105 transition-transform duration-300 ease-in-out w-[15rem] h-[22rem]">
 
                     <!-- Item Image -->
                     <?php if (!empty($item['image'])): ?>
@@ -158,9 +158,9 @@ try {
                             </div>
                         </div>
                         <div
-                            class="price-container bg-black bg-opacity-50 border text-white border-zinc-700/60 rounded-full shadow-lg">
+                            class="price-container bg-black bg-opacity-50 border text-white border-zinc-700/60 rounded-full shadow-lg px-1 min-w-14 flex items-center">
                             <h3 class="text-l">
-                                <?php echo htmlspecialchars($item['value']); ?>
+                            ₱ <?php echo htmlspecialchars($item['value']); ?>
                             </h3>
                         </div>
                     </div>
