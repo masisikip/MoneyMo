@@ -60,7 +60,7 @@
 
     <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:w-10/12 gap-4 place-items-center">
       <?php foreach ($purchases as $purchase): ?>
-        <div class="clickable-div w-[16rem] cursor-pointer"   
+        <div class="clickable-div w-[16rem] h-72 cursor-pointer"   
           data-reference="<?= $purchase['reference_no'] ?>"
           data-date="<?= $purchase['date'] ?>" 
           data-quantity="<?= $purchase['quantity'] ?>"
@@ -114,8 +114,8 @@
     <!-- hoverlay  -->
     <div id="modalOverlay" class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
 
-    <div class="modal-container h-auto bg-white w-11/12 md:max-w-md my-10 mx-auto shadow-lg z-50 overflow-y-auto">
-      <div class="bg-black grid grid-cols-2 gap-x-4">
+    <div class="modal-container flex flex-col items-center h-auto bg-white w-11/12 md:max-w-md my-10 mx-auto shadow-lg z-50 overflow-y-auto">
+      <div class="bg-black w-full grid grid-cols-2 gap-x-4">
         <p class="text-white font-medium ml-3 p-2">MoneyMo</p>
         <button type="button" id="closeModal"
           class="text-white hover:bg-white hover:text-black px-4 py-2 ml-auto cursor-pointer">
@@ -123,7 +123,7 @@
         </button>
       </div>
       <!-- Add modal content here -->
-      <div class="modal-content py-4 text-left px-6">
+      <div class="w-3/4 modal-content py-4 text-left px-6 bg-white">
         <div class="flex justify-center items-center">
           <p class="text-3xl font-bold">@</p>
         </div>
@@ -171,33 +171,45 @@
             <p id="total" class="font-bold">P 100.00</p>
           </div>
         </div>
-        <p class="pt-1 pb-1 text-center">This is a cutomer's copy. Thank You!</p>
-        <div class="mt-4 flex justify-center">
-          <button id="downloadButton"
-            class="px-20 bg-black p-3 ml-3 rounded-lg text-white hover:bg-white border-1 hover:border-1 hover:text-black hover:shadow-2xl cursor-pointer">
-            Download
-          </button>
-        </div>
+        <p class="pt-1 pb-1 text-center mt-5">This is a cutomer's copy. Thank You!</p>
+      </div>
+      <div class="my-4 flex justify-center">
+        <button id="downloadButton"
+          class="px-20 bg-black p-3 ml-3 rounded-lg text-white hover:bg-white border-1 hover:border-1 hover:text-black hover:shadow-2xl cursor-pointer">
+          Download
+        </button>
       </div>
     </div>
   </div>
   <script>
+    let qrFileName = "";
+
     document
       .querySelector("#downloadButton")
       .addEventListener("click", function () {
-        html2canvas(document.querySelector(".modal-container"), {
+        html2canvas(document.querySelector(".modal-content"), {
           onrendered: function (canvas) {
-            // document.body.appendChild(canvas);
-            return Canvas2Image.saveAsPNG(canvas);
+            const imgDataUrl = canvas.toDataURL("image/png");
+            const link = document.createElement("a");
+            link.href = imgDataUrl;
+            link.download = qrFileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
           },
         });
       });
 
     function downloadReceipt(element) {
-      html2canvas(document.querySelector(".modal-container"), {
+      html2canvas(document.querySelector(".modal-content"), {
           onrendered: function (canvas) {
-            // document.body.appendChild(canvas);
-            return Canvas2Image.saveAsPNG(canvas);
+            const imgDataUrl = canvas.toDataURL("image/png");
+            const link = document.createElement("a");
+            link.href = imgDataUrl;
+            link.download = qrFileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
           }, });
     }
 
@@ -210,6 +222,7 @@
         let amount = $(this).data("amount");
         let mode = $(this).data("mode");
 
+        qrFileName = "QR_" + reference + ".png"
 
         $("#reference").text(reference);
         $("#date").text(date);
