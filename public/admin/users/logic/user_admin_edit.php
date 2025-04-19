@@ -11,6 +11,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
     $password = trim($_POST['password']);
     $usertype = isset($_POST['usertype']) ? 1 : 0; // Admin (1) or User (0)
 
+    $stmt1 = $pdo->prepare('SELECT COUNT(*) FROM user WHERE student_id = ? OR email = ?');
+    $stmt1->execute([$student_id, $email]);
+    $users = $stmt1->fetchAll(PDO::FETCH_COLUMN);
+
+    if ($users != 0) {
+        echo 'User already exists';
+        header("Location: ../../users");
+        exit();
+    }
+
     try {
         // If password is provided, update with hashing
         if (!empty($password)) {
