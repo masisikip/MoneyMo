@@ -9,8 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $image = $_FILES['image'];
     $stock = $_POST['stock'];
 
-    $stmt1 = $pdo->prepare("SELECT COUNT(*) FROM item WHERE code = ?");
-    $stmt1->execute([$code]);
+    $stmt1 = $pdo->prepare("SELECT COUNT(*) FROM item WHERE code = ? AND iditem != ?");
+    $stmt1->execute([$code, $iditem]);
     $exists = $stmt1->fetchColumn();
 
     $code = strtoupper($code);
