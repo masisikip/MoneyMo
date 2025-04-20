@@ -19,7 +19,6 @@ if (isset($_SESSION['auth_token'])) {
 }
 
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email = trim($_POST['email']);
   $password = $_POST['password'];
@@ -28,7 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $stmt->execute([$email]);
   $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  if ($user && password_verify($password, $user['password'])) {
+  if (is_array($user) && isset($user['password'])) {
+    $password_is_verified = password_verify($password, $user['password']);
+  } else {
+    $password_is_verified = false;
+  }
+
+  if ($user && $password_is_verified) {
     // Create payload with user info
     $payload = [
       'user_id' => $user['iduser'],
@@ -53,15 +58,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       'samesite' => 'Strict'
     ]);
 
-    if ($user['usertype'] == 0){
+    if ($user['usertype'] == 0) {
       header("Location: ./user");
+      exit();
     } else {
       header("Location: ./admin");
+      exit();
     }
-    exit();
   }
-  header("Location: " . $_SERVER['PHP_SELF']);
-  exit();
+  // header("Location: " . $_SERVER['PHP_SELF']);
 }
 ?>
 
@@ -89,7 +94,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="w-full">
             <label for="email" class="block mb-2 text-sm font-medium text-gray-700">Email</label>
             <input type="text" id="email" name="email" placeholder="Enter your email" required
-              class="block w-full px-4 py-2 text-gray-700 bg-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-500" />
+              class="block w-full px-4 py-2 text-gray-700 bg-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-500" value="<?php if ($_SERVER['REQUEST_METHOD'] === 'POST') echo $email ?>" />
+            <?php
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+              if (!$user) {
+            ?>
+                <span class="block text-red-500 font-medium text-sm ml-2 mt-1">Unrecognized email. Please use your corporate student email.</span>
+            <?php
+              }
+            }
+            ?>
           </div>
 
           <!-- Password Field -->
@@ -97,6 +111,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="password" class="block mb-2 text-sm font-medium text-gray-700">Password</label>
             <input type="password" id="password" name="password" placeholder="Enter your password" required
               class="block w-full px-4 py-2 text-gray-700 bg-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-500" />
+            <?php
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+              if ($user && !$password_is_verified) {
+            ?>
+                <span class="block text-red-500 font-medium text-sm ml-2 mt-1">Incorrect password. Please try again.</span>
+            <?php
+              }
+            }
+            ?>
           </div>
 
           <!-- Sign In Button -->
