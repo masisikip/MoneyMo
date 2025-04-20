@@ -2,12 +2,32 @@
 include_once __DIR__ . '/../../../includes/connect-db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $code = $_POST['code'];
     $name = $_POST['name'];
     $value = $_POST['value'];
     $image = $_FILES['image'];
     $stock = $_POST['stock'];
 
+    $strings = explode(' ', $name);
+    $code = "";
+    $n = count($strings);
+    for ($i = 0; $i < $n; $i++) {
+        $code .= strtoupper(substr($strings[$i], 0, 3));
+        if ($i != $n -1) {
+            $code .= "_";
+        }
+    }
+
+    $stmt1 = $pdo->prepare("SELECT COUNT(*) FROM item WHERE code = ?");
+    $stmt1->execute([$code]);
+    $exists = $stmt1->fetchColumn();
+
+    if ($exists == 0) {
+        // safe to insert
+    } else {
+        echo "Item already exists!";
+        exit();
+    }
+    
     if (!empty($image['tmp_name'])) {
         $source = $image['tmp_name'];
         list($width, $height) = getimagesize($source);
@@ -51,5 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: ../../item/index.php?error=1");
         exit();
     }
+
 }
 ?>
