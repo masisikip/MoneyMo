@@ -7,12 +7,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $f_name = trim($_POST['f_name']);
     $email = trim($_POST['email']);
     $student_id = trim($_POST['student_id']);
-    $password = trim($_POST['password']);
+    $password = trim($_POST['student_id']); // Default pass is student_id
     $is_admin = isset($_POST['is_admin']) ? 1 : 0;
 
     if (empty($l_name) || empty($f_name) || empty($email) || empty($student_id) || empty($password)) {
         $_SESSION['message'] = "All fields are required.";
         $_SESSION['message_type'] = "error";
+        header("Location: ../../users");
+        exit();
+    }
+
+    $stmt1 = $pdo->prepare('SELECT COUNT(*) FROM user WHERE student_id = ? OR email = ?');
+    $stmt1->execute([$student_id, $email]);
+    $users = $stmt1->fetchColumn();
+
+    if ($users != 0) {
+        echo 'User already exists';
         header("Location: ../../users");
         exit();
     }
