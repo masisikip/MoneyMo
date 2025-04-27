@@ -207,16 +207,16 @@ try {
     <div id="addUserModal" class="fixed inset-0 flex items-center justify-center bg-[#00000078] hidden">
         <div class="bg-white p-6 rounded-lg w-96">
             <h2 class="text-xl font-bold mb-4">Add User</h2>
-            <form id="addUserForm" action="./logic/user_add.php" method="POST">
+            <form id="addUserForm" action="" method="POST">
                 <input type="text" name="f_name" placeholder="First Name" required
                     class="w-full p-2 border rounded mb-2">
                 <input type="text" name="l_name" placeholder="Last Name" required
                     class="w-full p-2 border rounded mb-2">
-                <input type="email" name="email" placeholder="Email" pattern=".*@psu.palawan.edu.ph" title="Email should be a PSU corporate one." required class="w-full p-2 border rounded mb-2">
+                <input type="email" name="email" placeholder="Email" pattern=".*@psu.palawan.edu.ph"
+                    title="Email should be a PSU corporate one." required class="w-full p-2 border rounded mb-2">
                 <input type="text" name="student_id" placeholder="Student ID"
-                    pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?"
-                    title="Format: 20##-#-#### or 20##-#-####XX" required
-                    class="w-full p-2 border rounded mb-2">
+                    pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?" title="Format: 20##-#-#### or 20##-#-####XX"
+                    required class="w-full p-2 border rounded mb-2">
                 <label class="flex items-center space-x-2">
                     <input type="checkbox" name="is_admin" value="1">
                     <span>Officer</span>
@@ -241,11 +241,13 @@ try {
                 <input type="text" name="f_name" id="edit_fname" class="border p-2 w-full rounded mb-2" required>
 
                 <label class="block text-gray-700">Email:</label>
-                <input type="email" name="email" id="edit_email" class="border p-2 w-full rounded mb-2" pattern=".*@psu.palawan.edu.ph" title="Email should be a PSU corporate one." required>
+                <input type="email" name="email" id="edit_email" class="border p-2 w-full rounded mb-2"
+                    pattern=".*@psu.palawan.edu.ph" title="Email should be a PSU corporate one." required>
 
                 <label class="block text-gray-700">Student ID:</label>
-                <input id="edit_student_id" name="student_id" class="w-full p-2 border rounded mb-2" pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?"
-                title="Format: 20##-#-#### or 20##-#-####XX" required>
+                <input id="edit_student_id" name="student_id" class="w-full p-2 border rounded mb-2"
+                    pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?" title="Format: 20##-#-#### or 20##-#-####XX"
+                    required>
 
                 <label class="block text-gray-700">New Password (leave blank to keep current):</label>
                 <input type="password" name="password" id="edit_password" class="border p-2 w-full rounded mb-2">
@@ -264,6 +266,46 @@ try {
             </form>
         </div>
     </div>
+
+    <!--Success Message -->
+    <div id="success"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div id="success-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
+            <div class="w-full h-fit pb-4 flex justify-center">
+                <i class="fa-solid fa-circle-check text-7xl text-green-500"></i>
+            </div>
+            <div class="mb-2 text-2xl font-semibold text-center">Success!</div>
+            <div id="success-message" class="w-full text-center"></div>
+
+            <div class="w-full mt-5 flex justify-center">
+                <button onclick="hideSuccessMessage()"
+                    class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer">Okay</button>
+            </div>
+        </div>
+    </div>
+
+    <!--Error Message -->
+    <div id="error"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div id="error-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
+            <div class="w-full h-fit pb-4 flex justify-center">
+                <i class="fa-solid fa-circle-check text-7xl text-red-500"></i>
+            </div>
+            <div class="mb-2 text-2xl font-semibold text-center">Error!</div>
+            <div id="error-message" class="w-full text-center"></div>
+
+            <div class="w-full mt-5 flex justify-center">
+                <button onclick="hideErrorMessage()" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">Okay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div class="w-16 h-16 border-6 border-t-gray-800 border-gray-300 rounded-full animate-spin"></div>
+    </div>
+
 
     <script>
         function searchTable(inputId, tableClass) {
@@ -289,6 +331,52 @@ try {
 
             document.getElementById("noResultsMessage").style.display = found ? "none" : "block";
         }
+
+        function addUser() {
+            let data = new FormData($('#addUserForm')[0]);
+
+            // Show loader
+            $('#loader').addClass('flex').removeClass('hidden');
+
+            $.ajax({
+                url: 'logic/user_add.php',
+                method: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    response = JSON.parse(response);
+
+                    $('#loader').removeClass('flex').addClass('hidden');
+
+                    if (response.status === 'success') {
+                        location.reload();
+                        localStorage.setItem("addSuccess", "true");
+                    } else {
+                        $('#error').addClass('flex').removeClass('hidden');
+                        $('#error-message').text(response.message);
+                        location.reload();
+                        localStorage.setItem("addError", "true");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('#error').addClass('flex').removeClass('hidden');
+                    $('#error-message').text('Failed to connect to server.');
+                    location.reload();
+                    localStorage.setItem("addError", "true");
+                }
+            });
+        }
+
+
+        function hideSuccessMessage() {
+            $('#success').addClass('hidden').removeClass('flex');
+        }
+
+        function hideErrorMessage() {
+            $('#error').addClass('hidden').removeClass('flex');
+        }
+
 
         document.addEventListener("DOMContentLoaded", function () {
             console.log("DOM fully loaded and parsed.");
@@ -350,6 +438,25 @@ try {
                 }
             });
         });
+
+        $(document).ready(function () {
+            if (localStorage.getItem('addSuccess') === 'true') {
+                $('#success').addClass('flex').removeClass('hidden');
+                $('#success-message').text('Successfully added user');
+                localStorage.removeItem('addSuccess');
+            }
+
+            if (localStorage.getItem('addError') === 'true') {
+                $('#error').addClass('flex').removeClass('hidden');
+                $('#error-message').text('Failed to add user');
+                localStorage.removeItem('addError');
+            }
+
+            $('#addUserForm').on('submit', function (e) {
+                e.preventDefault();
+                addUser();
+            })
+        })
     </script>
 
 
