@@ -81,8 +81,8 @@
                         FROM inventory
                         INNER JOIN item on inventory.iditem = item.iditem
                         INNER JOIN user ON inventory.iduser = user.iduser
-                        ORDER BY date desc   
-                         LIMIT :limit OFFSET :offset 
+                        ORDER BY date desc, reference_no desc   
+                        LIMIT :limit OFFSET :offset 
                         ");
 
                         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
@@ -99,13 +99,17 @@
                                 data-inventory="<?= $purchase['idinventory'] ?>"
                                 data-mode="<?= $purchase['payment_type'] ?>">
 
-                                <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs"><?= $purchase['username'] ?>
+                                <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
+                                    <?= $purchase['username'] ?>
                                 </td>
-                                <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs"><?= $purchase['date'] ?>
+                                <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
+                                    <?= $purchase['date'] ?>
                                 </td>
-                                <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs"><?= $purchase['itemname'] ?>
+                                <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
+                                    <?= $purchase['itemname'] ?>
                                 </td>
-                                <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">₱ <?= $purchase['value'] ?>
+                                <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">₱
+                                    <?= $purchase['value'] ?>
                                 </td>
                                 <td class="py-2 md:py-3 px-2 md:px-4 flex justify-center">
                                     <button
@@ -172,6 +176,124 @@
                     sidebar.classList.add('hidden');
                 }
             });
+        });
+
+
+
+        $(document).ready(function () {
+            // Event listener for table's print buttons
+            $('table').on('click', 'button', function () {
+                var $row = $(this).closest('tr');
+
+                var studentName = $row.find('td').eq(0).text().trim();
+                var date = $row.data('date');
+                var item = $row.data('item');
+                var amount = $row.data('amount');
+                var reference = $row.data('reference');
+                var mode = $row.data('mode');
+
+                printDynamicReceipt(studentName, date, item, amount, reference, mode);
+            });
+
+            // Dynamic receipt print function
+            function printDynamicReceipt(studentName, date, item, amount, reference, mode) {
+                var printWindow = window.open('', '', 'width=300,height=400');
+                printWindow.document.open();
+                printWindow.document.write(`
+    <html>
+    <head>
+        <title>Print</title>
+        <style>
+            @media print {
+                @page { margin: 0; }
+                body { 
+                    margin: 0; 
+                    font-family: 'Courier New', monospace; 
+                    text-align: center;
+                    width: 45mm; 
+                }
+                .receipt {
+                    padding: 3px;
+                }
+                .address {
+                    font-size: 10px;
+                    margin-bottom: 4px;
+                }
+                hr {
+                    border: none;
+                    border-top: 1px dashed black;
+                    margin: 4px 0;
+                }
+                .title {
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin: 2px 0;
+                }
+                .info {
+                    font-size: 10px;
+                    margin: 1px 0;
+                }
+                .item, .line {
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 10px;
+                }
+                .total {
+                    font-size: 11px;
+                    font-weight: bold;
+                    margin: 4px 0;
+                }
+                .spacer {
+                    font-size: 8px;
+                    margin: 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="receipt">
+            <p class="spacer">...</p>
+               <br>
+            <p class="title">(¬‿¬)</p>
+            <p class="info">Association of</p>
+            <p class="info">Computer Scientists</p>
+            <p class="title">PAYMENT RECEIPT</p>
+            <p class="info"><strong>REF</strong> ${reference}</p>
+            <hr>
+
+            <div class="line"><strong>Date</strong><span>${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span></div>
+            <div class="line"><strong>Method</strong><span>${mode}</span></div>
+            <div class="line"><strong>Item</strong><span>${item}</span></div>
+            <div class="line"><strong>Qty</strong><span>1</span></div>
+
+            <hr>
+
+            <div class="line"><strong>Price</strong><span>₱${parseFloat(amount).toFixed(2)}</span></div>
+            <div class="line"><strong>Discount</strong><span>0.00</span></div>
+
+            <hr>
+
+            <p class="total">Total: ₱${parseFloat(amount).toFixed(2)}</p>
+
+            <hr>
+    
+            <p class="info">This is a customer's copy.</p>
+            <p class="info">Thank You!</p>
+              <br>
+                 <br>
+            <p class="spacer">...</p>
+        </div>
+    </body>
+    </html>
+`);
+
+                printWindow.document.close();
+
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                }, 500);
+            }
         });
     </script>
 </body>
