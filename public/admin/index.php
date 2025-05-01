@@ -65,14 +65,15 @@
 
                         // Fetch paginated data
                         $stmt = $pdo->prepare("
-                            SELECT 
+                                   SELECT 
                             reference_no,
                             date(date) AS date,
-                            CONCAT(f_name, ' ', l_name) AS username,
+                            CONCAT(u1.f_name, ' ', u1.l_name) AS username,
                             quantity,
                             name as itemname,
                             value,
                             idinventory,
+                            CONCAT(u2.f_name, ' ', u2.l_name) AS officerName,
                             CASE 
                             WHEN payment_type = 0 THEN 'Cash'
                                 WHEN payment_type = 1 THEN 'Gcash'
@@ -80,7 +81,8 @@
                             END AS 	payment_type
                         FROM inventory
                         INNER JOIN item on inventory.iditem = item.iditem
-                        INNER JOIN user ON inventory.iduser = user.iduser
+                        INNER JOIN user u1 ON inventory.iduser = u1.iduser
+                        INNER JOIN user u2 ON inventory.idofficer = u2.iduser
                         ORDER BY date desc, reference_no desc   
                         LIMIT :limit OFFSET :offset 
                         ");
@@ -97,6 +99,7 @@
                                 data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
                                 data-item="<?= $purchase['itemname'] ?>" data-amount="<?= $purchase['value'] ?>"
                                 data-inventory="<?= $purchase['idinventory'] ?>"
+                                data-officerName="<?= $purchase['officerName'] ?>" 
                                 data-mode="<?= $purchase['payment_type'] ?>">
 
                                 <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
@@ -186,17 +189,18 @@
                 var $row = $(this).closest('tr');
 
                 var studentName = $row.find('td').eq(0).text().trim();
+                var officerName  = $row.data('officername');
                 var date = $row.data('date');
                 var item = $row.data('item');
                 var amount = $row.data('amount');
                 var reference = $row.data('reference');
                 var mode = $row.data('mode');
 
-                printDynamicReceipt(studentName, date, item, amount, reference, mode);
+                printDynamicReceipt(studentName, officerName, date, item, amount, reference, mode);
             });
 
             // Dynamic receipt print function
-            function printDynamicReceipt(studentName, date, item, amount, reference, mode) {
+            function printDynamicReceipt(studentName, officerName, date, item, amount, reference, mode) {
                 var printWindow = window.open('', '', 'width=300,height=400');
                 printWindow.document.open();
                 printWindow.document.write(`
@@ -266,6 +270,7 @@
             <div class="line"><strong>Item</strong><span>${item}</span></div>
             <div class="line"><strong>Qty</strong><span>1</span></div>
             <div class="line"><strong>Method</strong><span>${mode}</span></div>
+            <div class="line"><strong>Astd by</strong><span>${officerName}</span></div>
 
             <hr>
 
