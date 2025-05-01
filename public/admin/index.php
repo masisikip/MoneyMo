@@ -254,17 +254,18 @@
         <div class="receipt">
             <p class="spacer">...</p>
                <br>
-            <p class="title">(¬‿¬)</p>
+            <p class="title">👽</p>
             <p class="info">Association of</p>
             <p class="info">Computer Scientists</p>
             <p class="title">PAYMENT RECEIPT</p>
-            <p class="info"><strong>REF</strong> ${reference}</p>
+            <p class="info">${reference}</p>
             <hr>
 
             <div class="line"><strong>Date</strong><span>${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span></div>
-            <div class="line"><strong>Method</strong><span>${mode}</span></div>
+            <div class="line"><strong>Name</strong><span>${studentName  }</span></div>
             <div class="line"><strong>Item</strong><span>${item}</span></div>
             <div class="line"><strong>Qty</strong><span>1</span></div>
+            <div class="line"><strong>Method</strong><span>${mode}</span></div>
 
             <hr>
 
