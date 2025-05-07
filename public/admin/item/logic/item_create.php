@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Item already exists!";
         exit();
     }
-    
+
     if (!empty($image['tmp_name'])) {
         $source = $image['tmp_name'];
         list($width, $height) = getimagesize($source);
