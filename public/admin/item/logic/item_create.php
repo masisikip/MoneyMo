@@ -47,7 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } elseif ($info['mime'] == 'image/png') {
             $img_resource = imagecreatefrompng($source);
         } else {
-            header("Location: ../../item/index.php?error=1");
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Invalid file'
+            ]);
             exit();
         }
 
@@ -65,14 +68,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':image', $img_content, PDO::PARAM_LOB);
             $stmt->bindParam(':stock', $stock);
             $stmt->execute();
-            header("Location: ../../item/index.php");
+
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Successfully added item'
+            ]);
             exit();
         } catch (PDOException $e) {
-            header("Location: ../../item/index.php?error=1");
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to add item'
+            ]);
             exit();
         }
     } else {
-        header("Location: ../../item/index.php?error=1");
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Empty Image'
+        ]);
         exit();
     }
 

@@ -201,6 +201,45 @@ try {
         </div>
     </div>
 
+    <!--Success Message -->
+    <div id="success"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div id="success-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
+            <div class="w-full h-fit pb-4 flex justify-center">
+                <i class="fa-solid fa-circle-check text-7xl text-green-500"></i>
+            </div>
+            <div class="mb-2 text-2xl font-semibold text-center">Success!</div>
+            <div id="success-message" class="w-full text-center"></div>
+
+            <div class="w-full mt-5 flex justify-center">
+                <button onclick="hideSuccessMessage()"
+                    class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer">Okay</button>
+            </div>
+        </div>
+    </div>
+
+    <!--Error Message -->
+    <div id="error"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div id="error-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
+            <div class="w-full h-fit pb-4 flex justify-center">
+                <i class="fa-solid fa-circle-check text-7xl text-red-500"></i>
+            </div>
+            <div class="mb-2 text-2xl font-semibold text-center">Error!</div>
+            <div id="error-message" class="w-full text-center"></div>
+
+            <div class="w-full mt-5 flex justify-center">
+                <button onclick="hideErrorMessage()" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">Okay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div class="w-16 h-16 border-6 border-t-gray-800 border-gray-300 rounded-full animate-spin"></div>
+    </div>
+
 </body>
 <script>
     function openDeleteModal(iditem) {
@@ -219,28 +258,24 @@ try {
 
     function confirmDelete() {
         let iditem = $('#delete-iditem').val();
-        console.log(iditem);
+        $('#loader').removeClass('hidden').addClass('flex');
         $.ajax({
             url: "logic/item_delete.php",
             method: 'POST',
             data: {iditem: iditem},
+            // processData: false,
+            // contentType: false,
             success: function (response) {
-                // $('#loader').addClass('hidden').removeClass('flex');
-                // $('#items').addClass('hidden');
-                // $('body').append(response);
-                // $('#item-form')[0].reset();
-                // $('.item-card').addClass('border-gray-300').removeClass('border-black');
-                // location.reload();
                 location.reload();
+                localStorage.setItem("deleteSuccess", "true");
             },
             error: function (xhr, status, error) {
-                // $('#loader').addClass('hidden').removeClass('flex');
-                // console.error("AJAX Error: ", error);
-                // console.error("Status: ", status);
-                // console.error("Response Text: ", xhr.responseText);
+                $('#error').addClass('flex').removeClass('hidden');
+                $('#error-message').text(response.message);
                 location.reload();
+                localStorage.setItem("deleteError", "true");
             }
-        });
+        })
     }
 
     function openAddModal() {
@@ -253,22 +288,6 @@ try {
         $('#addItemForm')[0].reset();
         $('body').removeClass('overflow-y-hidden');
     }
-
-    document.getElementById('addItemForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-        fetch('logic/item_create.php', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.text())
-            .then(data => {
-                console.log(data);
-                toggleModal('addItemModal');
-                location.reload();
-            })
-            .catch(error => console.error('Error:', error));
-    });
 
     function openUpdateModal(iditem) {
         const item = document.getElementById(`${iditem}-item`);
@@ -290,28 +309,107 @@ try {
         $('body').removeClass('overflow-y-hidden');
     }
 
-    document.getElementById('updateItemForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-        fetch('logic/item_update.php', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.text())
-            .then(data => {
-                console.log(data);
-                location.reload();
-            })
-            .catch(error => console.error('Error:', error));
-    });
+    function hideSuccessMessage() {
+        $('#success').addClass('hidden').removeClass('flex');
+    }
+
+    function hideErrorMessage() {
+        $('#error').addClass('hidden').removeClass('flex');
+    }
 
     $(document).ready(function () {
+        if (localStorage.getItem('addSuccess') === 'true') {
+            $('#success').addClass('flex').removeClass('hidden');
+            $('#success-message').text('Successfully added item');
+            localStorage.removeItem('addSuccess');
+        }
+
+        if (localStorage.getItem('addError') === 'true') {
+            $('#error').addClass('flex').removeClass('hidden');
+            $('#error-message').text('Failed to add item');
+            localStorage.removeItem('addError');
+        }       
+        
+        if (localStorage.getItem('updateSuccess') === 'true') {
+            $('#success').addClass('flex').removeClass('hidden');
+            $('#success-message').text('Successfully updated item');
+            localStorage.removeItem('updateSuccess');
+        }
+
+        if (localStorage.getItem('updateError') === 'true') {
+            $('#error').addClass('flex').removeClass('hidden');
+            $('#error-message').text('Failed to update item');
+            localStorage.removeItem('updateError');
+        }
+
+        if (localStorage.getItem('deleteSuccess') === 'true') {
+            $('#success').addClass('flex').removeClass('hidden');
+            $('#success-message').text('Successfully deleted item');
+            localStorage.removeItem('deleteSuccess');
+        }
+
+        if (localStorage.getItem('deleteError') === 'true') {
+            $('#error').addClass('flex').removeClass('hidden');
+            $('#error-message').text('Failed to delete item');
+            localStorage.removeItem('deleteError');
+        }
+        
         $('#update_image').on('change', function () {
             let file = this.files[0];
 
             if (file) {
                 $('#preview').attr('src', URL.createObjectURL(file))
             }
+        })
+
+        $('#addItemForm').on('submit', function (event) {
+            event.preventDefault();
+            let data = new FormData($('#addItemForm')[0]);
+
+            $('#loader').removeClass('hidden').addClass('flex');
+            
+            $.ajax({
+                url: "logic/item_create.php",
+                method: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                    localStorage.setItem("addSuccess", "true");
+                },
+                error: function (xhr, status, error) {
+                    $('#error').addClass('flex').removeClass('hidden');
+                    $('#error-message').text(response.message);
+                    location.reload();
+                    localStorage.setItem("addError", "true");
+                }
+            })
+        })
+
+        $('#updateItemForm').on('submit', function (event) {
+            event.preventDefault();
+            let data = new FormData($('#updateItemForm')[0]);
+
+            $('#loader').removeClass('hidden').addClass('flex');
+            
+            $.ajax({
+                url: "logic/item_update.php",
+                method: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    location.reload();
+                    localStorage.setItem("updateSuccess", "true");
+                },
+                error: function (xhr, status, error) {
+                    $('#error').addClass('flex').removeClass('hidden');
+                    $('#error-message').text(response.message);
+                    location.reload();
+                    localStorage.setItem("updateError", "true");
+                }
+            })
         })
 
         $(document).click(function () {

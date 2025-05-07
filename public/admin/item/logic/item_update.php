@@ -48,7 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } elseif ($info['mime'] == 'image/png') {
             $img_resource = imagecreatefrompng($source);
         } else {
-            echo json_encode(["error" => "Invalid image type. Only JPEG and PNG are allowed."]);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Invalid file'
+            ]);
             exit;
         }
 
@@ -67,9 +70,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':stock', $stock);
             $stmt->bindParam(':iditem', $iditem);
             $stmt->execute();
-            echo json_encode(["message" => "Item updated successfully"]);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Successfully update item'
+            ]);
         } catch (PDOException $e) {
-            echo json_encode(["error" => "Error: " . $e->getMessage()]);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to update item'
+            ]);
         }
     } else {
         try {
@@ -80,9 +89,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':stock', $stock);
             $stmt->bindParam(':iditem', $iditem);
             $stmt->execute();
-            echo json_encode(["message" => "Item updated successfully"]);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Successfully update item'
+            ]);
         } catch (PDOException $e) {
-            echo json_encode(["error" => "Error: " . $e->getMessage()]);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to update item'
+            ]);
         }
     }
 }
