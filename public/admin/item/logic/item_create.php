@@ -11,9 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $code = "";
     $n = count($strings);
     for ($i = 0; $i < $n; $i++) {
-        $code .= strtoupper(substr($strings[$i], 0, 3));
-        if ($i != $n -1) {
-            $code .= "_";
+        if ($i < 2) {
+            $code .= strtoupper(substr($strings[$i], 0, 2));
+        } else {
+            $code .= strtoupper(substr($strings[$i], 0, 1));
+        }
+        if ($i == 1 && $n > 2) {
+           $code .= "_";
         }
     }
 
