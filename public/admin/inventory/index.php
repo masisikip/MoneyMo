@@ -40,7 +40,6 @@
     $search = $_GET['search'] ?? '';
     $filter = $_GET['filter'] ?? '';
 
-    // Build base WHERE conditions
     $whereClause = "WHERE 1 = 1";
 
     if (!empty($search)) {
@@ -53,16 +52,14 @@
         $whereClause .= " AND is_received = 0";
     }
 
-    // ========================
-// 1. Get total records first
-// ========================
     $countQuery = "
-    SELECT COUNT(*) 
+    SELECT COUNT(DISTINCT user.iduser)
     FROM inventory
     INNER JOIN item ON inventory.iditem = item.iditem
     INNER JOIN user ON inventory.iduser = user.iduser
     $whereClause
-";
+    ";
+
 
     $countStmt = $pdo->prepare($countQuery);
 
@@ -74,47 +71,92 @@
     }
 
     $countStmt->execute();
-    $total_records = $countStmt->fetchColumn(); // <<< Now we have the total
-    
+    $total_records = $countStmt->fetchColumn();
+
     $total_pages = ceil($total_records / $limit);
 
-    // ========================
-// 2. Then fetch paginated data
-// ========================
-    $query = "
-    SELECT 
-        idinventory,
-        DATE(date) AS date,
-        item.name AS itemname,
-        CONCAT(f_name, ' ', l_name) AS username,
-        is_received,
-        CASE 
-            WHEN is_received = 1 THEN 'Claimed'
-            WHEN is_received = 0 THEN 'Claim'
-            ELSE 'Unknown'
-        END AS claim_button
-    FROM inventory
-    INNER JOIN item ON inventory.iditem = item.iditem
-    INNER JOIN user ON inventory.iduser = user.iduser
-    $whereClause
-    ORDER BY date DESC
-    LIMIT :limit OFFSET :offset
-";
+    $userIdsQuery = "
+        SELECT DISTINCT user.iduser, CONCAT(f_name, ' ', l_name) AS username
+        FROM inventory
+        INNER JOIN item ON inventory.iditem = item.iditem
+        INNER JOIN user ON inventory.iduser = user.iduser
+        $whereClause
+        ORDER BY username ASC
+        LIMIT :limit OFFSET :offset
+        ";
 
-    $stmt = $pdo->prepare($query);
+    $userIdsStmt = $pdo->prepare($userIdsQuery);
 
     if (!empty($search)) {
-        $stmt->bindValue(':search1', $searchTerm);
-        $stmt->bindValue(':search2', $searchTerm);
-        $stmt->bindValue(':search3', $searchTerm);
+        $userIdsStmt->bindValue(':search1', $searchTerm);
+        $userIdsStmt->bindValue(':search2', $searchTerm);
+        $userIdsStmt->bindValue(':search3', $searchTerm);
     }
 
-    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $userIdsStmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $userIdsStmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 
-    $stmt->execute();
+    $userIdsStmt->execute();
+    $userRows = $userIdsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $userIds = array_column($userRows, 'iduser');
+
+
+    if (!empty($userIds)) {
+        // Generate named placeholders like :id1, :id2, :id3
+        $placeholders = [];
+        foreach ($userIds as $index => $uid) {
+            $placeholders[] = ':id' . $index;
+        }
+        $placeholdersString = implode(',', $placeholders);
+
+        $query = "
+        SELECT 
+            idinventory,
+            DATE(date) AS date,
+            item.name AS itemname,
+            CONCAT(f_name, ' ', l_name) AS username,
+            is_received,
+            CASE 
+                WHEN is_received = 1 THEN 'Claimed'
+                WHEN is_received = 0 THEN 'Claim'
+                ELSE 'Unknown'
+            END AS claim_button
+        FROM inventory
+        INNER JOIN item ON inventory.iditem = item.iditem
+        INNER JOIN user ON inventory.iduser = user.iduser
+        $whereClause AND user.iduser IN ($placeholdersString)
+        ORDER BY date DESC
+        ";
+
+        $stmt = $pdo->prepare($query);
+
+        // Bind search terms
+        if (!empty($search)) {
+            $stmt->bindValue(':search1', $searchTerm);
+            $stmt->bindValue(':search2', $searchTerm);
+            $stmt->bindValue(':search3', $searchTerm);
+        }
+
+        // Bind user IDs
+        foreach ($userIds as $index => $uid) {
+            $stmt->bindValue(':id' . $index, $uid, PDO::PARAM_INT);
+        }
+
+        $stmt->execute();
+        $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        $purchases = [];
+    }
+
+
+
+    // Group purchases by user
+    $groupedPurchases = [];
+    foreach ($purchases as $purchase) {
+        $groupedPurchases[$purchase['username']][] = $purchase;
+    }
+
     ?>
 
 
@@ -127,8 +169,7 @@
                         <i class="fas fa-search"></i>
                     </div>
                     <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
-                        placeholder="Search inventory..."
-                        class="px-2 w-full focus:outline-none py-0">
+                        placeholder="Search inventory..." class="px-2 w-full focus:outline-none py-0">
                 </div>
                 <div class="flex items-center border border-gray-300 rounded-lg w-full md:w-auto">
                     <button type="submit" class="text-white border bg-zinc-700 rounded-l-lg py-1 px-3">
@@ -149,70 +190,93 @@
         <!-- Desktop View -->
         <div class="hidden md:block bg-white shadow rounded-lg p-6 mb-4 overflow-x-auto w-full max-w-5xl">
             <div class="table-container">
-                <table class="w-full border-collapse overflow-hidden rounded-lg min-w-[600px]">
-                    <thead class="bg-gray-200 text-gray-700 rounded-t-lg">
-                        <tr>
-                            <th class="py-2 px-4 text-left">Item Name <i class="fas fa-sort ml-2 text-gray-400"></i>
-                            </th>
-                            <th class="py-2 px-4 text-left">Purchased By <i class="fas fa-sort ml-2 text-gray-400"></i>
-                            </th>
-                            <th class="py-2 px-4 text-left">Date of Purchase <i
-                                    class="fas fa-sort ml-2 text-gray-400"></i></th>
-                            <th class="py-2 px-4 text-left">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($purchases as $purchase): ?>
-                            <tr class="border-b">
-                                <td class="py-3 px-4"><?= $purchase['itemname'] ?></td>
-                                <td class="py-3 px-4"><?= $purchase['username'] ?></td>
-                                <td class="py-3 px-4"><?= $purchase['date'] ?></td>
-                                <td class="py-3 px-4">
-                                    <?php if ($purchase['is_received'] == 0): ?>
-                                        <button
-                                            onclick="confirmClaim(<?= $purchase['idinventory'] ?>, '<?= addslashes($purchase['itemname']) ?>', '<?= addslashes($purchase['username']) ?>')"
-                                            class="bg-gray-950 cursor-pointer text-white px-4 py-1 rounded-full hover:bg-gray-800 min-w-[120px]">
-                                            Claim
-                                        </button>
 
-                                    <?php else: ?>
-                                        <span class="text-gray-500  text-center font-semibold min-w-[120px] inline-block">
-                                            Claimed
-                                        </span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
+                <?php foreach ($groupedPurchases as $username => $items): ?>
+                    <div class="mb-4 border rounded-lg overflow-hidden">
+                        <!-- User Header (clickable) -->
+                        <button onclick="toggleUserItems(this)"
+                            class="w-full text-left bg-gray-200 px-4 py-2 font-bold flex justify-between items-center">
+                            <?= htmlspecialchars($username) ?>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
 
-                    </tbody>
-                </table>
+                        <!-- Items Table (collapsed initially) -->
+                        <div class="user-items hidden">
+                            <table class="w-full border-collapse min-w-[600px]">
+                                <thead class="bg-gray-100 text-gray-700">
+                                    <tr>
+                                        <th class="py-2 px-4 text-left">Item Name</th>
+                                        <th class="py-2 px-4 text-left">Date of Purchase</th>
+                                        <th class="py-2 px-4 text-left">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($items as $purchase): ?>
+                                        <tr class="border-b">
+                                            <td class="py-3 px-4"><?= htmlspecialchars($purchase['itemname']) ?></td>
+                                            <td class="py-3 px-4"><?= htmlspecialchars($purchase['date']) ?></td>
+                                            <td class="py-3 px-4">
+                                                <?php if ($purchase['is_received'] == 0): ?>
+                                                    <button
+                                                        onclick="confirmClaim(<?= $purchase['idinventory'] ?>, '<?= addslashes($purchase['itemname']) ?>', '<?= addslashes($purchase['username']) ?>')"
+                                                        class="bg-gray-950 cursor-pointer text-white px-4 py-1 rounded-full hover:bg-gray-800 min-w-[120px]">
+                                                        Claim
+                                                    </button>
+                                                <?php else: ?>
+                                                    <span class="text-gray-500 font-semibold min-w-[120px] inline-block">
+                                                        Claimed
+                                                    </span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
             </div>
         </div>
 
+
         <!-- Mobile View -->
         <div class="md:hidden space-y-4 w-full px-4">
-            <?php foreach ($purchases as $purchase): ?>
-                <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center mobile-card">
-                    <div>
-                        <p class="font-bold"><?= $purchase['itemname'] ?></p>
-                        <p class="text-gray-600"><?= $purchase['username'] ?></p>
-                        <p class="text-gray-500 text-sm"><?= $purchase['date'] ?></p>
-                    </div>
-                    <?php if ($purchase['is_received'] == 0): ?>
-                        <button
-                            onclick="confirmClaim(<?= $purchase['idinventory'] ?>, '<?= addslashes($purchase['itemname']) ?>', '<?= addslashes($purchase['username']) ?>')"
-                            class="bg-gray-950 text-white cursor-pointer px-4 py-1 rounded-full hover:bg-gray-800  min-w-[120px]">
-                            Claim
-                        </button>
+            <?php foreach ($groupedPurchases as $username => $items): ?>
+                <div class="border rounded-lg overflow-hidden">
+                    <!-- User Header -->
+                    <button onclick="toggleUserItems(this)"
+                        class="w-full text-left bg-gray-200 px-4 py-2 font-bold flex justify-between items-center">
+                        <?= htmlspecialchars($username) ?>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
 
-                    <?php else: ?>
-                        <span class="text-gray-500 text-center font-semibold min-w-[120px] inline-block">
-                            Claimed
-                        </span>
-                    <?php endif; ?>
+                    <!-- Items List -->
+                    <div class="user-items hidden space-y-2 p-2">
+                        <?php foreach ($items as $purchase): ?>
+                            <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
+                                <div>
+                                    <p class="font-bold"><?= htmlspecialchars($purchase['itemname']) ?></p>
+                                    <p class="text-gray-500 text-sm"><?= htmlspecialchars($purchase['date']) ?></p>
+                                </div>
+                                <?php if ($purchase['is_received'] == 0): ?>
+                                    <button
+                                        onclick="confirmClaim(<?= $purchase['idinventory'] ?>, '<?= addslashes($purchase['itemname']) ?>', '<?= addslashes($purchase['username']) ?>')"
+                                        class="bg-gray-950 text-white cursor-pointer px-4 py-1 rounded-full hover:bg-gray-800 min-w-[80px]">
+                                        Claim
+                                    </button>
+                                <?php else: ?>
+                                    <span class="text-gray-500 text-center font-semibold min-w-[80px] inline-block">
+                                        Claimed
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             <?php endforeach; ?>
         </div>
+
     </div>
 
     <?php
@@ -342,6 +406,16 @@
         });
     });
 
+
+    function toggleUserItems(button) {
+        const itemsDiv = button.nextElementSibling;
+        itemsDiv.classList.toggle('hidden');
+
+        // Toggle arrow icon
+        const icon = button.querySelector('i');
+        icon.classList.toggle('fa-chevron-down');
+        icon.classList.toggle('fa-chevron-up');
+    }
 </script>
 
 </html>
