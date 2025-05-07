@@ -104,7 +104,7 @@ try {
                                         <?= htmlspecialchars($userData['usertype'] == 1 ? 'Officer' : 'Student') ?>
                                     </td>
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left whitespace-nowrap">
-                                        <a href="#"
+                                        <a href="#" id="user-<?= $userData['iduser'] ?>"
                                             class="edit-btn text-black-500 text-xs md:text-base mx-1 inline-flex items-center"
                                             data-id="<?= $userData['iduser'] ?>"
                                             data-lname="<?= htmlspecialchars($userData['l_name']) ?>"
@@ -115,11 +115,10 @@ try {
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <span class="text-gray-400 mx-1">|</span>
-                                        <a href="./logic/user_delete.php?id=<?= $userData['iduser'] ?>"
-                                            class="text-black-500 text-xs md:text-base mx-1 inline-flex items-center"
-                                            onclick="return confirm('Are you sure you want to delete this user?');">
+                                        <button type='button' class="text-black text-xs md:text-base"
+                                            onclick="openDeleteModal(<?= $userData['iduser'] ?>)">
                                             <i class="fas fa-trash-alt"></i>
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -156,11 +155,10 @@ try {
                                 data-usertype="<?= htmlspecialchars($userData['usertype']) ?>">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="logic/user_delete.php?id=<?= $userData['iduser'] ?>"
-                                class="text-black text-xs md:text-base"
-                                onclick="return confirm('Are you sure you want to delete this user?');">
+                            <button type='button' class="text-black text-xs md:text-base"
+                                onclick="openDeleteModal(<?= $userData['iduser'] ?>)">
                                 <i class="fas fa-trash-alt"></i>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -207,16 +205,16 @@ try {
     <div id="addUserModal" class="fixed inset-0 flex items-center justify-center bg-[#00000078] hidden">
         <div class="bg-white p-6 rounded-lg w-96">
             <h2 class="text-xl font-bold mb-4">Add User</h2>
-            <form id="addUserForm" action="./logic/user_add.php" method="POST">
+            <form id="addUserForm" action="" method="POST">
                 <input type="text" name="f_name" placeholder="First Name" required
                     class="w-full p-2 border rounded mb-2">
                 <input type="text" name="l_name" placeholder="Last Name" required
                     class="w-full p-2 border rounded mb-2">
-                <input type="email" name="email" placeholder="Email" pattern=".*@psu.palawan.edu.ph" title="Email should be a PSU corporate one." required class="w-full p-2 border rounded mb-2">
+                <input type="email" name="email" placeholder="Email" pattern=".*@psu.palawan.edu.ph"
+                    title="Email should be a PSU corporate one." required class="w-full p-2 border rounded mb-2">
                 <input type="text" name="student_id" placeholder="Student ID"
-                    pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?"
-                    title="Format: 20##-#-#### or 20##-#-####XX" required
-                    class="w-full p-2 border rounded mb-2">
+                    pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?" title="Format: 20##-#-#### or 20##-#-####XX"
+                    required class="w-full p-2 border rounded mb-2">
                 <label class="flex items-center space-x-2">
                     <input type="checkbox" name="is_admin" value="1">
                     <span>Officer</span>
@@ -241,11 +239,13 @@ try {
                 <input type="text" name="f_name" id="edit_fname" class="border p-2 w-full rounded mb-2" required>
 
                 <label class="block text-gray-700">Email:</label>
-                <input type="email" name="email" id="edit_email" class="border p-2 w-full rounded mb-2" pattern=".*@psu.palawan.edu.ph" title="Email should be a PSU corporate one." required>
+                <input type="email" name="email" id="edit_email" class="border p-2 w-full rounded mb-2"
+                    pattern=".*@psu.palawan.edu.ph" title="Email should be a PSU corporate one." required>
 
                 <label class="block text-gray-700">Student ID:</label>
-                <input id="edit_student_id" name="student_id" class="w-full p-2 border rounded mb-2" pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?"
-                title="Format: 20##-#-#### or 20##-#-####XX" required>
+                <input id="edit_student_id" name="student_id" class="w-full p-2 border rounded mb-2"
+                    pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?" title="Format: 20##-#-#### or 20##-#-####XX"
+                    required>
 
                 <label class="block text-gray-700">New Password (leave blank to keep current):</label>
                 <input type="password" name="password" id="edit_password" class="border p-2 w-full rounded mb-2">
@@ -256,14 +256,73 @@ try {
                 </div>
 
                 <div class="flex justify-end space-x-2">
-                    <button type="submit" name="update_user"
-                        class="bg-black text-white px-4 py-2 rounded">Update</button>
+                    <button type="submit" class="bg-black text-white px-4 py-2 rounded">Update</button>
                     <button type="button" id="closeModal"
                         class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal"
+        class="fixed top-0 w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur hidden">
+        <div id="delete-main" class="w-10/12 md:w-1/4 bg-white rounded-lg flex flex-col px-4 py-2">
+            <div class="py-2 font-semibold text-xl w-full border-b">Delete Item</div>
+            <div class="w-full my-2 text-lg">
+                <p>Are you sure to delete item <span id="delete-user" class="font-semibold"></span>?</p>
+            </div>
+            <input type="hidden" id="delete-iduser">
+
+            <div class="flex gap-3 justify-center w-full mt-6 my-2">
+                <button type="button" class="w-20 py-1 rounded bg-gray-700 text-white hover:bg-gray-800 cursor-pointer"
+                    onclick="closeDeleteModal()">Cancel</button>
+                <button class="w-20 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer"
+                    onclick="confirmDelete()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!--Success Message -->
+    <div id="success"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div id="success-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
+            <div class="w-full h-fit pb-4 flex justify-center">
+                <i class="fa-solid fa-circle-check text-7xl text-green-500"></i>
+            </div>
+            <div class="mb-2 text-2xl font-semibold text-center">Success!</div>
+            <div id="success-message" class="w-full text-center"></div>
+
+            <div class="w-full mt-5 flex justify-center">
+                <button onclick="hideSuccessMessage()"
+                    class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer">Okay</button>
+            </div>
+        </div>
+    </div>
+
+    <!--Error Message -->
+    <div id="error"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div id="error-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
+            <div class="w-full h-fit pb-4 flex justify-center">
+                <i class="fa-solid fa-circle-xmark text-7xl text-red-500"></i>
+            </div>
+            <div class="mb-2 text-2xl font-semibold text-center">Error!</div>
+            <div id="error-message" class="w-full text-center"></div>
+
+            <div class="w-full mt-5 flex justify-center">
+                <button onclick="hideErrorMessage()"
+                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">Okay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div class="w-16 h-16 border-6 border-t-gray-800 border-gray-300 rounded-full animate-spin"></div>
+    </div>
+
 
     <script>
         function searchTable(inputId, tableClass) {
@@ -289,6 +348,118 @@ try {
 
             document.getElementById("noResultsMessage").style.display = found ? "none" : "block";
         }
+
+        function addUser() {
+            let data = new FormData($('#addUserForm')[0]);
+
+            // Show loader
+            $('#loader').addClass('flex').removeClass('hidden');
+
+            $.ajax({
+                url: 'logic/user_add.php',
+                method: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    response = JSON.parse(response);
+                    if (response.status === 'success') {
+                        location.reload();
+                        localStorage.setItem("addSuccess", "true");
+                    } else {
+                        $('#error').addClass('flex').removeClass('hidden');
+                        $('#error-message').text(response.message);
+                        location.reload();
+                        localStorage.setItem("addError", "true");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('#error').addClass('flex').removeClass('hidden');
+                    $('#error-message').text('Failed to connect to server.');
+                    location.reload();
+                    localStorage.setItem("addError", "true");
+                }
+            });
+        }
+
+        function updateUser() {
+            let data = new FormData($('#editForm')[0]);
+
+            $('#loader').addClass('flex').removeClass('hidden');
+
+            $.ajax({
+                url: 'logic/user_admin_edit.php',
+                method: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        localStorage.setItem("editSuccess", "true");
+                        location.reload();
+                    } else {
+                        localStorage.setItem("editError", "true");
+                        location.reload();
+
+                    }
+                },
+                error: function () {
+                    $('#loader').removeClass('flex').addClass('hidden');
+                    $('#error').addClass('flex').removeClass('hidden');
+                    $('#error-message').text('Failed to connect to server.');
+                    localStorage.setItem("editError", "true");
+                    location.reload();
+                }
+            });
+        }
+
+
+
+        function hideSuccessMessage() {
+            $('#success').addClass('hidden').removeClass('flex');
+        }
+
+        function hideErrorMessage() {
+            $('#error').addClass('hidden').removeClass('flex');
+        }
+
+        function openDeleteModal(iduser) {
+            let id = $('#user-' + iduser);
+            let name = id.data('fname') + id.data('fname');
+            $('#deleteModal').removeClass('hidden').addClass('flex');
+            $('#delete-user').text(name);
+            $('#delete-iduser').val(iduser);
+            $('body').addClass('overflow-y-hidden');
+        }
+
+        function closeDeleteModal() {
+            $('#deleteModal').addClass('hidden').removeClass('flex');
+            $('body').removeClass('overflow-y-hidden');
+        }
+
+        function confirmDelete() {
+            let iduser = $('#delete-iduser').val();
+            $('#loader').removeClass('hidden').addClass('flex');
+            $.ajax({
+                url: "logic/user_delete.php",
+                method: 'POST',
+                data: { iduser: iduser },
+                // processData: false,
+                // contentType: false,
+                success: function (response) {
+                    location.reload();
+                    localStorage.setItem("deleteSuccess", "true");
+                },
+                error: function (xhr, status, error) {
+                    $('#error').addClass('flex').removeClass('hidden');
+                    $('#error-message').text(response.message);
+                    location.reload();
+                    localStorage.setItem("deleteError", "true");
+                }
+            })
+        }
+
 
         document.addEventListener("DOMContentLoaded", function () {
             console.log("DOM fully loaded and parsed.");
@@ -350,6 +521,63 @@ try {
                 }
             });
         });
+
+        $(document).ready(function () {
+            if (localStorage.getItem('addSuccess') === 'true') {
+                $('#success').addClass('flex').removeClass('hidden');
+                $('#success-message').text('Successfully added user');
+                localStorage.removeItem('addSuccess');
+            }
+
+            if (localStorage.getItem('addError') === 'true') {
+                $('#error').addClass('flex').removeClass('hidden');
+                $('#error-message').text('Failed to add user');
+                localStorage.removeItem('addError');
+            }
+
+            if (localStorage.getItem('editSuccess') === 'true') {
+                $('#success').addClass('flex').removeClass('hidden');
+                $('#success-message').text('Successfully updated user');
+                localStorage.removeItem('editSuccess');
+            }
+
+            if (localStorage.getItem('editError') === 'true') {
+                $('#error-message').text('Failed to update user');
+                $('#error').addClass('flex').removeClass('hidden');
+                localStorage.removeItem('editError');
+            }
+
+            if (localStorage.getItem('deleteSuccess') === 'true') {
+                $('#success').addClass('flex').removeClass('hidden');
+                $('#success-message').text('Successfully deleted user');
+                localStorage.removeItem('deleteSuccess');
+            }
+
+            if (localStorage.getItem('deleteError') === 'true') {
+                $('#error-message').text('Failed to delete user');
+                $('#error').addClass('flex').removeClass('hidden');
+                localStorage.removeItem('deleteError');
+            }
+
+
+            $('#addUserForm').on('submit', function (e) {
+                e.preventDefault();
+                addUser();
+            })
+
+            $('#editForm').on('submit', function (e) {
+                e.preventDefault();
+                updateUser();
+            });
+
+            $(document).on('click', function () {
+
+                if ($(event.target).closest('#deleteModal').length && !$(event.target).closest('#delete-main').length) {
+                    closeDeleteModal();
+                }
+            })
+
+        })
     </script>
 
 

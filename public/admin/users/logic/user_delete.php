@@ -1,30 +1,32 @@
 <?php
-session_start();
-include_once '../../../includes/connect-db.php';
+include_once __DIR__ . '/../../../includes/connect-db.php';
 
-if (isset($_GET['id'])) {
-    $userId = $_GET['id'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['iduser'])) {
+        $iduser = $_POST['iduser'];
 
-    try {
-        $stmt = $pdo->prepare("DELETE FROM user WHERE iduser = :id");
-        $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
-        
-        if ($stmt->execute()) {
-            $_SESSION['message'] = "User deleted successfully!";
-            $_SESSION['message_type'] = "success";
-        } else {
-            $_SESSION['message'] = "Failed to delete user.";
-            $_SESSION['message_type'] = "error";
+        try {
+            $stmt = $pdo->prepare("DELETE FROM user WHERE iduser = :iduser");
+            $stmt->bindParam(':iduser', $iduser);
+            $stmt->execute();
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Successfully deleted user'
+            ]);
+            exit();
+        } catch (PDOException $e) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to delete user'
+            ]);
+            exit();
         }
-    } catch (PDOException $e) {
-        $_SESSION['message'] = "Error: " . $e->getMessage();
-        $_SESSION['message_type'] = "error";
+    } else {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'No user found'
+        ]);
+        exit();
     }
-} else {
-    $_SESSION['message'] = "Invalid user ID.";
-    $_SESSION['message_type'] = "error";
 }
-
-header("Location: ../../users");
-exit();
-
+?>

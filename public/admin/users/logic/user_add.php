@@ -7,13 +7,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $f_name = trim($_POST['f_name']);
     $email = trim($_POST['email']);
     $student_id = trim($_POST['student_id']);
-    $password = trim($_POST['student_id']); // Default pass is student_id
+    $password = trim($_POST['student_id']); 
     $is_admin = isset($_POST['is_admin']) ? 1 : 0;
 
     if (empty($l_name) || empty($f_name) || empty($email) || empty($student_id) || empty($password)) {
-        $_SESSION['message'] = "All fields are required.";
-        $_SESSION['message_type'] = "error";
-        header("Location: ../../users");
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'All fields are required.'
+        ]);
         exit();
     }
 
@@ -22,8 +23,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $users = $stmt1->fetchColumn();
 
     if ($users != 0) {
-        echo 'User already exists';
-        header("Location: ../../users");
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'User already exists.'
+        ]);
         exit();
     }
 
@@ -41,18 +44,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':usertype', $is_admin);
 
         if ($stmt->execute()) {
-            $_SESSION['message'] = "User added successfully!";
-            $_SESSION['message_type'] = "success";
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'User added successfully!'
+            ]);
         } else {
-            $_SESSION['message'] = "Failed to add user.";
-            $_SESSION['message_type'] = "error";
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to add user.'
+            ]);
         }
     } catch (PDOException $e) {
-        $_SESSION['message'] = "Database error: " . $e->getMessage();
-        $_SESSION['message_type'] = "error";
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Database error: ' . $e->getMessage()
+        ]);
     }
 
-    header("Location: ../../users");
     exit();
 }
 ?>
