@@ -104,7 +104,7 @@ try {
                                         <?= htmlspecialchars($userData['usertype'] == 1 ? 'Officer' : 'Student') ?>
                                     </td>
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left whitespace-nowrap">
-                                        <a href="#"
+                                        <a href="#" id="user-<?= $userData['iduser'] ?>"
                                             class="edit-btn text-black-500 text-xs md:text-base mx-1 inline-flex items-center"
                                             data-id="<?= $userData['iduser'] ?>"
                                             data-lname="<?= htmlspecialchars($userData['l_name']) ?>"
@@ -115,11 +115,10 @@ try {
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <span class="text-gray-400 mx-1">|</span>
-                                        <a href="./logic/user_delete.php?id=<?= $userData['iduser'] ?>"
-                                            class="text-black-500 text-xs md:text-base mx-1 inline-flex items-center"
-                                            onclick="return confirm('Are you sure you want to delete this user?');">
+                                        <button type='button' class="text-black text-xs md:text-base"
+                                            onclick="openDeleteModal(<?= $userData['iduser'] ?>)">
                                             <i class="fas fa-trash-alt"></i>
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -156,11 +155,10 @@ try {
                                 data-usertype="<?= htmlspecialchars($userData['usertype']) ?>">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="logic/user_delete.php?id=<?= $userData['iduser'] ?>"
-                                class="text-black text-xs md:text-base"
-                                onclick="return confirm('Are you sure you want to delete this user?');">
+                            <button type='button' class="text-black text-xs md:text-base"
+                                onclick="openDeleteModal(<?= $userData['iduser'] ?>)">
                                 <i class="fas fa-trash-alt"></i>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -258,12 +256,30 @@ try {
                 </div>
 
                 <div class="flex justify-end space-x-2">
-                    <button type="submit" name="update_user"
-                        class="bg-black text-white px-4 py-2 rounded">Update</button>
+                    <button type="submit" class="bg-black text-white px-4 py-2 rounded">Update</button>
                     <button type="button" id="closeModal"
                         class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal"
+        class="fixed top-0 w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur hidden">
+        <div id="delete-main" class="w-10/12 md:w-1/4 bg-white rounded-lg flex flex-col px-4 py-2">
+            <div class="py-2 font-semibold text-xl w-full border-b">Delete Item</div>
+            <div class="w-full my-2 text-lg">
+                <p>Are you sure to delete item <span id="delete-user" class="font-semibold"></span>?</p>
+            </div>
+            <input type="hidden" id="delete-iduser">
+
+            <div class="flex gap-3 justify-center w-full mt-6 my-2">
+                <button type="button" class="w-20 py-1 rounded bg-gray-700 text-white hover:bg-gray-800 cursor-pointer"
+                    onclick="closeDeleteModal()">Cancel</button>
+                <button class="w-20 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer"
+                    onclick="confirmDelete()">Confirm</button>
+            </div>
         </div>
     </div>
 
@@ -289,13 +305,14 @@ try {
         class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
         <div id="error-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
             <div class="w-full h-fit pb-4 flex justify-center">
-                <i class="fa-solid fa-circle-check text-7xl text-red-500"></i>
+                <i class="fa-solid fa-circle-xmark text-7xl text-red-500"></i>
             </div>
             <div class="mb-2 text-2xl font-semibold text-center">Error!</div>
             <div id="error-message" class="w-full text-center"></div>
 
             <div class="w-full mt-5 flex justify-center">
-                <button onclick="hideErrorMessage()" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">Okay</button>
+                <button onclick="hideErrorMessage()"
+                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">Okay</button>
             </div>
         </div>
     </div>
@@ -346,9 +363,6 @@ try {
                 contentType: false,
                 success: function (response) {
                     response = JSON.parse(response);
-
-                    $('#loader').removeClass('flex').addClass('hidden');
-
                     if (response.status === 'success') {
                         location.reload();
                         localStorage.setItem("addSuccess", "true");
@@ -368,6 +382,39 @@ try {
             });
         }
 
+        function updateUser() {
+            let data = new FormData($('#editForm')[0]);
+
+            $('#loader').addClass('flex').removeClass('hidden');
+
+            $.ajax({
+                url: 'logic/user_admin_edit.php',
+                method: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        localStorage.setItem("editSuccess", "true");
+                        location.reload();
+                    } else {
+                        localStorage.setItem("editError", "true");
+                        location.reload();
+
+                    }
+                },
+                error: function () {
+                    $('#loader').removeClass('flex').addClass('hidden');
+                    $('#error').addClass('flex').removeClass('hidden');
+                    $('#error-message').text('Failed to connect to server.');
+                    localStorage.setItem("editError", "true");
+                    location.reload();
+                }
+            });
+        }
+
+
 
         function hideSuccessMessage() {
             $('#success').addClass('hidden').removeClass('flex');
@@ -375,6 +422,42 @@ try {
 
         function hideErrorMessage() {
             $('#error').addClass('hidden').removeClass('flex');
+        }
+
+        function openDeleteModal(iduser) {
+            let id = $('#user-' + iduser);
+            let name = id.data('fname') + id.data('fname');
+            $('#deleteModal').removeClass('hidden').addClass('flex');
+            $('#delete-user').text(name);
+            $('#delete-iduser').val(iduser);
+            $('body').addClass('overflow-y-hidden');
+        }
+
+        function closeDeleteModal() {
+            $('#deleteModal').addClass('hidden').removeClass('flex');
+            $('body').removeClass('overflow-y-hidden');
+        }
+
+        function confirmDelete() {
+            let iduser = $('#delete-iduser').val();
+            $('#loader').removeClass('hidden').addClass('flex');
+            $.ajax({
+                url: "logic/user_delete.php",
+                method: 'POST',
+                data: { iduser: iduser },
+                // processData: false,
+                // contentType: false,
+                success: function (response) {
+                    location.reload();
+                    localStorage.setItem("deleteSuccess", "true");
+                },
+                error: function (xhr, status, error) {
+                    $('#error').addClass('flex').removeClass('hidden');
+                    $('#error-message').text(response.message);
+                    location.reload();
+                    localStorage.setItem("deleteError", "true");
+                }
+            })
         }
 
 
@@ -452,10 +535,48 @@ try {
                 localStorage.removeItem('addError');
             }
 
+            if (localStorage.getItem('editSuccess') === 'true') {
+                $('#success').addClass('flex').removeClass('hidden');
+                $('#success-message').text('Successfully updated user');
+                localStorage.removeItem('editSuccess');
+            }
+
+            if (localStorage.getItem('editError') === 'true') {
+                $('#error-message').text('Failed to update user');
+                $('#error').addClass('flex').removeClass('hidden');
+                localStorage.removeItem('editError');
+            }
+
+            if (localStorage.getItem('deleteSuccess') === 'true') {
+                $('#success').addClass('flex').removeClass('hidden');
+                $('#success-message').text('Successfully deleted user');
+                localStorage.removeItem('deleteSuccess');
+            }
+
+            if (localStorage.getItem('deleteError') === 'true') {
+                $('#error-message').text('Failed to delete user');
+                $('#error').addClass('flex').removeClass('hidden');
+                localStorage.removeItem('deleteError');
+            }
+
+
             $('#addUserForm').on('submit', function (e) {
                 e.preventDefault();
                 addUser();
             })
+
+            $('#editForm').on('submit', function (e) {
+                e.preventDefault();
+                updateUser();
+            });
+
+            $(document).on('click', function () {
+
+                if ($(event.target).closest('#deleteModal').length && !$(event.target).closest('#delete-main').length) {
+                    closeDeleteModal();
+                }
+            })
+
         })
     </script>
 
