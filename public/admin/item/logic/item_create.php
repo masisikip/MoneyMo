@@ -7,14 +7,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $image = $_FILES['image'];
     $stock = $_POST['stock'];
 
-    $strings = explode(' ', $name);
-    $code = "";
-    $n = count($strings);
-    for ($i = 0; $i < $n; $i++) {
-        $code .= strtoupper(substr($strings[$i], 0, 3));
-        if ($i != $n -1) {
-            $code .= "_";
-        }
+    $strings = explode(' ', trim($name));
+    $count = count($strings);
+
+    if ($count >= 3) {
+        $code = strtoupper(substr($strings[0], 0, 1) . substr($strings[1], 0, 1) . substr($strings[2], 0, 1));
+    } else {
+        $code = strtoupper(substr($strings[0], 0, 3));
     }
 
     $stmt1 = $pdo->prepare("SELECT COUNT(*) FROM item WHERE code = ?");
@@ -27,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Item already exists!";
         exit();
     }
-    
+
     if (!empty($image['tmp_name'])) {
         $source = $image['tmp_name'];
         list($width, $height) = getimagesize($source);

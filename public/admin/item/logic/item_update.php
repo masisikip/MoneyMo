@@ -3,17 +3,23 @@ include_once __DIR__ . '/../../../includes/connect-db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $iditem = $_POST['iditem'];
-    $code = $_POST['code'];
     $name = $_POST['name'];
     $value = $_POST['value'];
     $image = $_FILES['image'];
     $stock = $_POST['stock'];
 
-    $stmt1 = $pdo->prepare("SELECT COUNT(*) FROM item WHERE code = ? AND iditem != ?");
-    $stmt1->execute([$code, $iditem]);
+    $stmt1 = $pdo->prepare("SELECT COUNT(*) FROM item WHERE iditem != ?");
+    $stmt1->execute([$iditem]);
     $exists = $stmt1->fetchColumn();
 
-    $code = strtoupper($code);
+    $strings = explode(' ', trim($name));
+    $count = count($strings);
+
+    if ($count >= 3) {
+        $code = strtoupper(substr($strings[0], 0, 1) . substr($strings[1], 0, 1) . substr($strings[2], 0, 1));
+    } else {
+        $code = strtoupper(substr($strings[0], 0, 3));
+    }
 
     if ($exists == 0) {
         // safe to insert
