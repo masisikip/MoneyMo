@@ -222,11 +222,6 @@ try {
             <form id="updateItemForm" action="logic/item_update.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="update_iditem" name="iditem">
                 <div class="mb-4">
-                    <label for="update_code" class="block text-gray-700">Code</label>
-                    <input type="text" id="update_code" name="code"
-                        class="w-full p-2 border border-gray-300 rounded mt-1" required>
-                </div>
-                <div class="mb-4">
                     <label for="update_name" class="block text-gray-700">Name</label>
                     <input type="text" id="update_name" name="name"
                         class="w-full p-2 border border-gray-300 rounded mt-1" required>
@@ -327,7 +322,6 @@ try {
     function openUpdateModal(iditem) {
         const item = document.getElementById(`${iditem}-item`);
         document.getElementById('update_iditem').value = item.dataset.iditem;
-        document.getElementById('update_code').value = item.dataset.code;
         document.getElementById('update_name').value = item.dataset.name;
         document.getElementById('update_value').value = item.dataset.value;
         document.getElementById('update_stock').value = item.dataset.stock;
