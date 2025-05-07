@@ -1,40 +1,87 @@
 <?php
 include_once '../../includes/connect-db.php';
 
-$usersPerPage = 8;
-$currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-$offset = ($currentPage - 1) * $usersPerPage;
 
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
-try {
-    if (!empty($search)) {
-        $stmt = $pdo->prepare("SELECT * FROM user WHERE name LIKE :search OR email LIKE :search");
-        $stmt->bindValue(':search', "%$search%", PDO::PARAM_STR);
-        $stmt->execute();
-        $users = $stmt->fetchAll();
+$limit = $_GET['limit'] ?? 10;
+$page = $_GET['page'] ?? 1;
+$offset = ($page - 1) * $limit;
+$search = $_GET['search'] ?? '';
+$filter = $_GET['filter'] ?? '';
 
-        $stmtCount = $pdo->prepare("SELECT COUNT(*) AS total FROM user WHERE name LIKE :search OR email LIKE :search");
-        $stmtCount->bindValue(':search', "%$search%", PDO::PARAM_STR);
-        $stmtCount->execute();
-        $totalSearchResults = $stmtCount->fetch()['total'];
+$whereClause = "WHERE 1 = 1";
 
-        $totalPages = 1;
-    } else {
-        $stmt = $pdo->query("SELECT COUNT(*) AS total FROM user");
-        $totalUsers = $stmt->fetch()['total'];
 
-        $stmt = $pdo->prepare("SELECT * FROM user LIMIT :offset, :usersPerPage");
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->bindValue(':usersPerPage', $usersPerPage, PDO::PARAM_INT);
-        $stmt->execute();
-        $users = $stmt->fetchAll();
-
-        $totalPages = ceil($totalUsers / $usersPerPage);
-    }
-} catch (PDOException $e) {
-    echo "Query failed: " . $e->getMessage();
+if (!empty($search)) {
+    $whereClause .= " AND (email LIKE :search1 OR f_name LIKE :search2 OR l_name LIKE :search3 OR student_id LIKE :search4 )";
+}
+if ($filter === 'officer') {
+    $whereClause .= " AND usertype = 1";
+}
+if ($filter === 'student') {
+    $whereClause .= " AND usertype = 0";
 }
 
+$countQuery = "
+SELECT COUNT(*) 
+FROM user
+$whereClause
+";
+
+$countStmt = $pdo->prepare($countQuery);
+
+if (!empty($search)) {
+    $searchTerm = "%$search%";
+    $countStmt->bindValue(':search1', $searchTerm);
+    $countStmt->bindValue(':search2', $searchTerm);
+    $countStmt->bindValue(':search3', $searchTerm);
+    $countStmt->bindValue(':search4', $searchTerm);
+}
+
+$countStmt->execute();
+$total_records = $countStmt->fetchColumn();
+
+$total_pages = ceil($total_records / $limit);
+
+
+$query = "
+SELECT 
+    iduser,
+    f_name,
+    l_name,
+    student_id,
+    email,
+    year,
+    CASE 
+        WHEN year = 0 THEN 'unknown'
+        WHEN year = 1 THEN '1st'
+        WHEN year = 2 THEN '2nd'
+        WHEN year = 3 THEN '3rd'
+        WHEN year = 4 THEN '4th'
+    END AS yeartext,
+    usertype
+FROM user
+$whereClause
+ORDER BY year, l_name
+LIMIT :limit OFFSET :offset
+";
+
+$stmt = $pdo->prepare($query);
+
+$stmt = $pdo->prepare($query);
+
+if (!empty($search)) {
+    $stmt->bindValue(':search1', $searchTerm);
+    $stmt->bindValue(':search2', $searchTerm);
+    $stmt->bindValue(':search3', $searchTerm);
+    $stmt->bindValue(':search4', $searchTerm);
+}
+
+$stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+$stmt->execute();
+
+$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -66,7 +113,7 @@ try {
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
             </div>
-            <button onclick="document.getElementById('addUserModal').style.display='flex'"
+            <button id="openAddUserModal"
                 class="bg-black text-white p-3 rounded-lg flex items-center hover:bg-gray-800 transition md:px-4 md:py-2 md:gap-2 justify-center">
                 <i class="fas fa-user-plus text-xl"></i>
                 <span class="hidden md:block text-sm font-medium">Add User</span>
@@ -83,6 +130,7 @@ try {
                             <tr class="bg-gray-100">
                                 <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Name</th>
                                 <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Student ID</th>
+                                <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Year</th>
                                 <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Email</th>
                                 <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Usertype</th>
                                 <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Actions</th>
@@ -92,10 +140,13 @@ try {
                             <?php foreach ($users as $userData): ?>
                                 <tr class="border-t">
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-base">
-                                        <?= htmlspecialchars($userData['f_name'] . ' ' . $userData['l_name']) ?>
+                                        <?= htmlspecialchars($userData['l_name'] . ', ' . $userData['f_name']) ?>
+                                    </td>
+                                    <td class="px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-base">
+                                        <?= htmlspecialchars($userData['student_id']) ?>
                                     </td>
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left">
-                                        <?= $userData['student_id'] ?>
+                                        <?= $userData['yeartext'] ?>
                                     </td>
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left text-xs md:text-base">
                                         <?= htmlspecialchars($userData['email']) ?>
@@ -110,6 +161,7 @@ try {
                                             data-lname="<?= htmlspecialchars($userData['l_name']) ?>"
                                             data-fname="<?= htmlspecialchars($userData['f_name']) ?>"
                                             data-email="<?= htmlspecialchars($userData['email']) ?>"
+                                            data-year="<?= htmlspecialchars($userData['year']) ?>"
                                             data-usertype="<?= htmlspecialchars($userData['usertype']) ?>"
                                             data-student_id="<?= htmlspecialchars($userData['student_id']) ?>">
                                             <i class="fas fa-edit"></i>
@@ -136,24 +188,19 @@ try {
                 <?php foreach ($users as $userData): ?>
                     <div class="bg-white shadow-md border border-gray-200 rounded-lg p-5 flex justify-between items-center">
                         <div>
-                            <!-- User Name -->
-                            <p class="text-black-700 font-medium">
-                                <?= htmlspecialchars($userData['f_name'] . ' ' . $userData['l_name']) ?>
-                            </p>
-                            <!-- User Student_id -->
-                            <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>">
-                                <?= $userData['student_id'] ?>
-                            </p>
-                            <!-- User Email -->
+                            <p class="text-black-700 font-medium"><?= htmlspecialchars($userData['f_name'] . ' ' . $userData['l_name']) ?></p>
+                            <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>"><?= $userData['student_id'] ?></p>
+                            <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>"><?= $userData['year'] ?></p>
                             <p class="text-gray-500 text-sm"><?= htmlspecialchars($userData['email']) ?></p>
                         </div>
-                        <!-- Action Buttons -->
                         <div class="flex space-x-3">
                             <a href="#" class="edit-btn text-black text-xs md:text-base" data-id="<?= $userData['iduser'] ?>"
-                                data-lname="<?= htmlspecialchars($userData['l_name']) ?>"
+                                data-id="<?= $userData['iduser'] ?>" data-lname="<?= htmlspecialchars($userData['l_name']) ?>"
                                 data-fname="<?= htmlspecialchars($userData['f_name']) ?>"
                                 data-email="<?= htmlspecialchars($userData['email']) ?>"
-                                data-usertype="<?= htmlspecialchars($userData['usertype']) ?>">
+                                data-year="<?= htmlspecialchars($userData['year']) ?>"
+                                data-usertype="<?= htmlspecialchars($userData['usertype']) ?>"
+                                data-student_id="<?= htmlspecialchars($userData['student_id']) ?>">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <a href="logic/user_delete.php?id=<?= $userData['iduser'] ?>"
@@ -169,66 +216,85 @@ try {
             <p class="text-center text-gray-500 text-xs md:text-base">No users found.</p>
         <?php endif; ?>
 
+
+
+
+
+
         <?php
-        $range = 2;
+        $queryParams = $_GET;
+        unset($queryParams['page']);
+        $base_url = $_SERVER['PHP_SELF'] . '?' . http_build_query($queryParams);
         ?>
-        <div class="flex justify-center mt-6">
-            <nav class="flex space-x-2">
-                <?php if ($currentPage > 1): ?>
-                    <a href="?page=<?= $currentPage - 1 ?>" class="px-3 py-2 border rounded hover:bg-gray-200">« Prev</a>
+
+        <!-- Pagination -->
+        <div class="flex justify-center my-4 ">
+            <div class="flex items-center space-x-2">
+                <?php if ($page > 1): ?>
+                    <a href="<?= $base_url ?>&page=<?= $page - 1 ?>"
+                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&lt;</a>
                 <?php endif; ?>
 
-                <?php if ($currentPage > ($range + 1)): ?>
-                    <a href="?page=1" class="px-3 py-2 border rounded hover:bg-gray-200">1</a>
-                    <span class="px-3 py-2">...</span>
-                <?php endif; ?>
-
-                <?php for ($i = max(1, $currentPage - $range); $i <= min($totalPages, $currentPage + $range); $i++): ?>
-                    <a href="?page=<?= $i ?>"
-                        class="px-3 py-2 border rounded <?= ($i == $currentPage) ? 'bg-black text-white' : 'hover:bg-gray-200' ?>">
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <a href="<?= $base_url ?>&page=<?= $i ?>"
+                        class="px-3 py-2 rounded-lg <?= $i == $page ? 'bg-black text-white' : 'bg-gray-300 text-black hover:bg-gray-400' ?>">
                         <?= $i ?>
                     </a>
                 <?php endfor; ?>
 
-                <?php if ($currentPage < $totalPages - $range): ?>
-                    <span class="px-3 py-2">...</span>
-                    <a href="?page=<?= $totalPages ?>"
-                        class="px-3 py-2 border rounded hover:bg-gray-200"><?= $totalPages ?></a>
+                <?php if ($page < $total_pages): ?>
+                    <a href="<?= $base_url ?>&page=<?= $page + 1 ?>"
+                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&gt;</a>
                 <?php endif; ?>
-
-                <?php if ($currentPage < $totalPages): ?>
-                    <a href="?page=<?= $currentPage + 1 ?>" class="px-3 py-2 border rounded hover:bg-gray-200">Next »</a>
-                <?php endif; ?>
-            </nav>
+            </div>
         </div>
 
     </main>
 
-    <div id="addUserModal" class="fixed inset-0 flex items-center justify-center bg-[#00000078] hidden">
+    <div id="addUserModal" class="fixed inset-0 flex items-center justify-center bg-[#00000078] invisible">
         <div class="bg-white p-6 rounded-lg w-96">
             <h2 class="text-xl font-bold mb-4">Add User</h2>
             <form id="addUserForm" action="./logic/user_add.php" method="POST">
-                <input type="text" name="f_name" placeholder="First Name" required
-                    class="w-full p-2 border rounded mb-2">
                 <input type="text" name="l_name" placeholder="Last Name" required
                     class="w-full p-2 border rounded mb-2">
-                <input type="email" name="email" placeholder="Email" pattern=".*@psu.palawan.edu.ph" title="Email should be a PSU corporate one." required class="w-full p-2 border rounded mb-2">
-                <input type="text" name="student_id" placeholder="Student ID"
-                    pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?"
-                    title="Format: 20##-#-#### or 20##-#-####XX" required
+                <input type="text" name="f_name" placeholder="First Name" required
                     class="w-full p-2 border rounded mb-2">
-                <label class="flex items-center space-x-2">
-                    <input type="checkbox" name="is_admin" value="1">
-                    <span>Officer</span>
-                </label>
-                <button type="submit" class="bg-black text-white w-full py-2 rounded mt-2">Add User</button>
+
+                <select name="year" id="year" required class="w-full p-2 border rounded mb-2 bg-white text-gray-700">
+                    <option value="" selected disabled>Year</option>
+                    <option value="1">1st</option>
+                    <option value="2">2nd</option>
+                    <option value="3">3rd</option>
+                    <option value="4">4th</option>
+                    <option value="0">Unknown</option>
+                </select>
+
+                <input type="email" name="email" placeholder="Email" pattern=".*@psu.palawan.edu.ph"
+                    title="Email should be a PSU corporate one." required class="w-full p-2 border rounded mb-2">
+                <input type="text" name="student_id" placeholder="Student ID"
+                    pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?" title="Format: 20##-#-#### or 20##-#-####XX"
+                    required class="w-full p-2 border rounded mb-2">
+
+                <div class="mb-2 ">
+                    <p class="font-semibold mb-1">User Type:</p>
+                    <label class="inline-flex items-center mr-4">
+                        <input type="radio" name="is_admin" value="1" class="form-radio text-black" required>
+                        <span class="ml-2">Officer</span>
+                    </label>
+                    <label class="inline-flex ml-4 items-center">
+                        <input type="radio" name="is_admin" checked value="0" class="form-radio text-black" required>
+                        <span class="ml-2">Student</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="bg-black cursor-pointer text-white w-full py-2 rounded mt-2">Add User</button>
             </form>
-            <button id="cancelButton" class="bg-gray-400 text-white w-full py-2 rounded mt-2">Cancel</button>
+            <button id="cancelButton" class="bg-gray-400 cursor-pointer text-white w-full py-2 rounded mt-2">Cancel</button>
         </div>
     </div>
 
 
-    <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-[#00000078] hidden">
+    <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-[#00000078] invisible">
         <div class="bg-white p-6 rounded shadow-lg w-96">
             <h2 class="text-xl font-semibold mb-4">Edit User/Admin</h2>
             <form id="editForm" method="POST" action="./logic/user_admin_edit.php">
@@ -240,55 +306,56 @@ try {
                 <label class="block text-gray-700">First Name:</label>
                 <input type="text" name="f_name" id="edit_fname" class="border p-2 w-full rounded mb-2" required>
 
+                <label class="block text-gray-700">Year Level:</label>
+                <select name="year" id="edit_year" required
+                    class="w-full p-2 border rounded mb-2 bg-white text-gray-700">
+                    <option value="" disabled>Year</option>
+                    <option value="1">1st</option>
+                    <option value="2">2nd</option>
+                    <option value="3">3rd</option>
+                    <option value="4">4th</option>
+                    <option value="0">Unknown</option>
+                </select>
+
+
                 <label class="block text-gray-700">Email:</label>
-                <input type="email" name="email" id="edit_email" class="border p-2 w-full rounded mb-2" pattern=".*@psu.palawan.edu.ph" title="Email should be a PSU corporate one." required>
+                <input type="email" name="email" id="edit_email" class="border p-2 w-full rounded mb-2"
+                    pattern=".*@psu.palawan.edu.ph" title="Email should be a PSU corporate one." required>
 
                 <label class="block text-gray-700">Student ID:</label>
-                <input id="edit_student_id" name="student_id" class="w-full p-2 border rounded mb-2" pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?"
-                title="Format: 20##-#-#### or 20##-#-####XX" required>
+                <input id="edit_student_id" name="student_id" class="w-full p-2 border rounded mb-2"
+                    pattern="20[0-9]{2}-[0-9]+-[0-9]{4}([A-Z]{2})?" title="Format: 20##-#-#### or 20##-#-####XX"
+                    required>
 
                 <label class="block text-gray-700">New Password (leave blank to keep current):</label>
                 <input type="password" name="password" id="edit_password" class="border p-2 w-full rounded mb-2">
 
-                <div class="flex items-center space-x-2 mb-4">
-                    <input type="checkbox" name="usertype" id="edit_usertype_checkbox" class="h-4 w-4">
-                    <label for="edit_usertype_checkbox" class="text-gray-700">Officer</label>
+                <!-- User Type Radio Buttons -->
+                <div class="mb-4">
+                    <p class="font-semibold mb-1">User Type:</p>
+                    <label class="inline-flex items-center mr-4">
+                        <input type="radio" name="usertype" value="1" id="edit_usertype_officer"
+                            class="form-radio text-black">
+                        <span class="ml-2">Officer</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="usertype" checked value="0" id="edit_usertype_student"
+                            class="form-radio text-black">
+                        <span class="ml-2">Student</span>
+                    </label>
                 </div>
 
                 <div class="flex justify-end space-x-2">
                     <button type="submit" name="update_user"
-                        class="bg-black text-white px-4 py-2 rounded">Update</button>
+                        class="bg-black cursor-pointer text-white px-4 py-2 rounded">Update</button>
                     <button type="button" id="closeModal"
-                        class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
+                        class="bg-gray-400 cursor-pointer text-white px-4 py-2 rounded">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        function searchTable(inputId, tableClass) {
-            let input = document.getElementById(inputId);
-            let filter = input.value.toLowerCase();
-            let table = document.querySelector(tableClass);
-            let rows = table.getElementsByTagName("tr");
-
-            let found = false;
-            for (let i = 1; i < rows.length; i++) {
-                let cells = rows[i].getElementsByTagName("td");
-                let match = false;
-
-                for (let j = 0; j < cells.length; j++) {
-                    if (cells[j].innerText.toLowerCase().includes(filter)) {
-                        match = true;
-                        break;
-                    }
-                }
-                rows[i].style.display = match ? "" : "none";
-                if (match) found = true;
-            }
-
-            document.getElementById("noResultsMessage").style.display = found ? "none" : "block";
-        }
 
         document.addEventListener("DOMContentLoaded", function () {
             console.log("DOM fully loaded and parsed.");
@@ -304,49 +371,70 @@ try {
                 return;
             }
 
+            // Open Add User Modal
             document.getElementById("openAddUserModal")?.addEventListener("click", function () {
                 console.log("Open Add User Modal clicked.");
-                addUserModal.style.display = "none";
+                addUserModal.classList.remove("invisible");
             });
 
-            cancelButton?.addEventListener("click", function () {
-                console.log("Cancel button clicked. Hiding modal...");
-                addUserForm?.reset();
-                addUserModal.style.display = "none";
-            });
 
+            // Edit buttons
             document.querySelectorAll('.edit-btn').forEach(button => {
                 button.addEventListener('click', function () {
                     console.log("Edit button clicked for ID:", this.dataset.id);
 
+                    // Fill form fields
                     document.getElementById('edit_user_id').value = this.dataset.id;
                     document.getElementById('edit_lname').value = this.dataset.lname;
                     document.getElementById('edit_fname').value = this.dataset.fname;
                     document.getElementById('edit_student_id').value = this.dataset.student_id;
                     document.getElementById('edit_email').value = this.dataset.email;
 
-                    // Check if user is admin
-                    document.getElementById('edit_usertype_checkbox').checked = (this.dataset.usertype === "1");
+                    // Set year
+                    let yearSelect = document.getElementById('edit_year');
+                    if (yearSelect) {
+                        yearSelect.value = this.dataset.year || "";
+                    }
 
-                    editModal.classList.remove('hidden');
+                    // Set user type (radio buttons)
+                    const officerRadio = document.getElementById('edit_usertype_officer');
+                    const studentRadio = document.getElementById('edit_usertype_student');
+                    if (officerRadio && studentRadio) {
+                        if (this.dataset.usertype === "1") {
+                            officerRadio.checked = true;
+                        } else {
+                            studentRadio.checked = true;
+                        }
+                    }
+
+                    // Show modal
+                    editModal.classList.remove('invisible');
                 });
             });
 
-
-            closeModal?.addEventListener("click", function () {
-                console.log("Close Edit Modal clicked.");
-                editModal.classList.add("hidden");
+            // Cancel Add User
+            cancelButton?.addEventListener("click", function () {
+                console.log("Cancel button clicked. Hiding modal...");
+                addUserForm?.reset();
+                addUserModal.classList.add("invisible");
             });
 
+            // Close Edit Modal
+            closeModal?.addEventListener("click", function () {
+                console.log("Close Edit Modal clicked.");
+                editModal.classList.add("invisible");
+            });
+
+            // Close modals when clicking outside
             window.addEventListener("click", (event) => {
                 if (event.target === addUserModal) {
                     console.log("Clicked outside Add User Modal. Closing...");
                     addUserForm?.reset();
-                    addUserModal.style.display = "none";
+                    addUserModal.classList.add("invisible");
                 }
                 if (event.target === editModal) {
                     console.log("Clicked outside Edit Modal. Closing...");
-                    editModal.classList.add("hidden");
+                    editModal.classList.add("invisible");
                 }
             });
         });
