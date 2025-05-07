@@ -218,12 +218,12 @@
                                             <td class="py-3 px-4">
                                                 <?php if ($purchase['is_received'] == 0): ?>
                                                     <button
-                                                        onclick="confirmClaim(<?= $purchase['idinventory'] ?>, '<?= addslashes($purchase['itemname']) ?>', '<?= addslashes($purchase['username']) ?>')"
+                                                        onclick="confirmClaim(<?= $purchase['idinventory'] ?>, '<?= addslashes($purchase['itemname']) ?>', '<?= addslashes($purchase['username']) ?>', this)"
                                                         class="bg-gray-950 cursor-pointer text-white px-4 py-1 rounded-full hover:bg-gray-800 min-w-[120px]">
                                                         Claim
                                                     </button>
                                                 <?php else: ?>
-                                                    <span class="text-gray-500 font-semibold min-w-[120px] inline-block">
+                                                    <span class="text-gray-500 font-semibold min-w-[120px] text-center inline-block">
                                                         Claimed
                                                     </span>
                                                 <?php endif; ?>
@@ -261,13 +261,12 @@
                                 </div>
                                 <?php if ($purchase['is_received'] == 0): ?>
                                     <button
-                                        onclick="confirmClaim(<?= $purchase['idinventory'] ?>, '<?= addslashes($purchase['itemname']) ?>', '<?= addslashes($purchase['username']) ?>')"
+                                        onclick="confirmClaim(<?= $purchase['idinventory'] ?>, '<?= addslashes($purchase['itemname']) ?>', '<?= addslashes($purchase['username']) ?>', this)"
                                         class="bg-gray-950 text-white cursor-pointer px-4 py-1 rounded-full hover:bg-gray-800 min-w-[80px]">
                                         Claim
                                     </button>
                                 <?php else: ?>
-                                    <span class="text-gray-500 text-center font-semibold min-w-[80px] inline-block">
-                                        Claimed
+                                    <span class="text-gray-500 text-center font-semibold min-w-[120px] inline-block">Claimed
                                     </span>
                                 <?php endif; ?>
                             </div>
@@ -337,17 +336,21 @@
 
 
 <script>
-    function confirmClaim(idinventory, itemname, username) {
+    function confirmClaim(idinventory, itemname, username, buttonElement) {
         $("#confirmText").text(`Confirm that item '${itemname}' has been claimed by '${username}'?`);
-        $("#confirmBtn").attr("onclick", `claimItem(${idinventory})`);
+        $("#confirmBtn").off("click").on("click", function () {
+            claimItem(idinventory, buttonElement);
+        });
+
         $("#confirmModal").removeClass("hidden");
     }
+
 
     function closeModal() {
         $("#confirmModal").addClass("hidden");
     }
 
-    function claimItem(idinventory) {
+    function claimItem(idinventory, buttonElement) {
         closeModal();
         $("#loadingOverlay").removeClass("hidden");
         $.ajax({
@@ -357,7 +360,9 @@
             success: function (response) {
                 $("#loadingOverlay").addClass("hidden");
                 if (response.trim() === "success") {
-                    location.reload();
+                    // Disable the button and change its text
+                    $(buttonElement)
+                        .replaceWith('<span class="text-gray-500 text-center font-semibold min-w-[120px] inline-block">Claimed</span>');
                 } else {
                     alert("Error claiming item. Please try again.");
                 }
@@ -368,6 +373,7 @@
             }
         });
     }
+
 
 
 
