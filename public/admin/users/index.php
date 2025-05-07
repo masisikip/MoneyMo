@@ -1,48 +1,48 @@
 <?php
 include_once '../../includes/connect-db.php';
 
-
 $limit = $_GET['limit'] ?? 10;
 $page = $_GET['page'] ?? 1;
 $offset = ($page - 1) * $limit;
 $search = $_GET['search'] ?? '';
-$filter = $_GET['filter'] ?? '';
+$years = $_GET['year'] ?? [];
+$usertypes = $_GET['usertype'] ?? [];
 
 $whereClause = "WHERE 1 = 1";
+$params = [];
 
-
+// Search
 if (!empty($search)) {
-    $whereClause .= " AND (email LIKE :search1 OR f_name LIKE :search2 OR l_name LIKE :search3 OR student_id LIKE :search4 )";
-}
-if ($filter === 'officer') {
-    $whereClause .= " AND usertype = 1";
-}
-if ($filter === 'student') {
-    $whereClause .= " AND usertype = 0";
-}
-
-$countQuery = "
-SELECT COUNT(*) 
-FROM user
-$whereClause
-";
-
-$countStmt = $pdo->prepare($countQuery);
-
-if (!empty($search)) {
+    $whereClause .= " AND (email LIKE ? OR f_name LIKE ? OR l_name LIKE ? OR student_id LIKE ?)";
     $searchTerm = "%$search%";
-    $countStmt->bindValue(':search1', $searchTerm);
-    $countStmt->bindValue(':search2', $searchTerm);
-    $countStmt->bindValue(':search3', $searchTerm);
-    $countStmt->bindValue(':search4', $searchTerm);
+    array_push($params, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
 }
 
+// Filter: Years
+if (!empty($years)) {
+    $in = implode(',', array_fill(0, count($years), '?'));
+    $whereClause .= " AND year IN ($in)";
+    $params = array_merge($params, $years);
+}
+
+// Filter: Usertypes
+if (!empty($usertypes)) {
+    $in = implode(',', array_fill(0, count($usertypes), '?'));
+    $whereClause .= " AND usertype IN ($in)";
+    $params = array_merge($params, $usertypes);
+}
+
+// Get total count
+$countQuery = "SELECT COUNT(*) FROM user $whereClause";
+$countStmt = $pdo->prepare($countQuery);
+foreach ($params as $i => $val) {
+    $countStmt->bindValue($i + 1, $val);
+}
 $countStmt->execute();
 $total_records = $countStmt->fetchColumn();
-
 $total_pages = ceil($total_records / $limit);
 
-
+// Get actual user data
 $query = "
 SELECT 
     iduser,
@@ -62,28 +62,21 @@ SELECT
 FROM user
 $whereClause
 ORDER BY year, l_name
-LIMIT :limit OFFSET :offset
+LIMIT ? OFFSET ?
 ";
-
 $stmt = $pdo->prepare($query);
 
-$stmt = $pdo->prepare($query);
-
-if (!empty($search)) {
-    $stmt->bindValue(':search1', $searchTerm);
-    $stmt->bindValue(':search2', $searchTerm);
-    $stmt->bindValue(':search3', $searchTerm);
-    $stmt->bindValue(':search4', $searchTerm);
+// Bind all dynamic filters
+foreach ($params as $i => $val) {
+    $stmt->bindValue($i + 1, $val);
 }
-
-$stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-
+// Add limit and offset
+$stmt->bindValue(count($params) + 1, (int) $limit, PDO::PARAM_INT);
+$stmt->bindValue(count($params) + 2, (int) $offset, PDO::PARAM_INT);
 $stmt->execute();
-
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -103,16 +96,52 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php include_once '../../includes/partial.php' ?>
 
     <main id="mainContent" class="mt-5 p-6 w-full max-w-full transition-all duration-300">
-        <div class="flex items-center justify-between bg-white p-4 shadow rounded-lg gap-2">
-            <div class="flex items-center gap-3 flex-grow">
+        <div class="flex items-center justify-between bg-white p-4 shadow rounded-lg gap-4 relative">
+            <!-- Left: Title, Search, Filter -->
+            <div class="flex items-center gap-4 flex-wrap flex-grow">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Users</h1>
+
+                <!-- Search -->
                 <div class="relative w-full max-w-[180px] md:max-w-xs">
-                    <input type="text" id="userSearch" onkeyup="searchTable('userSearch', '.user-table')"
-                        placeholder="Search"
+                    <input type="text" id="userSearch" placeholder="Search" autocomplete="off"
+                        value="<?php if (isset($_GET['search'])) {
+                            echo $_GET['search'];
+                        } ?>"
                         class="border border-gray-300 p-2 pl-8 pr-4 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-black text-base md:text-sm">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
+
+                <!-- Filter Dropdown -->
+                <div class="relative">
+                    <button id="toggleFilterMenu"
+                        class="bg-gray-100 text-black p-3 rounded-lg flex items-center hover:bg-gray-200 transition">
+                        <i class="fas fa-filter text-xl"></i>
+                    </button>
+
+                    <div id="filterMenu"
+                        class="hidden absolute top-full mt-2 right-0 bg-white shadow-lg border p-4 rounded-lg z-20 w-64">
+                        <form id="filterForm">
+                            <div class="mb-4">
+                                <label class="font-semibold mb-2 block">Year</label>
+                                <label><input type="checkbox" name="year[]" value="1"> 1st</label><br>
+                                <label><input type="checkbox" name="year[]" value="2"> 2nd</label><br>
+                                <label><input type="checkbox" name="year[]" value="3"> 3rd</label><br>
+                                <label><input type="checkbox" name="year[]" value="4"> 4th</label>
+                            </div>
+                            <div class="mb-4">
+                                <label class="font-semibold mb-2 block">User Type</label>
+                                <label><input type="checkbox" name="usertype[]" value="0"> Student</label><br>
+                                <label><input type="checkbox" name="usertype[]" value="1"> Officer</label>
+                            </div>
+                            <button type="submit"
+                                class="w-full mt-2 bg-black text-white py-2 rounded hover:bg-gray-800">Apply
+                                Filters</button>
+                        </form>
+                    </div>
+                </div>
             </div>
+
+            <!-- Right: Add User Button -->
             <button id="openAddUserModal"
                 class="bg-black text-white p-3 rounded-lg flex items-center hover:bg-gray-800 transition md:px-4 md:py-2 md:gap-2 justify-center">
                 <i class="fas fa-user-plus text-xl"></i>
@@ -177,8 +206,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                <?php else: ?>
-                    <p class="text-center text-gray-500 text-xs md:text-base">No users found.</p>
                 <?php endif; ?>
             </div>
         </div>
@@ -188,9 +215,15 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($users as $userData): ?>
                     <div class="bg-white shadow-md border border-gray-200 rounded-lg p-5 flex justify-between items-center">
                         <div>
-                            <p class="text-black-700 font-medium"><?= htmlspecialchars($userData['f_name'] . ' ' . $userData['l_name']) ?></p>
-                            <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>"><?= $userData['student_id'] ?></p>
-                            <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>"><?= $userData['year'] ?></p>
+                            <p class="text-black-700 font-medium">
+                                <?= htmlspecialchars($userData['f_name'] . ' ' . $userData['l_name']) ?>
+                            </p>
+                            <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>">
+                                <?= $userData['student_id'] ?>
+                            </p>
+                            <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>">
+                                <?= $userData['year'] ?>
+                            </p>
                             <p class="text-gray-500 text-sm"><?= htmlspecialchars($userData['email']) ?></p>
                         </div>
                         <div class="flex space-x-3">
@@ -287,9 +320,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </label>
                 </div>
 
-                <button type="submit" class="bg-black cursor-pointer text-white w-full py-2 rounded mt-2">Add User</button>
+                <button type="submit" class="bg-black cursor-pointer text-white w-full py-2 rounded mt-2">Add
+                    User</button>
             </form>
-            <button id="cancelButton" class="bg-gray-400 cursor-pointer text-white w-full py-2 rounded mt-2">Cancel</button>
+            <button id="cancelButton"
+                class="bg-gray-400 cursor-pointer text-white w-full py-2 rounded mt-2">Cancel</button>
         </div>
     </div>
 
@@ -355,7 +390,19 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-2">
+            <span class="animate-spin h-5 w-5 border-4 border-blue-500 border-t-transparent rounded-full"></span>
+            <p class="text-lg font-semibold">Processing...</p>
+        </div>
+    </div>
+
+
     <script>
+        function showLoading() {
+            $('#loadingOverlay').removeClass('hidden');
+        }
 
         document.addEventListener("DOMContentLoaded", function () {
             console.log("DOM fully loaded and parsed.");
@@ -437,6 +484,44 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     editModal.classList.add("invisible");
                 }
             });
+        });
+
+
+        function getSelectedValues(form) {
+            showLoading();
+            const data = new FormData(form);
+            const params = new URLSearchParams();
+
+            // Search value
+            const search = document.getElementById("userSearch").value;
+            if (search) {
+                params.set('search', search);
+            }
+
+            // Collect filter checkboxes
+            for (const pair of data.entries()) {
+                params.append(pair[0], pair[1]);
+            }
+
+            window.location.search = params.toString(); // Reload with query params
+        }
+
+        document.getElementById("filterForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            getSelectedValues(this);
+        });
+
+        document.getElementById("toggleFilterMenu").addEventListener("click", () => {
+            const menu = document.getElementById("filterMenu");
+            menu.classList.toggle("hidden");
+        });
+
+        let debounceTimer;
+        document.getElementById("userSearch").addEventListener("keyup", function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                getSelectedValues(document.getElementById("filterForm"));
+            }, 300); // Adjust delay as needed
         });
     </script>
 
