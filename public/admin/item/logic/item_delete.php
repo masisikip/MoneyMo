@@ -12,11 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location: ../../item/index.php");
             exit();
         } catch (PDOException $e) {
-            header("Location: ../../item/index.php?error=1");
+            echo 'Error';
             exit();
         }
     } else {
-        header("Location: ../../item/index.php?error=1");
+        echo 'Failed to delete item';
         exit();
     }
 }
