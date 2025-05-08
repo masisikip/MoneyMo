@@ -6,11 +6,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $l_name = trim($_POST['l_name']);
     $f_name = trim($_POST['f_name']);
     $email = trim($_POST['email']);
+    $year = trim($_POST['year']);
     $student_id = trim($_POST['student_id']);
     $password = trim($_POST['student_id']); // Default pass is student_id
-    $is_admin = isset($_POST['is_admin']) ? 1 : 0;
+    $is_admin = isset($_POST['is_admin']) ? intval($_POST['is_admin']) : 0;
 
-    if (empty($l_name) || empty($f_name) || empty($email) || empty($student_id) || empty($password)) {
+    if (empty($l_name) || empty($f_name) || empty($email) || empty($student_id) || empty($year) || empty($password)) {
         $_SESSION['message'] = "All fields are required.";
         $_SESSION['message_type'] = "error";
         header("Location: ../../users");
@@ -31,11 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO user (l_name, f_name, email, student_id, password, usertype) 
-                               VALUES (:l_name, :f_name, :email, :student_id, :password, :usertype)");
+        $stmt = $pdo->prepare("INSERT INTO user (l_name, f_name, email, student_id, year, password, usertype) 
+                               VALUES (:l_name, :f_name, :email, :student_id, :year, :password, :usertype)");
         $stmt->bindParam(':l_name', $l_name);
         $stmt->bindParam(':f_name', $f_name);
         $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':year', $year);
         $stmt->bindParam(':student_id', $student_id);
         $stmt->bindParam(':password', $hashed_password);
         $stmt->bindParam(':usertype', $is_admin);

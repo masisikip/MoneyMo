@@ -7,9 +7,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
     $l_name = trim($_POST['l_name']);
     $f_name = trim($_POST['f_name']);
     $email = trim($_POST['email']);
+    $year = trim($_POST['year']);
     $student_id = trim($_POST['student_id']);
     $password = trim($_POST['password']);
-    $usertype = isset($_POST['usertype']) ? 1 : 0; // Admin (1) or User (0)
+    $is_admin = isset($_POST['is_admin']) ? intval($_POST['is_admin']) : 0;
 
     $stmt1 = $pdo->prepare('SELECT COUNT(*) FROM user WHERE (student_id = ? OR email = ?) AND iduser != ?');
     $stmt1->execute([$student_id, $email, $user_id]);
@@ -25,12 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
         // If password is provided, update with hashing
         if (!empty($password)) {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("UPDATE user SET l_name = ?, f_name = ?, email = ?, student_id = ?, password = ?, usertype = ? WHERE iduser = ?");
-            $stmt->execute([$l_name, $f_name, $email, $student_id, $hashed_password, $usertype, $user_id]);
+            $stmt = $pdo->prepare("UPDATE user SET l_name = ?, f_name = ?, email = ?, year = ?, student_id = ?, password = ?, usertype = ? WHERE iduser = ?");
+            $stmt->execute([$l_name, $f_name, $email, $year, $student_id, $hashed_password, $usertype, $user_id]);
         } else {
             // No password update
-            $stmt = $pdo->prepare("UPDATE user SET l_name = ?, f_name = ?, email = ?, student_id = ?, usertype = ? WHERE iduser = ?");
-            $stmt->execute([$l_name, $f_name, $email, $student_id, $usertype, $user_id]);
+            $stmt = $pdo->prepare("UPDATE user SET l_name = ?, f_name = ?, email = ?, year = ?, student_id = ?, usertype = ? WHERE iduser = ?");
+            $stmt->execute([$l_name, $f_name, $email, $year, $student_id, $usertype, $user_id]);
         }
 
         $_SESSION['message'] = "User updated successfully!";
