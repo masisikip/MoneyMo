@@ -115,7 +115,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="relative">
                     <button id="toggleFilterMenu"
                         class="bg-gray-100 text-black p-3 rounded-lg flex items-center hover:bg-gray-200 transition">
-                        <i class="fas fa-filter text-xl"></i>
+                        <i class="fa-solid fa-sliders  text-xl"></i>
                     </button>
 
                     <div id="filterMenu"
@@ -391,7 +391,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden">
+    <div id="loadingOverlay" class="fixed inset-0 z-50 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-2">
             <span class="animate-spin h-5 w-5 border-4 border-blue-500 border-t-transparent rounded-full"></span>
             <p class="text-lg font-semibold">Processing...</p>
@@ -523,6 +523,14 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 getSelectedValues(document.getElementById("filterForm"));
             }, 300); // Adjust delay as needed
         });
+
+        $(document).ready(function () {
+            $(document).on('click', function () {
+                if (!$(event.target).closest("#filterMenu").length && !$(event.target).closest("#toggleFilterMenu").length) {
+                    $("#filterMenu").addClass('hidden');
+                }
+            })
+        })
     </script>
 
 
