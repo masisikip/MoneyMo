@@ -1,4 +1,106 @@
 <?php
+include_once '../../includes/partial.php';
+include_once '../../includes/connect-db.php';
+
+
+$limit = $_GET['limit'] ?? 10;
+$page = $_GET['page'] ?? 1;
+$offset = ($page - 1) * $limit;
+$search = $_GET['search'] ?? '';
+$filter = $_GET['filter'] ?? '';
+
+$whereClause = "WHERE 1 = 1";
+
+if (!empty($search)) {
+    $whereClause .= " AND (item.name LIKE :search1 OR u1.f_name LIKE :search2 OR u1.l_name LIKE :search3)";
+}
+
+if (!empty($filter)) {
+    $whereClause .= " AND item.iditem = :filter";
+}
+
+
+$countQuery = "
+    SELECT COUNT(*)
+    FROM inventory
+    INNER JOIN item ON inventory.iditem = item.iditem
+    INNER JOIN user u1 ON inventory.iduser = u1.iduser
+    $whereClause
+    ";
+
+
+$countStmt = $pdo->prepare($countQuery);
+
+if (!empty($search)) {
+    $searchTerm = "%$search%";
+    $countStmt->bindValue(':search1', $searchTerm);
+    $countStmt->bindValue(':search2', $searchTerm);
+    $countStmt->bindValue(':search3', $searchTerm);
+}
+
+
+if (!empty($filter)) {
+    $countStmt->bindValue(':filter', $filter, PDO::PARAM_INT);
+}
+
+
+$countStmt->execute();
+$total_records = $countStmt->fetchColumn();
+
+$total_pages = ceil($total_records / $limit);
+
+
+$stmt = $pdo->prepare("
+    SELECT 
+        reference_no,
+        date(date) AS date,
+        CONCAT(u1.f_name, ' ', u1.l_name) AS username,
+        quantity,
+        name as itemname,
+        inventory.value,
+        idinventory,
+        CONCAT(u2.f_name, ' ', u2.l_name) AS officerName,
+        CASE 
+        WHEN payment_type = 0 THEN 'Cash'
+            WHEN payment_type = 1 THEN 'Gcash'
+            ELSE 'unknown'
+        END AS 	payment_type
+    FROM inventory
+    INNER JOIN item on inventory.iditem = item.iditem
+    INNER JOIN user u1 ON inventory.iduser = u1.iduser
+    INNER JOIN user u2 ON inventory.idofficer = u2.iduser
+    $whereClause
+    ORDER BY date desc, reference_no desc   
+    LIMIT :limit OFFSET :offset 
+    ");
+
+
+if (!empty($search)) {
+    $stmt->bindValue(':search1', $searchTerm);
+    $stmt->bindValue(':search2', $searchTerm);
+    $stmt->bindValue(':search3', $searchTerm);
+}
+
+if (!empty($filter)) {
+    $stmt->bindValue(':filter', $filter, PDO::PARAM_INT);
+}
+
+
+$stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+$purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+$stmt2 = $pdo->query("
+    SELECT 
+        iditem,
+        name
+    FROM item
+");
+$items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -15,16 +117,35 @@
 </head>
 
 <body class="h-screen bg-gray-100">
-
-    <?php
-    include_once '../../includes/partial.php';
-    include_once '../../includes/connect-db.php';
-    ?>
-
-
-
     <div class="flex-1 p-4 md:p-8 overflow-y-auto w-full md:ml-0 pb-24">
+        <form method="get" class="w-full">
+            <div
+                class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full  mx-auto">
+                <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
+                    <div class="px-3 py-1 text-white border rounded-l-lg bg-zinc-700">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
+                        placeholder="Search inventory..." class="px-2 w-full focus:outline-none py-0">
+                </div>
+                <div class="flex items-center border border-gray-300 rounded-lg w-full md:w-auto">
+                    <button type="submit" class="text-white border bg-zinc-700 rounded-l-lg py-1 px-3">
+                        <i class="fas fa-sliders-h"></i>
+                    </button>
+                    <select name="filter" class="px-2 focus:outline-none w-full md:w-auto">
 
+                        <option value="" <?= (($_GET['filter'] ?? '') === '') ? 'selected' : '' ?>>All</option>
+
+                        <?php foreach ($items as $item) { ?>
+                            <option value="<?= $item['iditem'] ?>" <?= (isset($_GET['filter']) && $_GET['filter'] == $item['iditem']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($item['name']) ?>
+                            </option>
+                        <?php } ?>
+
+                    </select>
+                </div>
+            </div>
+        </form>
 
         <div class="bg-white shadow rounded-lg p-4 md:p-6 overflow-x-auto">
             <div class="min-w-full overflow-x-auto">
@@ -53,53 +174,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                        $limit = 10; // Number of records per page
-                        $page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
-                        $offset = ($page - 1) * $limit;
-
-                        // Get total count
-                        $stmt = $pdo->query("SELECT COUNT(*) FROM inventory");
-                        $total_records = $stmt->fetchColumn();
-                        $total_pages = ceil($total_records / $limit);
-
-                        // Fetch paginated data
-                        $stmt = $pdo->prepare("
-                                   SELECT 
-                            reference_no,
-                            date(date) AS date,
-                            CONCAT(u1.f_name, ' ', u1.l_name) AS username,
-                            quantity,
-                            name as itemname,
-                            inventory.value,
-                            idinventory,
-                            CONCAT(u2.f_name, ' ', u2.l_name) AS officerName,
-                            CASE 
-                            WHEN payment_type = 0 THEN 'Cash'
-                                WHEN payment_type = 1 THEN 'Gcash'
-                                ELSE 'unknown'
-                            END AS 	payment_type
-                        FROM inventory
-                        INNER JOIN item on inventory.iditem = item.iditem
-                        INNER JOIN user u1 ON inventory.iduser = u1.iduser
-                        INNER JOIN user u2 ON inventory.idofficer = u2.iduser
-                        ORDER BY date desc, reference_no desc   
-                        LIMIT :limit OFFSET :offset 
-                        ");
-
-                        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-                        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-                        $stmt->execute();
-                        $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                        ?>
                         <?php foreach ($purchases as $purchase): ?>
 
                             <tr class="border-b" data-reference="<?= $purchase['reference_no'] ?>"
                                 data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
                                 data-item="<?= $purchase['itemname'] ?>" data-amount="<?= $purchase['value'] ?>"
                                 data-inventory="<?= $purchase['idinventory'] ?>"
-                                data-officerName="<?= $purchase['officerName'] ?>" 
+                                data-officerName="<?= $purchase['officerName'] ?>"
                                 data-mode="<?= $purchase['payment_type'] ?>">
 
                                 <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
@@ -148,6 +229,22 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-2">
+            <span class="animate-spin h-5 w-5 border-4 border-blue-500 border-t-transparent rounded-full"></span>
+            <p class="text-lg font-semibold">Processing...</p>
+        </div>
+    </div>
+
+
+
+
+
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const mobileMenuToggle = document.getElementById('mobileMenuToggle');
@@ -189,7 +286,7 @@
                 var $row = $(this).closest('tr');
 
                 var studentName = $row.find('td').eq(0).text().trim();
-                var officerName  = $row.data('officername');
+                var officerName = $row.data('officername');
                 var date = $row.data('date');
                 var item = $row.data('item');
                 var amount = $row.data('amount');
@@ -204,94 +301,94 @@
                 var printWindow = window.open('', '', 'width=300,height=400');
                 printWindow.document.open();
                 printWindow.document.write(`
-    <html>
-    <head>
-        <title>Print</title>
-        <style>
-            @media print {
-                @page { margin: 0; }
-                body { 
-                    margin: 0; 
-                    font-family: 'Courier New', monospace; 
-                    text-align: center;
-                    width: 45mm; 
-                }
-                .receipt {
-                    padding: 3px;
-                }
-                .address {
-                    font-size: 10px;
-                    margin-bottom: 4px;
-                }
-                hr {
-                    border: none;
-                    border-top: 1px dashed black;
-                    margin: 4px 0;
-                }
-                .title {
-                    font-size: 12px;
-                    font-weight: bold;
-                    margin: 2px 0;
-                }
-                .info {
-                    font-size: 10px;
-                    margin: 1px 0;
-                }
-                .item, .line {
-                    display: flex;
-                    justify-content: space-between;
-                    font-size: 10px;
-                }
-                .total {
-                    font-size: 11px;
-                    font-weight: bold;
-                    margin: 4px 0;
-                }
-                .spacer {
-                    font-size: 8px;
-                    margin: 0;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="receipt">
-            <p class="spacer">...</p>
-               <br>
-            <p class="title">👽</p>
-            <p class="info">Association of</p>
-            <p class="info">Computer Scientists</p>
-            <p class="title">PAYMENT RECEIPT</p>
-            <p class="info">${reference}</p>
-            <hr>
+                    <html>
+                    <head>
+                        <title>Print</title>
+                        <style>
+                            @media print {
+                                @page { margin: 0; }
+                                body { 
+                                    margin: 0; 
+                                    font-family: 'Courier New', monospace; 
+                                    text-align: center;
+                                    width: 45mm; 
+                                }
+                                .receipt {
+                                    padding: 3px;
+                                }
+                                .address {
+                                    font-size: 10px;
+                                    margin-bottom: 4px;
+                                }
+                                hr {
+                                    border: none;
+                                    border-top: 1px dashed black;
+                                    margin: 4px 0;
+                                }
+                                .title {
+                                    font-size: 12px;
+                                    font-weight: bold;
+                                    margin: 2px 0;
+                                }
+                                .info {
+                                    font-size: 10px;
+                                    margin: 1px 0;
+                                }
+                                .item, .line {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    font-size: 10px;
+                                }
+                                .total {
+                                    font-size: 11px;
+                                    font-weight: bold;
+                                    margin: 4px 0;
+                                }
+                                .spacer {
+                                    font-size: 8px;
+                                    margin: 0;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="receipt">
+                            <p class="spacer">...</p>
+                            <br>
+                            <p class="title">👽</p>
+                            <p class="info">Association of</p>
+                            <p class="info">Computer Scientists</p>
+                            <p class="title">PAYMENT RECEIPT</p>
+                            <p class="info">${reference}</p>
+                            <hr>
 
-            <div class="line"><strong>Date</strong><span>${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span></div>
-            <div class="line"><strong>Name</strong><span>${studentName  }</span></div>
-            <div class="line"><strong>Item</strong><span>${item}</span></div>
-            <div class="line"><strong>Qty</strong><span>1</span></div>
-            <div class="line"><strong>Method</strong><span>${mode}</span></div>
-            <div class="line"><strong>Astd by</strong><span>${officerName}</span></div>
+                            <div class="line"><strong>Date</strong><span>${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span></div>
+                            <div class="line"><strong>Name</strong><span>${studentName}</span></div>
+                            <div class="line"><strong>Item</strong><span>${item}</span></div>
+                            <div class="line"><strong>Qty</strong><span>1</span></div>
+                            <div class="line"><strong>Method</strong><span>${mode}</span></div>
+                            <div class="line"><strong>Astd by</strong><span>${officerName}</span></div>
 
-            <hr>
+                            <hr>
 
-            <div class="line"><strong>Price</strong><span>₱${parseFloat(amount).toFixed(2)}</span></div>
-            <div class="line"><strong>Discount</strong><span>0.00</span></div>
+                            <div class="line"><strong>Price</strong><span>₱${parseFloat(amount).toFixed(2)}</span></div>
+                            <div class="line"><strong>Discount</strong><span>0.00</span></div>
 
-            <hr>
+                            <hr>
 
-            <p class="total">Total: ₱${parseFloat(amount).toFixed(2)}</p>
+                            <p class="total">Total: ₱${parseFloat(amount).toFixed(2)}</p>
 
-            <hr>
-    
-            <p class="info">This is a customer's copy.</p>
-            <p class="info">Thank You!</p>
-              <br>
-                 <br>
-            <p class="spacer">...</p>
-        </div>
-    </body>
-    </html>
-`);
+                            <hr>
+                    
+                            <p class="info">This is a customer's copy.</p>
+                            <p class="info">Thank You!</p>
+                            <br>
+                                <br>
+                            <p class="spacer">...</p>
+                        </div>
+                    </body>
+                    </html>
+                `);
 
                 printWindow.document.close();
 
@@ -300,6 +397,44 @@
                     printWindow.close();
                 }, 500);
             }
+
+
+
+
+
+
+            function showLoading() {
+                $('#loadingOverlay').removeClass('hidden');
+            }
+
+            $('select[name="filter"]').on('change', function () {
+                showLoading();
+                $(this).closest('form').submit();
+            });
+
+            let typingTimer;
+            const doneTypingInterval = 300;
+            const $searchInput = $('input[name="search"]');
+
+            $searchInput.on('keyup', function () {
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(() => {
+                    showLoading();
+                    $(this).closest('form').submit();
+                }, doneTypingInterval);
+            });
+
+            $searchInput.on('keydown', function () {
+                clearTimeout(typingTimer);
+            });
+
+            $searchInput.on('keypress', function (e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    showLoading();
+                    $(this).closest('form').submit();
+                }
+            });
         });
     </script>
 </body>
