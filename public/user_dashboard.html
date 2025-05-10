@@ -14,7 +14,9 @@
     <script src="js/user_dashboard.js"></script>
   </head>
 
-  <body class="bg-[#d9d9d9]">
+  <body
+    class="bg-[#d9d9d9] flex flex-col w-screen min-h-screen overflow-x-hidden"
+  >
     <!-- Title part -->
     <div class="p-8 flex">
       <div class="flex items-center space-x-4">
@@ -37,199 +39,257 @@
     </div>
 
     <!--Receipts-->
-    <div class="flex flex-wrap justify-center mt-3">
-      <!-- card 1 -->
-      <div class="clickable-div m-4 max-w-sm cursor-pointer">
+    <div class="flex justify-center">
+      <div
+        class="w-full p-2 sm:p-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 place-items-center"
+      >
+        <!-- card 1 -->
         <div
-          class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl"
+          class="clickable-div w-full h-50 sm:h-64 max-w-[14rem] sm:max-w-[16rem] cursor-pointer"
         >
-          <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
-            <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
-            <div
-              class="w-8 h-8 mr-3 inline-flex items-center justify-center flex-shrink-0 ml-auto bg-amber-200"
-            >
-              <svg
-                class="w-6 h-6 text-black mt-3 text-blackinline-flex items-center"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 16 18"
+          <div
+            class="flex rounded-lg h-full bg-white p-4 flex-col hover:shadow-2xl"
+          >
+            <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
+              <h2 class="text-black text-sm sm:text-lg font-bold mr-1">
+                PAYMENT RECEIPT
+              </h2>
+              <div
+                class="inline-flex items-center justify-end flex-shrink-0 ml-auto"
               >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"
-                />
-              </svg>
+                <i
+                  id="downloadIcon"
+                  onclick="downloadReceipt(this)"
+                  class="fa-solid fa-download hover:text-gray-700 text-sm"
+                ></i>
+              </div>
             </div>
-          </div>
 
-          <div class="pb-3 border-b border-black text-black">
-            <div class="grid grid-cols-2 gap-x-4">
-              <p>Item:</p>
-              <p class="text-right font-bold">Org fee</p>
+            <div class="pb-3 border-b border-black text-black text-sm">
+              <div class="grid grid-cols-2 gap-x-2">
+                <p class="">Date:</p>
+                <p
+                  class="text-left font-bold text-[13px] sm:text-sm whitespace-nowrap"
+                >
+                  2025-05-10
+                </p>
 
-              <p>Mode:</p>
-              <p class="text-right font-bold">Gcash</p>
+                <p>Item:</p>
+                <p class="text-left font-bold">Org Fee</p>
 
-              <p>Paid:</p>
-              <p class="text-right font-bold">P 100.00</p>
+                <p>Mode:</p>
+                <p class="text-left font-bold">Gcash</p>
+
+                <p>Paid:</p>
+                <p class="text-left font-bold">P 100</p>
+              </div>
             </div>
-          </div>
 
-          <div class="flex flex-col justify-between flex-grow text-center">
-            <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
-              Tap to see full details
-            </p>
+            <div class="flex flex-col justify-between flex-grow text-center">
+              <p class="leading-relaxed text-sm text-gray-800 my-3 font-light">
+                Tap to see full details
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- card 2-->
-      <div class="clickable-div m-4 max-w-sm cursor-pointer">
+        <!-- card 2 -->
         <div
-          class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl"
+          class="clickable-div w-full h-50 sm:h-64 max-w-[14rem] sm:max-w-[16rem] cursor-pointer"
         >
-          <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
-            <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
-            <div
-              class="w-8 h-8 mr-3 inline-flex items-center justify-center text-white flex-shrink-0 ml-auto"
-            >
-              <svg
-                class="w-6 h-6 text-black mt-3 text-blackinline-flex items-center"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 16 18"
+          <div
+            class="flex rounded-lg h-full bg-white p-4 flex-col hover:shadow-2xl"
+          >
+            <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
+              <h2 class="text-black text-sm sm:text-lg font-bold mr-1">
+                PAYMENT RECEIPT
+              </h2>
+              <div
+                class="inline-flex items-center justify-end flex-shrink-0 ml-auto"
               >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"
-                />
-              </svg>
+                <i
+                  id="downloadIcon"
+                  onclick="downloadReceipt(this)"
+                  class="fa-solid fa-download hover:text-gray-700 text-sm"
+                ></i>
+              </div>
             </div>
-          </div>
 
-          <div class="pb-3 border-b border-black text-black">
-            <div class="grid grid-cols-2 gap-x-4">
-              <p>Item:</p>
-              <p class="text-right font-bold">Org Shirt</p>
+            <div class="pb-3 border-b border-black text-black text-sm">
+              <div class="grid grid-cols-2 gap-x-2">
+                <p class="">Date:</p>
+                <p
+                  class="text-left font-bold text-[13px] sm:text-sm whitespace-nowrap"
+                >
+                  2025-05-10
+                </p>
 
-              <p>Mode:</p>
-              <p class="text-right font-bold">Gcash</p>
+                <p>Item:</p>
+                <p class="text-left font-bold">Org Fee</p>
 
-              <p>Paid:</p>
-              <p class="text-right font-bold">P 500.00</p>
+                <p>Mode:</p>
+                <p class="text-left font-bold">Gcash</p>
+
+                <p>Paid:</p>
+                <p class="text-left font-bold">P 100</p>
+              </div>
             </div>
-          </div>
 
-          <div class="flex flex-col justify-between flex-grow text-center">
-            <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
-              Tap to see full details
-            </p>
+            <div class="flex flex-col justify-between flex-grow text-center">
+              <p class="leading-relaxed text-sm text-gray-800 my-3 font-light">
+                Tap to see full details
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- card 3-->
-      <div class="clickable-div m-4 max-w-sm cursor-pointer">
+        <!-- card 3 -->
         <div
-          class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl"
+          class="clickable-div w-full h-50 sm:h-64 max-w-[14rem] sm:max-w-[16rem] cursor-pointer"
         >
-          <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
-            <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
-            <div
-              class="w-8 h-8 mr-3 inline-flex items-center justify-center text-white flex-shrink-0 ml-auto"
-            >
-              <svg
-                class="w-6 h-6 text-black mt-3 text-blackinline-flex items-center"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 16 18"
+          <div
+            class="flex rounded-lg h-full bg-white p-4 flex-col hover:shadow-2xl"
+          >
+            <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
+              <h2 class="text-black text-sm sm:text-lg font-bold mr-1">
+                PAYMENT RECEIPT
+              </h2>
+              <div
+                class="inline-flex items-center justify-end flex-shrink-0 ml-auto"
               >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"
-                />
-              </svg>
+                <i
+                  id="downloadIcon"
+                  onclick="downloadReceipt(this)"
+                  class="fa-solid fa-download hover:text-gray-700 text-sm"
+                ></i>
+              </div>
             </div>
-          </div>
 
-          <div class="pb-3 border-b border-black text-black">
-            <div class="grid grid-cols-2 gap-x-4">
-              <p>Item:</p>
-              <p class="text-right font-bold">Org ID Lace</p>
+            <div class="pb-3 border-b border-black text-black text-sm">
+              <div class="grid grid-cols-2 gap-x-2">
+                <p class="">Date:</p>
+                <p
+                  class="text-left font-bold text-[13px] sm:text-sm whitespace-nowrap"
+                >
+                  2025-05-10
+                </p>
 
-              <p>Mode:</p>
-              <p class="text-right font-bold">Gcash</p>
+                <p>Item:</p>
+                <p class="text-left font-bold">Org Fee</p>
 
-              <p>Paid:</p>
-              <p class="text-right font-bold">P 200.00</p>
+                <p>Mode:</p>
+                <p class="text-left font-bold">Gcash</p>
+
+                <p>Paid:</p>
+                <p class="text-left font-bold">P 100</p>
+              </div>
             </div>
-          </div>
 
-          <div class="flex flex-col justify-between flex-grow text-center">
-            <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
-              Tap to see full details
-            </p>
+            <div class="flex flex-col justify-between flex-grow text-center">
+              <p class="leading-relaxed text-sm text-gray-800 my-3 font-light">
+                Tap to see full details
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- card 4-->
-      <div class="clickable-div m-4 max-w-sm cursor-pointer">
+        <!-- card 4 -->
         <div
-          class="flex rounded-lg h-full bg-white p-8 flex-col hover:shadow-2xl"
+          class="clickable-div w-full h-50 sm:h-64 max-w-[14rem] sm:max-w-[16rem] cursor-pointer"
         >
-          <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
-            <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
-            <div
-              class="w-8 h-8 mr-3 inline-flex items-center justify-center text-white flex-shrink-0 ml-auto"
-            >
-              <svg
-                class="w-6 h-6 text-black mt-3 text-blackinline-flex items-center"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 16 18"
+          <div
+            class="flex rounded-lg h-full bg-white p-4 flex-col hover:shadow-2xl"
+          >
+            <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
+              <h2 class="text-black text-sm sm:text-lg font-bold mr-1">
+                PAYMENT RECEIPT
+              </h2>
+              <div
+                class="inline-flex items-center justify-end flex-shrink-0 ml-auto"
               >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"
-                />
-              </svg>
+                <i
+                  id="downloadIcon"
+                  onclick="downloadReceipt(this)"
+                  class="fa-solid fa-download hover:text-gray-700 text-sm"
+                ></i>
+              </div>
+            </div>
+
+            <div class="pb-3 border-b border-black text-black text-sm">
+              <div class="grid grid-cols-2 gap-x-2">
+                <p class="">Date:</p>
+                <p
+                  class="text-left font-bold text-[13px] sm:text-sm whitespace-nowrap"
+                >
+                  2025-05-10
+                </p>
+
+                <p>Item:</p>
+                <p class="text-left font-bold">Org Fee</p>
+
+                <p>Mode:</p>
+                <p class="text-left font-bold">Gcash</p>
+
+                <p>Paid:</p>
+                <p class="text-left font-bold">P 100</p>
+              </div>
+            </div>
+
+            <div class="flex flex-col justify-between flex-grow text-center">
+              <p class="leading-relaxed text-sm text-gray-800 my-3 font-light">
+                Tap to see full details
+              </p>
             </div>
           </div>
+        </div>
 
-          <div class="pb-3 border-b border-black text-black">
-            <div class="grid grid-cols-2 gap-x-4">
-              <p>Item:</p>
-              <p class="text-right font-bold">Night Gala</p>
-
-              <p>Mode:</p>
-              <p class="text-right font-bold">Gcash</p>
-
-              <p>Paid:</p>
-              <p class="text-right font-bold">P 550.00</p>
+        <!-- card 5 -->
+        <div
+          class="clickable-div w-full h-50 sm:h-64 max-w-[14rem] sm:max-w-[16rem] cursor-pointer"
+        >
+          <div
+            class="flex rounded-lg h-full bg-white p-4 flex-col hover:shadow-2xl"
+          >
+            <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
+              <h2 class="text-black text-sm sm:text-lg font-bold mr-1">
+                PAYMENT RECEIPT
+              </h2>
+              <div
+                class="inline-flex items-center justify-end flex-shrink-0 ml-auto"
+              >
+                <i
+                  id="downloadIcon"
+                  onclick="downloadReceipt(this)"
+                  class="fa-solid fa-download hover:text-gray-700 text-sm"
+                ></i>
+              </div>
             </div>
-          </div>
 
-          <div class="flex flex-col justify-between flex-grow text-center">
-            <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
-              Tap to see full details
-            </p>
+            <div class="pb-3 border-b border-black text-black text-sm">
+              <div class="grid grid-cols-2 gap-x-2">
+                <p class="">Date:</p>
+                <p
+                  class="text-left font-bold text-[13px] sm:text-sm whitespace-nowrap"
+                >
+                  2025-05-10
+                </p>
+
+                <p>Item:</p>
+                <p class="text-left font-bold">Org Fee</p>
+
+                <p>Mode:</p>
+                <p class="text-left font-bold">Gcash</p>
+
+                <p>Paid:</p>
+                <p class="text-left font-bold">P 100</p>
+              </div>
+            </div>
+
+            <div class="flex flex-col justify-between flex-grow text-center">
+              <p class="leading-relaxed text-sm text-gray-800 my-3 font-light">
+                Tap to see full details
+              </p>
+            </div>
           </div>
         </div>
       </div>
