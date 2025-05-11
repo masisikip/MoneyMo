@@ -30,7 +30,7 @@ $path = ($host === 'localhost')
         <?php endif; ?>
 
         <div class="flex items-center space-x-2">
-            <h1 class="text-xl font-bold">DASHBOARD</h1>
+            <h1 id="header-title"class="text-xl font-bold">DASHBOARD</h1>
             <span class="<?= $usertype == 1 ? 'text-gray-600' : 'text-gray-300' ?>">
                 | Hello, <?= $usertype == 1 ? 'Admin' : 'User' ?> <?= htmlspecialchars($username) ?>
             </span>

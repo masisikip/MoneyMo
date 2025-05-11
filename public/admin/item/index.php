@@ -1,12 +1,67 @@
 <?php
 include_once '../../includes/connect-db.php';
 
-try {
-    $stmt = $pdo->query("SELECT * FROM item");
-    $items = $stmt->fetchAll();
-} catch (PDOException $e) {
-    echo "Query failed: " . $e->getMessage();
+$limit = $_GET['limit'] ?? 10;
+$page = $_GET['page'] ?? 1;
+$offset = ($page - 1) * $limit;
+$search = $_GET['search'] ?? '';
+$filter = $_GET['filter'] ?? '';
+
+$whereClause = "WHERE 1 = 1";
+
+if (!empty($search)) {
+    $whereClause .= " AND (item.name LIKE :search)";
 }
+
+// Updated filter logic
+if ($filter === 'in_stock') {
+    $whereClause .= " AND stock >= 10";
+} elseif ($filter === 'low_stock') {
+    $whereClause .= " AND stock > 0 AND stock < 10";
+} elseif ($filter === 'out_of_stock') {
+    $whereClause .= " AND stock = 0";
+}
+
+// Count query
+$countQuery = "
+    SELECT COUNT(*)
+    FROM item
+    $whereClause
+";
+
+$countStmt = $pdo->prepare($countQuery);
+
+if (!empty($search)) {
+    $searchTerm = "%$search%";
+    $countStmt->bindValue(':search', $searchTerm);
+}
+
+$countStmt->execute();
+$total_records = $countStmt->fetchColumn();
+
+$total_pages = ceil($total_records / $limit);
+
+// Main data query
+$query = "
+    SELECT *
+    FROM item
+    $whereClause
+    ORDER BY name
+    LIMIT :limit OFFSET :offset
+";
+
+$stmt = $pdo->prepare($query);
+
+if (!empty($search)) {
+    $stmt->bindValue(':search', $searchTerm);
+}
+
+$stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+$stmt->execute();
+$items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -54,56 +109,124 @@ try {
         </button>
     </div>
 
-    <div id="content" class="flex-1 px-8 py-4 content">
-        <!-- Item Grid -->
+
+    <form method="get" class="w-full px-4">
         <div
-            class="grid justify-center w-full place-items-center grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9 lg:justify-items-center xl:justify-items-center">
-            <?php foreach ($items as $item): ?>
-                <div id="<?= $item['iditem'] ?>-item" data-iditem="<?= $item['iditem'] ?>" data-code="<?= $item['code'] ?>"
-                    data-name="<?= $item['name'] ?>" data-value="<?= $item['value'] ?>" data-stock="<?= $item['stock'] ?>"
-                    data-image="data:image/jpeg;base64,<?= base64_encode($item['image']); ?>"
-                    class="cursor-pointer flex flex-col justify-center items-center relative bg-white border border-gray-300 rounded-lg hover:scale-105 transition-transform duration-300 ease-in-out w-[15rem] h-[22rem]">
-
-                    <!-- Item Image -->
-                    <?php if (!empty($item['image'])): ?>
-                        <img src="data:image/jpeg;base64,<?php echo base64_encode($item['image']); ?>" alt="Item Image"
-                            class="object-cover h-full rounded-lg item-image">
-                    <?php endif; ?>
-
-                    <!-- Item Title Overlay -->
-                    <div class="absolute top-0 left-0 right-0 flex items-center justify-between h-16 px-3 text-black">
-                        <div class="flex rounded-full bg-[#ffffffa8] border border-zinc-700/60">
-                            <div onclick="openUpdateModal(<?= $item['iditem'] ?>)"
-                                class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 border-r rounded-l-full cursor-pointer border-r-gray-600 icon-button">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
-                            <div onclick="openDeleteModal(<?= $item['iditem'] ?>)"
-                                class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 rounded-r-full cursor-pointer icon-button">
-                                <i class="fa-solid fa-trash"></i>
-                            </div>
-                        </div>
-                        <div class="price-container text-white bg-gray-800/80 rounded-full shadow-lg px-2 py-1 min-w-14">
-                            <h3 class="text-l text-center">
-                                ₱ <?php echo htmlspecialchars($item['value']); ?>
-                            </h3>
-                        </div>
-                    </div>
-
-                    <!-- Item Name -->
-                    <div
-                        class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center h-28 px-3 text-white rounded-b-lg bg-gradient-to-t from-zinc-800/90 via-zinc-800/30 to-transparent">
-                        <h3 class="text-lg font-bold item-name text-center">
-                            <?php echo htmlspecialchars($item['name']); ?>
-                        </h3>
-                        <p class="text-base item-stock">
-                            In Stock &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; <?php echo htmlspecialchars($item['stock']); ?>
-                            Units
-                        </p>
-                    </div>
+            class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full max-w-5xl mx-auto">
+            <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
+                <div class="px-3 py-1 text-white border rounded-l-lg bg-zinc-700">
+                    <i class="fas fa-search"></i>
                 </div>
-            <?php endforeach; ?>
+                <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
+                    placeholder="Search inventory..." class="px-2 w-full focus:outline-none py-0">
+            </div>
+            <div class="flex items-center border border-gray-300 rounded-lg w-full md:w-auto">
+                <button type="submit" class="text-white border bg-zinc-700 rounded-l-lg py-1 px-3">
+                    <i class="fas fa-sliders-h"></i>
+                </button>
+                <select name="filter" class="px-2 focus:outline-none w-full md:w-auto">
+                    <option value="" <?= (($_GET['filter'] ?? '') === '') ? 'selected' : '' ?>>All</option>
+                    <option value="in_stock" <?= (($_GET['filter'] ?? '') === 'in_stock') ? 'selected' : '' ?>>In Stock
+                    </option>
+                    <option value="low_stock" <?= (($_GET['filter'] ?? '') === 'low_stock') ? 'selected' : '' ?>>Low
+                        Stock
+                    </option>
+                    <option value="out_of_stock" <?= (($_GET['filter'] ?? '') === 'out_of_stock') ? 'selected' : '' ?>>
+                        Out of Stock</option>
+                </select>
+
+            </div>
         </div>
-    </div>
+    </form>
+
+    <main class="justify-center mt-3 w-full px-4">
+
+        <div id="content" class="flex-1 px-8 py-4 content">
+            <!-- Item Grid -->
+            <div
+                class="grid justify-center w-full place-items-center grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9 lg:justify-items-center xl:justify-items-center">
+                <?php foreach ($items as $item): ?>
+                    <div id="<?= $item['iditem'] ?>-item" data-iditem="<?= $item['iditem'] ?>"
+                        data-code="<?= $item['code'] ?>" data-name="<?= $item['name'] ?>" data-value="<?= $item['value'] ?>"
+                        data-stock="<?= $item['stock'] ?>"
+                        data-image="data:image/jpeg;base64,<?= base64_encode($item['image']); ?>"
+                        class="cursor-pointer flex flex-col justify-center items-center relative bg-white border border-gray-300 rounded-lg hover:scale-105 transition-transform duration-300 ease-in-out w-[15rem] h-[22rem]">
+
+                        <!-- Item Image -->
+                        <?php if (!empty($item['image'])): ?>
+                            <img src="data:image/jpeg;base64,<?php echo base64_encode($item['image']); ?>" alt="Item Image"
+                                class="object-cover h-full rounded-lg item-image">
+                        <?php endif; ?>
+
+                        <!-- Item Title Overlay -->
+                        <div class="absolute top-0 left-0 right-0 flex items-center justify-between h-16 px-3 text-black">
+                            <div class="flex rounded-full bg-[#ffffffa8] border border-zinc-700/60">
+                                <div onclick="openUpdateModal(<?= $item['iditem'] ?>)"
+                                    class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 border-r rounded-l-full cursor-pointer border-r-gray-600 icon-button">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </div>
+                                <div onclick="openDeleteModal(<?= $item['iditem'] ?>)"
+                                    class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 rounded-r-full cursor-pointer icon-button">
+                                    <i class="fa-solid fa-trash"></i>
+                                </div>
+                            </div>
+                            <div
+                                class="price-container text-white bg-gray-800/80 rounded-full shadow-lg px-2 py-1 min-w-14">
+                                <h3 class="text-l text-center">
+                                    ₱ <?php echo htmlspecialchars($item['value']); ?>
+                                </h3>
+                            </div>
+                        </div>
+
+                        <!-- Item Name -->
+                        <div
+                            class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center h-28 px-3 text-white rounded-b-lg bg-gradient-to-t from-zinc-800/90 via-zinc-800/30 to-transparent">
+                            <h3 class="text-lg font-bold item-name text-center">
+                                <?php echo htmlspecialchars($item['name']); ?>
+                            </h3>
+                            <p class="text-base item-stock">
+                                In Stock &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                                <?php echo htmlspecialchars($item['stock']); ?>
+                                Units
+                            </p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <?php
+        $queryParams = $_GET;
+        unset($queryParams['page']);
+        $base_url = $_SERVER['PHP_SELF'] . '?' . http_build_query($queryParams);
+        ?>
+
+        <!-- Pagination -->
+        <div class="flex justify-center my-4 ">
+            <div class="flex items-center space-x-2">
+                <?php if ($page > 1): ?>
+                    <a href="<?= $base_url ?>&page=<?= $page - 1 ?>"
+                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&lt;</a>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <a href="<?= $base_url ?>&page=<?= $i ?>"
+                        class="px-3 py-2 rounded-lg <?= $i == $page ? 'bg-black text-white' : 'bg-gray-300 text-black hover:bg-gray-400' ?>">
+                        <?= $i ?>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($page < $total_pages): ?>
+                    <a href="<?= $base_url ?>&page=<?= $page + 1 ?>"
+                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&gt;</a>
+                <?php endif; ?>
+            </div>
+        </div>
+
+
+
+
+    </main>
 
     <!-- Add Item Modal -->
     <div id="addItemModal"
@@ -247,6 +370,15 @@ try {
         class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
         <div class="w-16 h-16 border-6 border-t-gray-800 border-gray-300 rounded-full animate-spin"></div>
     </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-2">
+            <span class="animate-spin h-5 w-5 border-4 border-blue-500 border-t-transparent rounded-full"></span>
+            <p class="text-lg font-semibold">Processing...</p>
+        </div>
+    </div>
+
 
 </body>
 <script>
@@ -469,6 +601,41 @@ try {
                 closeDeleteModal();
             }
         })
+
+
+
+        function showLoading() {
+            $('#loadingOverlay').removeClass('hidden');
+        }
+
+        $('select[name="filter"]').on('change', function () {
+            showLoading();
+            $(this).closest('form').submit();
+        });
+
+        let typingTimer;
+        const doneTypingInterval = 300;
+        const $searchInput = $('input[name="search"]');
+
+        $searchInput.on('keyup', function () {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                showLoading();
+                $(this).closest('form').submit();
+            }, doneTypingInterval);
+        });
+
+        $searchInput.on('keydown', function () {
+            clearTimeout(typingTimer);
+        });
+
+        $searchInput.on('keypress', function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                showLoading();
+                $(this).closest('form').submit();
+            }
+        });
     })
 </script>
 
