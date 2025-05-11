@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute();
             echo json_encode([
                 'status' => 'success',
-                'message' => 'Successfully update item'
+                'message' => 'Successfully updated item'
             ]);
         } catch (PDOException $e) {
             echo json_encode([
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute();
             echo json_encode([
                 'status' => 'success',
-                'message' => 'Successfully update item'
+                'message' => 'Successfully updated item'
             ]);
         } catch (PDOException $e) {
             echo json_encode([

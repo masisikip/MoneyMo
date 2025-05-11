@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($exists != 0) {
         echo json_encode([
             'status' => 'error',
-            'message' => 'Item already exists'
+            'message' => 'Item already exists!'
         ]);        
         exit();
     }

@@ -82,8 +82,7 @@ try {
                                 <i class="fa-solid fa-trash"></i>
                             </div>
                         </div>
-                        <div
-                            class="price-container text-white bg-gray-800/80 rounded-full shadow-lg px-2 py-1 min-w-14">
+                        <div class="price-container text-white bg-gray-800/80 rounded-full shadow-lg px-2 py-1 min-w-14">
                             <h3 class="text-l text-center">
                                 ₱ <?php echo htmlspecialchars($item['value']); ?>
                             </h3>
@@ -107,7 +106,8 @@ try {
     </div>
 
     <!-- Add Item Modal -->
-    <div id="addItemModal" class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
+    <div id="addItemModal"
+        class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
         <div id="add-main" class="bg-white p-6 rounded-lg shadow-lg modal-content">
             <h2 class="text-xl font-bold mb-4">Add New Item</h2>
             <form id="addItemForm" action="logic/item_create.php" method="POST" enctype="multipart/form-data">
@@ -128,7 +128,8 @@ try {
                 </div>
                 <div class="mb-4">
                     <label for="image" class="block text-gray-700">Image <span class="text-red-500">*</span></label>
-                    <input type="file" id="image" name="image" class="w-full border border-gray-300 rounded mt-1 file:p-2 file:bg-gray-700 file:text-white"
+                    <input type="file" id="image" name="image"
+                        class="w-full border border-gray-300 rounded mt-1 file:p-2 file:bg-gray-700 file:text-white"
                         required>
                 </div>
                 <div class="flex justify-end">
@@ -141,7 +142,8 @@ try {
     </div>
 
     <!-- Update Item Modal -->
-    <div id="updateItemModal" class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
+    <div id="updateItemModal"
+        class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
         <div id="update-main" class="w-10/12 bg-white p-6 rounded-lg shadow-lg h-4/5 md:w-1/4 overflow-y-auto">
             <h2 class="text-xl font-bold mb-4">Update Item</h2>
             <form id="updateItemForm" action="logic/item_update.php" method="POST" enctype="multipart/form-data">
@@ -150,16 +152,18 @@ try {
                 <div class="mb-4 flex flex-col items-center">
                     <div class="relative w-64 h-80 rounded-lg shadow-lg shadow-zinc-700/50">
                         <img id="preview" src="" alt="Item Image" class="h-full object-cover rounded-lg">
-                        <label for="update_image" class="absolute text-sm rounded px-2 py-1 bottom-1 right-1 bg-zinc-600 hover:bg-zinc-700 text-white cursor-pointer"><i class="fa-solid fa-upload"></i></label>
+                        <label for="update_image"
+                            class="absolute text-sm rounded px-2 py-1 bottom-1 right-1 bg-zinc-600 hover:bg-zinc-700 text-white cursor-pointer"><i
+                                class="fa-solid fa-upload"></i></label>
                     </div>
-                    <input type="file" id="update_image" name="image"
-                        class="hidden">
+                    <input type="file" id="update_image" name="image" class="hidden">
                 </div>
 
                 <div class="mb-4">
                     <p class="block text-gray-700">Code</p>
-                    <div 
-                        class="w-full p-2 border border-gray-300 rounded mt-1 text-gray-500"><span id="update_code"><innerHTMLspan></div>
+                    <div class="w-full p-2 border border-gray-300 rounded mt-1 text-gray-500"><span id="update_code">
+                            <innerHTMLspan>
+                    </div>
                 </div>
                 <div class="mb-4">
                     <label for="update_name" class="block text-gray-700">Name</label>
@@ -186,17 +190,20 @@ try {
     </div>
 
     <!-- Delete Modal -->
-    <div id="deleteItemModal" class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
+    <div id="deleteItemModal"
+        class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
         <div id="delete-main" class="w-10/12 md:w-1/4 bg-white rounded-lg flex flex-col px-4 py-2">
             <div class="py-2 font-semibold text-xl w-full border-b">Delete Item</div>
             <div class="w-full my-2 text-lg">
                 <p>Are you sure to delete item <span id="delete-item" class="font-semibold"></span>?</p>
             </div>
             <input type="hidden" id="delete-iditem">
-            
+
             <div class="flex gap-3 justify-center w-full mt-6 my-2">
-                <button type="button" class="w-20 py-1 rounded bg-gray-700 text-white hover:bg-gray-800 cursor-pointer" onclick="closeDeleteModal()">Cancel</button>
-                <button class="w-20 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer" onclick="confirmDelete()">Confirm</button>
+                <button type="button" class="w-20 py-1 rounded bg-gray-700 text-white hover:bg-gray-800 cursor-pointer"
+                    onclick="closeDeleteModal()">Cancel</button>
+                <button class="w-20 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer"
+                    onclick="confirmDelete()">Confirm</button>
             </div>
         </div>
     </div>
@@ -229,7 +236,8 @@ try {
             <div id="error-message" class="w-full text-center"></div>
 
             <div class="w-full mt-5 flex justify-center">
-                <button onclick="hideErrorMessage()" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">Okay</button>
+                <button onclick="hideErrorMessage()"
+                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">Okay</button>
             </div>
         </div>
     </div>
@@ -262,12 +270,20 @@ try {
         $.ajax({
             url: "logic/item_delete.php",
             method: 'POST',
-            data: {iditem: iditem},
+            data: { iditem: iditem },
+            dataType: 'json',
             // processData: false,
             // contentType: false,
             success: function (response) {
-                location.reload();
-                localStorage.setItem("deleteSuccess", "true");
+                if (response['status'] == 'success') {
+                    localStorage.setItem("deleteSuccess", "true");
+                    localStorage.setItem('message', response['message']);
+                    location.reload();
+                } else {
+                    localStorage.setItem("deleteError", "true");
+                    localStorage.setItem('message', response['message']);
+                    location.reload();
+                }
             },
             error: function (xhr, status, error) {
                 $('#error').addClass('flex').removeClass('hidden');
@@ -319,41 +335,53 @@ try {
 
     $(document).ready(function () {
         if (localStorage.getItem('addSuccess') === 'true') {
+            message = localStorage.getItem('message');
             $('#success').addClass('flex').removeClass('hidden');
-            $('#success-message').text('Successfully added item');
+            $('#success-message').text(message);
             localStorage.removeItem('addSuccess');
+            localStorage.removeItem('message');
         }
 
         if (localStorage.getItem('addError') === 'true') {
+            message = localStorage.getItem('message');
             $('#error').addClass('flex').removeClass('hidden');
-            $('#error-message').text('Failed to add item');
+            $('#error-message').text(message);
             localStorage.removeItem('addError');
-        }       
-        
+            localStorage.removeItem('message');
+        }
+
         if (localStorage.getItem('updateSuccess') === 'true') {
+            message = localStorage.getItem('message');
             $('#success').addClass('flex').removeClass('hidden');
-            $('#success-message').text('Successfully updated item');
+            $('#success-message').text(message);
             localStorage.removeItem('updateSuccess');
+            localStorage.removeItem('message');
         }
 
         if (localStorage.getItem('updateError') === 'true') {
+            message = localStorage.getItem('message');
             $('#error').addClass('flex').removeClass('hidden');
-            $('#error-message').text('Failed to update item');
+            $('#error-message').text(message);
             localStorage.removeItem('updateError');
+            localStorage.removeItem('message');
         }
 
         if (localStorage.getItem('deleteSuccess') === 'true') {
+            message = localStorage.getItem('message');
             $('#success').addClass('flex').removeClass('hidden');
-            $('#success-message').text('Successfully deleted item');
+            $('#success-message').text(message);
             localStorage.removeItem('deleteSuccess');
+            localStorage.removeItem('message');
         }
 
         if (localStorage.getItem('deleteError') === 'true') {
+            message = localStorage.getItem('message');
             $('#error').addClass('flex').removeClass('hidden');
-            $('#error-message').text('Failed to delete item');
+            $('#error-message').text(message);
             localStorage.removeItem('deleteError');
+            localStorage.removeItem('message');
         }
-        
+
         $('#update_image').on('change', function () {
             let file = this.files[0];
 
@@ -367,20 +395,23 @@ try {
             let data = new FormData($('#addItemForm')[0]);
 
             $('#loader').removeClass('hidden').addClass('flex');
-            
+
             $.ajax({
                 url: "logic/item_create.php",
                 method: 'POST',
                 data: data,
                 processData: false,
                 contentType: false,
+                dataType: 'json',
                 success: function (response) {
                     if (response['status'] == 'success') {
-                        location.reload();
                         localStorage.setItem("addSuccess", "true");
-                    } else {
+                        localStorage.setItem('message', response['message']);
                         location.reload();
+                    } else {
                         localStorage.setItem("addError", "true");
+                        localStorage.setItem('message', response['message']);
+                        location.reload();
                     }
                 },
                 error: function (xhr, status, error) {
@@ -397,16 +428,24 @@ try {
             let data = new FormData($('#updateItemForm')[0]);
 
             $('#loader').removeClass('hidden').addClass('flex');
-            
+
             $.ajax({
                 url: "logic/item_update.php",
                 method: 'POST',
                 data: data,
                 processData: false,
                 contentType: false,
+                dataType: 'json',
                 success: function (response) {
-                    location.reload();
-                    localStorage.setItem("updateSuccess", "true");
+                    if (response['status'] == 'success') {
+                        localStorage.setItem("updateSuccess", "true");
+                        localStorage.setItem('message', response['message']);
+                        location.reload();
+                    } else {
+                        localStorage.setItem("updateError", "true");
+                        localStorage.setItem('message', response['message']);
+                        location.reload();
+                    }
                 },
                 error: function (xhr, status, error) {
                     $('#error').addClass('flex').removeClass('hidden');
