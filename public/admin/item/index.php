@@ -1,12 +1,67 @@
 <?php
 include_once '../../includes/connect-db.php';
 
-try {
-    $stmt = $pdo->query("SELECT * FROM item");
-    $items = $stmt->fetchAll();
-} catch (PDOException $e) {
-    echo "Query failed: " . $e->getMessage();
+$limit = $_GET['limit'] ?? 10;
+$page = $_GET['page'] ?? 1;
+$offset = ($page - 1) * $limit;
+$search = $_GET['search'] ?? '';
+$filter = $_GET['filter'] ?? '';
+
+$whereClause = "WHERE 1 = 1";
+
+if (!empty($search)) {
+    $whereClause .= " AND (item.name LIKE :search)";
 }
+
+// Updated filter logic
+if ($filter === 'in_stock') {
+    $whereClause .= " AND stock >= 10";
+} elseif ($filter === 'low_stock') {
+    $whereClause .= " AND stock > 0 AND stock < 10";
+} elseif ($filter === 'out_of_stock') {
+    $whereClause .= " AND stock = 0";
+}
+
+// Count query
+$countQuery = "
+    SELECT COUNT(*)
+    FROM item
+    $whereClause
+";
+
+$countStmt = $pdo->prepare($countQuery);
+
+if (!empty($search)) {
+    $searchTerm = "%$search%";
+    $countStmt->bindValue(':search', $searchTerm);
+}
+
+$countStmt->execute();
+$total_records = $countStmt->fetchColumn();
+
+$total_pages = ceil($total_records / $limit);
+
+// Main data query
+$query = "
+    SELECT *
+    FROM item
+    $whereClause
+    ORDER BY name
+    LIMIT :limit OFFSET :offset
+";
+
+$stmt = $pdo->prepare($query);
+
+if (!empty($search)) {
+    $stmt->bindValue(':search', $searchTerm);
+}
+
+$stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+$stmt->execute();
+$items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -54,198 +109,274 @@ try {
         </button>
     </div>
 
-    <div id="content" class="flex-1 px-8 py-4 content">
-        <!-- Item Grid -->
-        <div
-            class="grid justify-center w-full place-items-center grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9 lg:justify-items-center xl:justify-items-center">
-            <?php foreach ($items as $item): ?>
-                <div id="<?= $item['iditem'] ?>-item" data-iditem="<?= $item['iditem'] ?>" data-code="<?= $item['code'] ?>"
-                    data-name="<?= $item['name'] ?>" data-value="<?= $item['value'] ?>" data-stock="<?= $item['stock'] ?>"
-                    data-image="data:image/jpeg;base64,<?= base64_encode($item['image']); ?>"
-                    class="cursor-pointer flex flex-col justify-center items-center relative bg-white border border-gray-300 rounded-lg hover:scale-105 transition-transform duration-300 ease-in-out w-[15rem] h-[22rem]">
 
-                    <!-- Item Image -->
-                    <?php if (!empty($item['image'])): ?>
-                        <img src="data:image/jpeg;base64,<?php echo base64_encode($item['image']); ?>" alt="Item Image"
-                            class="object-cover h-full rounded-lg item-image">
-                    <?php endif; ?>
+    <div class=" justify-center mt-3 w-full px-4">
+        <form method="get" class="w-full px-4">
+            <div
+                class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full max-w-5xl mx-auto">
+                <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
+                    <div class="px-3 py-1 text-white border rounded-l-lg bg-zinc-700">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
+                        placeholder="Search inventory..." class="px-2 w-full focus:outline-none py-0">
+                </div>
+                <div class="flex items-center border border-gray-300 rounded-lg w-full md:w-auto">
+                    <button type="submit" class="text-white border bg-zinc-700 rounded-l-lg py-1 px-3">
+                        <i class="fas fa-sliders-h"></i>
+                    </button>
+                    <select name="filter" class="px-2 focus:outline-none w-full md:w-auto">
+                        <option value="" <?= (($_GET['filter'] ?? '') === '') ? 'selected' : '' ?>>All</option>
+                        <option value="in_stock" <?= (($_GET['filter'] ?? '') === 'in_stock') ? 'selected' : '' ?>>In Stock
+                        </option>
+                        <option value="low_stock" <?= (($_GET['filter'] ?? '') === 'low_stock') ? 'selected' : '' ?>>Low Stock
+                        </option>
+                        <option value="out_of_stock" <?= (($_GET['filter'] ?? '') === 'out_of_stock') ? 'selected' : '' ?>>
+                            Out of Stock</option>
+                    </select>
 
-                    <!-- Item Title Overlay -->
-                    <div class="absolute top-0 left-0 right-0 flex items-center justify-between h-16 px-3 text-black">
-                        <div class="flex rounded-full bg-[#ffffffa8] border border-zinc-700/60">
-                            <div onclick="openUpdateModal(<?= $item['iditem'] ?>)"
-                                class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 border-r rounded-l-full cursor-pointer border-r-gray-600 icon-button">
-                                <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+            </div>
+        </form>
+
+        <div id="content" class="flex-1 px-8 py-4 content">
+            <!-- Item Grid -->
+            <div
+                class="grid justify-center w-full place-items-center grid-cols-1 gap-4 p-4 mt-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:mt-9 lg:justify-items-center xl:justify-items-center">
+                <?php foreach ($items as $item): ?>
+                    <div id="<?= $item['iditem'] ?>-item" data-iditem="<?= $item['iditem'] ?>"
+                        data-code="<?= $item['code'] ?>" data-name="<?= $item['name'] ?>" data-value="<?= $item['value'] ?>"
+                        data-stock="<?= $item['stock'] ?>"
+                        data-image="data:image/jpeg;base64,<?= base64_encode($item['image']); ?>"
+                        class="cursor-pointer flex flex-col justify-center items-center relative bg-white border border-gray-300 rounded-lg hover:scale-105 transition-transform duration-300 ease-in-out w-[15rem] h-[22rem]">
+
+                        <!-- Item Image -->
+                        <?php if (!empty($item['image'])): ?>
+                            <img src="data:image/jpeg;base64,<?php echo base64_encode($item['image']); ?>" alt="Item Image"
+                                class="object-cover h-full rounded-lg item-image">
+                        <?php endif; ?>
+
+                        <!-- Item Title Overlay -->
+                        <div class="absolute top-0 left-0 right-0 flex items-center justify-between h-16 px-3 text-black">
+                            <div class="flex rounded-full bg-[#ffffffa8] border border-zinc-700/60">
+                                <div onclick="openUpdateModal(<?= $item['iditem'] ?>)"
+                                    class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 border-r rounded-l-full cursor-pointer border-r-gray-600 icon-button">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </div>
+                                <div onclick="openDeleteModal(<?= $item['iditem'] ?>)"
+                                    class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 rounded-r-full cursor-pointer icon-button">
+                                    <i class="fa-solid fa-trash"></i>
+                                </div>
                             </div>
-                            <div onclick="openDeleteModal(<?= $item['iditem'] ?>)"
-                                class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 rounded-r-full cursor-pointer icon-button">
-                                <i class="fa-solid fa-trash"></i>
+                            <div
+                                class="price-container text-white bg-gray-800/80 rounded-full shadow-lg px-2 py-1 min-w-14">
+                                <h3 class="text-l text-center">
+                                    ₱ <?php echo htmlspecialchars($item['value']); ?>
+                                </h3>
                             </div>
                         </div>
-                        <div class="price-container text-white bg-gray-800/80 rounded-full shadow-lg px-2 py-1 min-w-14">
-                            <h3 class="text-l text-center">
-                                ₱ <?php echo htmlspecialchars($item['value']); ?>
+
+                        <!-- Item Name -->
+                        <div
+                            class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center h-28 px-3 text-white rounded-b-lg bg-gradient-to-t from-zinc-800/90 via-zinc-800/30 to-transparent">
+                            <h3 class="text-lg font-bold item-name text-center">
+                                <?php echo htmlspecialchars($item['name']); ?>
                             </h3>
+                            <p class="text-base item-stock">
+                                In Stock &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                                <?php echo htmlspecialchars($item['stock']); ?>
+                                Units
+                            </p>
                         </div>
                     </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
 
-                    <!-- Item Name -->
-                    <div
-                        class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center h-28 px-3 text-white rounded-b-lg bg-gradient-to-t from-zinc-800/90 via-zinc-800/30 to-transparent">
-                        <h3 class="text-lg font-bold item-name text-center">
-                            <?php echo htmlspecialchars($item['name']); ?>
-                        </h3>
-                        <p class="text-base item-stock">
-                            In Stock &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; <?php echo htmlspecialchars($item['stock']); ?>
-                            Units
-                        </p>
+        <?php
+        $queryParams = $_GET;
+        unset($queryParams['page']);
+        $base_url = $_SERVER['PHP_SELF'] . '?' . http_build_query($queryParams);
+        ?>
+
+        <!-- Pagination -->
+        <div class="flex justify-center my-4 ">
+            <div class="flex items-center space-x-2">
+                <?php if ($page > 1): ?>
+                    <a href="<?= $base_url ?>&page=<?= $page - 1 ?>"
+                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&lt;</a>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <a href="<?= $base_url ?>&page=<?= $i ?>"
+                        class="px-3 py-2 rounded-lg <?= $i == $page ? 'bg-black text-white' : 'bg-gray-300 text-black hover:bg-gray-400' ?>">
+                        <?= $i ?>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($page < $total_pages): ?>
+                    <a href="<?= $base_url ?>&page=<?= $page + 1 ?>"
+                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&gt;</a>
+                <?php endif; ?>
+            </div>
+        </div>
+
+
+
+        <!-- Add Item Modal -->
+        <div id="addItemModal"
+            class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
+            <div id="add-main" class="bg-white p-6 rounded-lg shadow-lg modal-content">
+                <h2 class="text-xl font-bold mb-4">Add New Item</h2>
+                <form id="addItemForm" action="logic/item_create.php" method="POST" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label for="name" class="block text-gray-700">Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded mt-1"
+                            required>
                     </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-
-    <!-- Add Item Modal -->
-    <div id="addItemModal"
-        class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
-        <div id="add-main" class="bg-white p-6 rounded-lg shadow-lg modal-content">
-            <h2 class="text-xl font-bold mb-4">Add New Item</h2>
-            <form id="addItemForm" action="logic/item_create.php" method="POST" enctype="multipart/form-data">
-                <div class="mb-4">
-                    <label for="name" class="block text-gray-700">Name <span class="text-red-500">*</span></label>
-                    <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded mt-1"
-                        required>
-                </div>
-                <div class="mb-4">
-                    <label for="value" class="block text-gray-700">Value <span class="text-red-500">*</span></label>
-                    <input type="number" id="value" name="value" class="w-full p-2 border border-gray-300 rounded mt-1"
-                        required>
-                </div>
-                <div class="mb-4">
-                    <label for="stock" class="block text-gray-700">Stock <span class="text-red-500">*</span></label>
-                    <input type="number" id="stock" name="stock" class="w-full p-2 border border-gray-300 rounded mt-1"
-                        required>
-                </div>
-                <div class="mb-4">
-                    <label for="image" class="block text-gray-700">Image <span class="text-red-500">*</span></label>
-                    <input type="file" id="image" name="image"
-                        class="w-full border border-gray-300 rounded mt-1 file:p-2 file:bg-gray-700 file:text-white"
-                        required>
-                </div>
-                <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2"
-                        onclick="closeAddModal()">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Update Item Modal -->
-    <div id="updateItemModal"
-        class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
-        <div id="update-main" class="w-10/12 bg-white p-6 rounded-lg shadow-lg h-4/5 md:w-1/4 overflow-y-auto">
-            <h2 class="text-xl font-bold mb-4">Update Item</h2>
-            <form id="updateItemForm" action="logic/item_update.php" method="POST" enctype="multipart/form-data">
-                <input type="hidden" id="update_iditem" name="iditem">
-                <!-- Image Preview -->
-                <div class="mb-4 flex flex-col items-center">
-                    <div class="relative w-64 h-80 rounded-lg shadow-lg shadow-zinc-700/50">
-                        <img id="preview" src="" alt="Item Image" class="h-full object-cover rounded-lg">
-                        <label for="update_image"
-                            class="absolute text-sm rounded px-2 py-1 bottom-1 right-1 bg-zinc-600 hover:bg-zinc-700 text-white cursor-pointer"><i
-                                class="fa-solid fa-upload"></i></label>
+                    <div class="mb-4">
+                        <label for="value" class="block text-gray-700">Value <span class="text-red-500">*</span></label>
+                        <input type="number" id="value" name="value"
+                            class="w-full p-2 border border-gray-300 rounded mt-1" required>
                     </div>
-                    <input type="file" id="update_image" name="image" class="hidden">
-                </div>
-
-                <div class="mb-4">
-                    <p class="block text-gray-700">Code</p>
-                    <div class="w-full p-2 border border-gray-300 rounded mt-1 text-gray-500"><span id="update_code">
-                            <innerHTMLspan>
+                    <div class="mb-4">
+                        <label for="stock" class="block text-gray-700">Stock <span class="text-red-500">*</span></label>
+                        <input type="number" id="stock" name="stock"
+                            class="w-full p-2 border border-gray-300 rounded mt-1" required>
                     </div>
-                </div>
-                <div class="mb-4">
-                    <label for="update_name" class="block text-gray-700">Name</label>
-                    <input type="text" id="update_name" name="name"
-                        class="w-full p-2 border border-gray-300 rounded mt-1" required>
-                </div>
-                <div class="mb-4">
-                    <label for="update_value" class="block text-gray-700">Value</label>
-                    <input type="number" id="update_value" name="value"
-                        class="w-full p-2 border border-gray-300 rounded mt-1" required>
-                </div>
-                <div class="mb-4">
-                    <label for="update_stock" class="block text-gray-700">Stock</label>
-                    <input type="number" id="update_stock" name="stock"
-                        class="w-full p-2 border border-gray-300 rounded mt-1" required>
-                </div>
-                <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2"
-                        onclick="closeUpdateModal()">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Delete Modal -->
-    <div id="deleteItemModal"
-        class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
-        <div id="delete-main" class="w-10/12 md:w-1/4 bg-white rounded-lg flex flex-col px-4 py-2">
-            <div class="py-2 font-semibold text-xl w-full border-b">Delete Item</div>
-            <div class="w-full my-2 text-lg">
-                <p>Are you sure to delete item <span id="delete-item" class="font-semibold"></span>?</p>
-            </div>
-            <input type="hidden" id="delete-iditem">
-
-            <div class="flex gap-3 justify-center w-full mt-6 my-2">
-                <button type="button" class="w-20 py-1 rounded bg-gray-700 text-white hover:bg-gray-800 cursor-pointer"
-                    onclick="closeDeleteModal()">Cancel</button>
-                <button class="w-20 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer"
-                    onclick="confirmDelete()">Confirm</button>
+                    <div class="mb-4">
+                        <label for="image" class="block text-gray-700">Image <span class="text-red-500">*</span></label>
+                        <input type="file" id="image" name="image"
+                            class="w-full border border-gray-300 rounded mt-1 file:p-2 file:bg-gray-700 file:text-white"
+                            required>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2"
+                            onclick="closeAddModal()">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
 
-    <!--Success Message -->
-    <div id="success"
-        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
-        <div id="success-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
-            <div class="w-full h-fit pb-4 flex justify-center">
-                <i class="fa-solid fa-circle-check text-7xl text-green-500"></i>
-            </div>
-            <div class="mb-2 text-2xl font-semibold text-center">Success!</div>
-            <div id="success-message" class="w-full text-center"></div>
+        <!-- Update Item Modal -->
+        <div id="updateItemModal"
+            class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
+            <div id="update-main" class="w-10/12 bg-white p-6 rounded-lg shadow-lg h-4/5 md:w-1/4 overflow-y-auto">
+                <h2 class="text-xl font-bold mb-4">Update Item</h2>
+                <form id="updateItemForm" action="logic/item_update.php" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" id="update_iditem" name="iditem">
+                    <!-- Image Preview -->
+                    <div class="mb-4 flex flex-col items-center">
+                        <div class="relative w-64 h-80 rounded-lg shadow-lg shadow-zinc-700/50">
+                            <img id="preview" src="" alt="Item Image" class="h-full object-cover rounded-lg">
+                            <label for="update_image"
+                                class="absolute text-sm rounded px-2 py-1 bottom-1 right-1 bg-zinc-600 hover:bg-zinc-700 text-white cursor-pointer"><i
+                                    class="fa-solid fa-upload"></i></label>
+                        </div>
+                        <input type="file" id="update_image" name="image" class="hidden">
+                    </div>
 
-            <div class="w-full mt-5 flex justify-center">
-                <button onclick="hideSuccessMessage()"
-                    class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer">Okay</button>
+                    <div class="mb-4">
+                        <p class="block text-gray-700">Code</p>
+                        <div class="w-full p-2 border border-gray-300 rounded mt-1 text-gray-500"><span
+                                id="update_code">
+                                <innerHTMLspan>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="update_name" class="block text-gray-700">Name</label>
+                        <input type="text" id="update_name" name="name"
+                            class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="update_value" class="block text-gray-700">Value</label>
+                        <input type="number" id="update_value" name="value"
+                            class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="update_stock" class="block text-gray-700">Stock</label>
+                        <input type="number" id="update_stock" name="stock"
+                            class="w-full p-2 border border-gray-300 rounded mt-1" required>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2"
+                            onclick="closeUpdateModal()">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
 
-    <!--Error Message -->
-    <div id="error"
-        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
-        <div id="error-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
-            <div class="w-full h-fit pb-4 flex justify-center">
-                <i class="fa-solid fa-circle-check text-7xl text-red-500"></i>
-            </div>
-            <div class="mb-2 text-2xl font-semibold text-center">Error!</div>
-            <div id="error-message" class="w-full text-center"></div>
+        <!-- Delete Modal -->
+        <div id="deleteItemModal"
+            class="fixed w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur-lg hidden">
+            <div id="delete-main" class="w-10/12 md:w-1/4 bg-white rounded-lg flex flex-col px-4 py-2">
+                <div class="py-2 font-semibold text-xl w-full border-b">Delete Item</div>
+                <div class="w-full my-2 text-lg">
+                    <p>Are you sure to delete item <span id="delete-item" class="font-semibold"></span>?</p>
+                </div>
+                <input type="hidden" id="delete-iditem">
 
-            <div class="w-full mt-5 flex justify-center">
-                <button onclick="hideErrorMessage()"
-                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">Okay</button>
+                <div class="flex gap-3 justify-center w-full mt-6 my-2">
+                    <button type="button"
+                        class="w-20 py-1 rounded bg-gray-700 text-white hover:bg-gray-800 cursor-pointer"
+                        onclick="closeDeleteModal()">Cancel</button>
+                    <button class="w-20 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer"
+                        onclick="confirmDelete()">Confirm</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Loader -->
-    <div id="loader"
-        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
-        <div class="w-16 h-16 border-6 border-t-gray-800 border-gray-300 rounded-full animate-spin"></div>
+        <!--Success Message -->
+        <div id="success"
+            class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+            <div id="success-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
+                <div class="w-full h-fit pb-4 flex justify-center">
+                    <i class="fa-solid fa-circle-check text-7xl text-green-500"></i>
+                </div>
+                <div class="mb-2 text-2xl font-semibold text-center">Success!</div>
+                <div id="success-message" class="w-full text-center"></div>
+
+                <div class="w-full mt-5 flex justify-center">
+                    <button onclick="hideSuccessMessage()"
+                        class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer">Okay</button>
+                </div>
+            </div>
+        </div>
+
+        <!--Error Message -->
+        <div id="error"
+            class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+            <div id="error-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
+                <div class="w-full h-fit pb-4 flex justify-center">
+                    <i class="fa-solid fa-circle-check text-7xl text-red-500"></i>
+                </div>
+                <div class="mb-2 text-2xl font-semibold text-center">Error!</div>
+                <div id="error-message" class="w-full text-center"></div>
+
+                <div class="w-full mt-5 flex justify-center">
+                    <button onclick="hideErrorMessage()"
+                        class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">Okay</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loader -->
+        <div id="loader"
+            class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+            <div class="w-16 h-16 border-6 border-t-gray-800 border-gray-300 rounded-full animate-spin"></div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay"
+            class="fixed inset-0 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden">
+            <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-2">
+                <span class="animate-spin h-5 w-5 border-4 border-blue-500 border-t-transparent rounded-full"></span>
+                <p class="text-lg font-semibold">Processing...</p>
+            </div>
+        </div>
+
     </div>
 
 </body>
@@ -469,6 +600,41 @@ try {
                 closeDeleteModal();
             }
         })
+
+
+
+        function showLoading() {
+            $('#loadingOverlay').removeClass('hidden');
+        }
+
+        $('select[name="filter"]').on('change', function () {
+            showLoading();
+            $(this).closest('form').submit();
+        });
+
+        let typingTimer;
+        const doneTypingInterval = 300;
+        const $searchInput = $('input[name="search"]');
+
+        $searchInput.on('keyup', function () {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                showLoading();
+                $(this).closest('form').submit();
+            }, doneTypingInterval);
+        });
+
+        $searchInput.on('keydown', function () {
+            clearTimeout(typingTimer);
+        });
+
+        $searchInput.on('keypress', function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                showLoading();
+                $(this).closest('form').submit();
+            }
+        });
     })
 </script>
 
