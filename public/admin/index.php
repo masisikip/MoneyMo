@@ -184,6 +184,8 @@
 
 
         $(document).ready(function () {
+            $('#header-title').text('Dashboard');
+
             // Event listener for table's print buttons
             $('table').on('click', 'button', function () {
                 var $row = $(this).closest('tr');

@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($users != 0) {
         echo json_encode([
             'status' => 'error',
-            'message' => 'User already exists.'
+            'message' => 'User already exists!'
         ]);
         exit();
     }
@@ -48,12 +48,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt->execute()) {
             echo json_encode([
                 'status' => 'success',
-                'message' => 'User added successfully!'
+                'message' => 'User added successfully'
             ]);
         } else {
             echo json_encode([
                 'status' => 'error',
-                'message' => 'Failed to add user.'
+                'message' => 'Failed to add user'
             ]);
         }
     } catch (PDOException $e) {

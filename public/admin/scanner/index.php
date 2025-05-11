@@ -127,6 +127,8 @@ try {
     }
 
     $(document).ready(function () {
+        $('#header-title').text('QR Scan');
+
         $('#select-all').on('change', function () {
             if ($(this).prop('checked')) {
                 $('.item-card').removeClass('border-gray-300').addClass('border-black');

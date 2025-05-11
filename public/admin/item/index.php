@@ -334,6 +334,8 @@ try {
     }
 
     $(document).ready(function () {
+        $('#header-title').text('Items');
+
         if (localStorage.getItem('addSuccess') === 'true') {
             message = localStorage.getItem('message');
             $('#success').addClass('flex').removeClass('hidden');

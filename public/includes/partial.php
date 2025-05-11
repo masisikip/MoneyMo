@@ -31,7 +31,7 @@ if ($host === 'localhost') {
 
 
         <div class="flex items-center space-x-2">
-            <h1 class="text-xl font-bold">DASHBOARD</h1>
+            <h1 id="header-title" class="text-xl font-bold">DASHBOARD</h1>
             <span class="<?php echo ($usertype == 1) ? 'text-gray-600' : 'text-gray-300'; ?>">
                 | Hello, <?php echo ($usertype == 1) ? 'Admin' : 'User'; ?> <?= $payload['user_name']; ?>
             </span>

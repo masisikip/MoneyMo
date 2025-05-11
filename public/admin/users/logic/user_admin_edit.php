@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $users = $stmt1->fetchColumn();
 
     if ($users != 0) {
-        echo json_encode(['status' => 'error', 'message' => 'Update failed 1.']);
+        echo json_encode(['status' => 'error', 'message' => 'User already exists!']);
         exit();
     }
 
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $pdo->prepare("UPDATE user SET l_name = ?, f_name = ?, email = ?, year = ?, student_id = ?, password = ?, usertype = ? WHERE iduser = ?");
             $stmt->execute([$l_name, $f_name, $email, $year, $student_id, $hashed_password, $is_admin, $user_id]);
 
-            echo json_encode(['status' => 'success', 'temp' => $is_admin]);
+            echo json_encode(['status' => 'success', 'temp' => $is_admin, 'message' => 'User updated successfully']);
             // echo json_encode(['status' => 'success']);
             exit();
         } else {
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $pdo->prepare("UPDATE user SET l_name = ?, f_name = ?, email = ?, year = ?, student_id = ?, usertype = ? WHERE iduser = ?");
             $stmt->execute([$l_name, $f_name, $email, $year, $student_id, $is_admin, $user_id]);
             
-            echo json_encode(['status' => 'success', 'temp' => $is_admin]);
+            echo json_encode(['status' => 'success', 'temp' => $is_admin, 'message' => 'User updated successfully']);
             // echo json_encode(['status' => 'success']);
             exit();
         }
@@ -45,6 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Update failed.']);
+    echo json_encode(['status' => 'error', 'message' => 'User failed to update']);
     exit();
 }

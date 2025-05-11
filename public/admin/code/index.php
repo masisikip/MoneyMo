@@ -102,4 +102,8 @@ require_once '../../includes/token.php';
             }
         });
     });
+
+    $(document).ready(function () {
+        $('#header-title').text('QR Code');
+    })
 </script>

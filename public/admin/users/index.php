@@ -96,56 +96,60 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php include_once '../../includes/partial.php' ?>
 
     <main id="mainContent" class="mt-5 p-6 w-full max-w-full transition-all duration-300">
-        <div class="flex items-center justify-between bg-white p-4 shadow rounded-lg gap-4 relative">
+        <div class="flex items-center justify-between bg-white p-4 shadow rounded-lg relative">
             <!-- Left: Title, Search, Filter -->
-            <div class="flex items-center gap-4 flex-wrap flex-grow">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Users</h1>
+            <div class="flex flex-col md:flex-row p-1 gap-4 flex-wrap flex-grow">
+                <div class="flex flex-1 gap-2 max-w-[40rem]">
+                    <!-- Search -->
+                    <div class="relative w-full flex items-center">
+                        <input type="text" id="userSearch" placeholder="Search" autocomplete="off" value="<?php if (isset($_GET['search'])) {
+                            echo $_GET['search'];
+                        } ?>"
+                            class="border border-gray-300 py-2 pl-10 pr-4 rounded-lg w-full focus:outline-none focus:ring focus:ring-black text-base md:text-sm h-full">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 mr-2"></i>
+                    </div>
 
-                <!-- Search -->
-                <div class="relative w-full max-w-[180px] md:max-w-xs">
-                    <input type="text" id="userSearch" placeholder="Search" autocomplete="off" value="<?php if (isset($_GET['search'])) {
-                        echo $_GET['search'];
-                    } ?>"
-                        class="border border-gray-300 p-2 pl-8 pr-4 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-black text-base md:text-sm">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <!-- Filter Dropdown -->
+                    <div class="relative">
+                        <button id="toggleFilterMenu"
+                            class="bg-gray-100 text-black p-3 rounded-lg flex items-center hover:bg-gray-200 transition">
+                            <i class="fa-solid fa-sliders text-xl"></i>
+                        </button>
+
+                        <div id="filterMenu"
+                            class="hidden absolute top-full mt-2 right-0 bg-white shadow-lg border p-4 rounded-lg z-20 w-64">
+                            <form id="filterForm">
+                                <div class="mb-4">
+                                    <label class="font-semibold mb-2 block">Year</label>
+                                    <label><input type="checkbox" name="year[]" value="1"> 1st</label><br>
+                                    <label><input type="checkbox" name="year[]" value="2"> 2nd</label><br>
+                                    <label><input type="checkbox" name="year[]" value="3"> 3rd</label><br>
+                                    <label><input type="checkbox" name="year[]" value="4"> 4th</label>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="font-semibold mb-2 block">User Type</label>
+                                    <label><input type="checkbox" name="usertype[]" value="0"> Student</label><br>
+                                    <label><input type="checkbox" name="usertype[]" value="1"> Officer</label>
+                                </div>
+                                <button type="submit"
+                                    class="w-full mt-2 bg-black text-white py-2 rounded hover:bg-gray-800">Apply
+                                    Filters</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Filter Dropdown -->
-                <div class="relative">
-                    <button id="toggleFilterMenu"
-                        class="bg-gray-100 text-black p-3 rounded-lg flex items-center hover:bg-gray-200 transition">
-                        <i class="fa-solid fa-sliders  text-xl"></i>
+                <div class="flex flex-grow justify-end">
+                    <!-- Right: Add User Button -->
+                    <button id="openAddUserModal"
+                        class="w-full bg-black text-white rounded-lg flex items-center hover:bg-gray-800 transition md:w-fit md:px-4 py-2 gap-2">
+                        <i class="fas fa-user-plus text-xl ml-4 md:ml-0"></i>
+                        <span class="font-medium mx-auto md:mx-0">Add User</span>
                     </button>
-
-                    <div id="filterMenu"
-                        class="hidden absolute top-full mt-2 right-0 bg-white shadow-lg border p-4 rounded-lg z-20 w-64">
-                        <form id="filterForm">
-                            <div class="mb-4">
-                                <label class="font-semibold mb-2 block">Year</label>
-                                <label><input type="checkbox" name="year[]" value="1"> 1st</label><br>
-                                <label><input type="checkbox" name="year[]" value="2"> 2nd</label><br>
-                                <label><input type="checkbox" name="year[]" value="3"> 3rd</label><br>
-                                <label><input type="checkbox" name="year[]" value="4"> 4th</label>
-                            </div>
-                            <div class="mb-4">
-                                <label class="font-semibold mb-2 block">User Type</label>
-                                <label><input type="checkbox" name="usertype[]" value="0"> Student</label><br>
-                                <label><input type="checkbox" name="usertype[]" value="1"> Officer</label>
-                            </div>
-                            <button type="submit"
-                                class="w-full mt-2 bg-black text-white py-2 rounded hover:bg-gray-800">Apply
-                                Filters</button>
-                        </form>
-                    </div>
                 </div>
             </div>
 
-            <!-- Right: Add User Button -->
-            <button id="openAddUserModal"
-                class="bg-black text-white p-3 rounded-lg flex items-center hover:bg-gray-800 transition md:px-4 md:py-2 md:gap-2 justify-center">
-                <i class="fas fa-user-plus text-xl"></i>
-                <span class="hidden md:block text-sm font-medium">Add User</span>
-            </button>
+
         </div>
 
 
@@ -220,7 +224,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?= $userData['student_id'] ?>
                             </p>
                             <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>">
-                                <?= $userData['year'] ?>
+                                Year <?= $userData['year'] ?>
                             </p>
                             <p class="text-gray-500 text-sm"><?= htmlspecialchars($userData['email']) ?></p>
                         </div>
@@ -478,16 +482,17 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 success: function (response) {
                     response = JSON.parse(response);
                     if (response.status === 'success') {
+                        localStorage.setItem("message", response.message)
                         location.reload();
                         localStorage.setItem("addSuccess", "true");
                     } else {
-                        $('#error').addClass('flex').removeClass('hidden');
-                        $('#error-message').text(response.message);
+                        localStorage.setItem("message", response.message)
                         location.reload();
                         localStorage.setItem("addError", "true");
                     }
                 },
                 error: function (xhr, status, error) {
+                    localStorage.setItem("message", response.message)
                     location.reload();
                     localStorage.setItem("addError", "true");
                 }
@@ -508,15 +513,17 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 dataType: 'json',
                 success: function (response) {
                     if (response.status === 'success') {
+                        localStorage.setItem("message", response.message)
                         localStorage.setItem("editSuccess", "true");
                         location.reload();
                     } else {
+                        localStorage.setItem("message", response.message)
                         localStorage.setItem("editError", "true");
                         location.reload();
-
                     }
                 },
                 error: function (xhr, status, error) {
+                    localStorage.setItem("message", response.message)
                     localStorage.setItem("editError", "true");
                     location.reload();
                 }
@@ -535,7 +542,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         function openDeleteModal(iduser) {
             let id = $('#user-' + iduser);
-            let name = id.data('fname') + id.data('fname');
+            let name = id.data('fname') + ' ' + id.data('lname');
             $('#deleteModal').removeClass('hidden').addClass('flex');
             $('#delete-user').text(name);
             $('#delete-iduser').val(iduser);
@@ -554,13 +561,23 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 url: "logic/user_delete.php",
                 method: 'POST',
                 data: { iduser: iduser },
+                dataType: 'json',
                 // processData: false,
                 // contentType: false,
                 success: function (response) {
-                    location.reload();
-                    localStorage.setItem("deleteSuccess", "true");
+                    if (response.status == 'success') {
+                        localStorage.setItem("message", response.message)
+                        localStorage.setItem("deleteSuccess", "true");
+                        location.reload();
+                    } else {
+                        localStorage.setItem("message", response.message)
+                        localStorage.setItem("deleteError", "true");
+                        location.reload();
+
+                    }
                 },
                 error: function (xhr, status, error) {
+                    localStorage.setItem("message", response.message)
                     location.reload();
                     localStorage.setItem("deleteError", "true");
                 }
@@ -651,40 +668,53 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         });
 
         $(document).ready(function () {
+            $('#header-title').text('Users');
             if (localStorage.getItem('addSuccess') === 'true') {
+                message = localStorage.getItem('message');
                 $('#success').addClass('flex').removeClass('hidden');
-                $('#success-message').text('Successfully added user');
+                $('#success-message').text(message);
                 localStorage.removeItem('addSuccess');
+                localStorage.removeItem('message');
             }
 
             if (localStorage.getItem('addError') === 'true') {
+                message = localStorage.getItem('message');
                 $('#error').addClass('flex').removeClass('hidden');
-                $('#error-message').text('Failed to add user');
+                $('#error-message').text(message);
                 localStorage.removeItem('addError');
+                localStorage.removeItem('message');
             }
 
             if (localStorage.getItem('editSuccess') === 'true') {
+                message = localStorage.getItem('message');
                 $('#success').addClass('flex').removeClass('hidden');
-                $('#success-message').text('Successfully updated user');
+                $('#success-message').text(message);
                 localStorage.removeItem('editSuccess');
+                localStorage.removeItem('message');
             }
 
             if (localStorage.getItem('editError') === 'true') {
-                $('#error-message').text('Failed to update user');
+                message = localStorage.getItem('message');
+                $('#error-message').text(message);
                 $('#error').addClass('flex').removeClass('hidden');
                 localStorage.removeItem('editError');
+                localStorage.removeItem('message');
             }
 
             if (localStorage.getItem('deleteSuccess') === 'true') {
+                message = localStorage.getItem('message');
+                $('#success-message').text(message);
                 $('#success').addClass('flex').removeClass('hidden');
-                $('#success-message').text('Successfully deleted user');
                 localStorage.removeItem('deleteSuccess');
+                localStorage.removeItem('message');
             }
 
             if (localStorage.getItem('deleteError') === 'true') {
-                $('#error-message').text('Failed to delete user');
+                message = localStorage.getItem('message');
                 $('#error').addClass('flex').removeClass('hidden');
+                $('#error-message').text(message);
                 localStorage.removeItem('deleteError');
+                localStorage.removeItem('message');
             }
 
 
