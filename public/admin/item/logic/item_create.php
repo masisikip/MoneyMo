@@ -11,9 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $code = "";
     $n = count($strings);
     for ($i = 0; $i < $n; $i++) {
-        $code .= strtoupper(substr($strings[$i], 0, 3));
-        if ($i != $n -1) {
-            $code .= "_";
+        if ($i < 2) {
+            $code .= strtoupper(substr($strings[$i], 0, 2));
+        } else {
+            $code .= strtoupper(substr($strings[$i], 0, 1));
+        }
+        if ($i == 1 && $n > 2) {
+           $code .= "_";
         }
     }
 
@@ -21,13 +25,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt1->execute([$code]);
     $exists = $stmt1->fetchColumn();
 
-    if ($exists == 0) {
-        // safe to insert
-    } else {
-        echo "Item already exists!";
+    if ($exists != 0) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Item already exists!'
+        ]);        
         exit();
     }
-    
+
     if (!empty($image['tmp_name'])) {
         $source = $image['tmp_name'];
         list($width, $height) = getimagesize($source);
@@ -43,7 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } elseif ($info['mime'] == 'image/png') {
             $img_resource = imagecreatefrompng($source);
         } else {
-            header("Location: ../../item/index.php?error=1");
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Invalid file'
+            ]);
             exit();
         }
 
@@ -61,14 +69,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':image', $img_content, PDO::PARAM_LOB);
             $stmt->bindParam(':stock', $stock);
             $stmt->execute();
-            header("Location: ../../item/index.php");
+
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Successfully added item'
+            ]);
             exit();
         } catch (PDOException $e) {
-            header("Location: ../../item/index.php?error=1");
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to add item'
+            ]);
             exit();
         }
     } else {
-        header("Location: ../../item/index.php?error=1");
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Empty Image'
+        ]);
         exit();
     }
 

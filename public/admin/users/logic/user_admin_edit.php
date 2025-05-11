@@ -2,7 +2,7 @@
 session_start();
 include_once '../../../includes/connect-db.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = $_POST['user_id'];
     $l_name = trim($_POST['l_name']);
     $f_name = trim($_POST['f_name']);
@@ -17,8 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
     $users = $stmt1->fetchColumn();
 
     if ($users != 0) {
-        echo 'User already exists';
-        header("Location: ../../users");
+        echo json_encode(['status' => 'error', 'message' => 'User already exists!']);
         exit();
     }
 
@@ -27,25 +26,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
         if (!empty($password)) {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $pdo->prepare("UPDATE user SET l_name = ?, f_name = ?, email = ?, year = ?, student_id = ?, password = ?, usertype = ? WHERE iduser = ?");
-            $stmt->execute([$l_name, $f_name, $email, $year, $student_id, $hashed_password, $usertype, $user_id]);
+            $stmt->execute([$l_name, $f_name, $email, $year, $student_id, $hashed_password, $is_admin, $user_id]);
+
+            echo json_encode(['status' => 'success', 'temp' => $is_admin, 'message' => 'User updated successfully']);
+            // echo json_encode(['status' => 'success']);
+            exit();
         } else {
             // No password update
             $stmt = $pdo->prepare("UPDATE user SET l_name = ?, f_name = ?, email = ?, year = ?, student_id = ?, usertype = ? WHERE iduser = ?");
-            $stmt->execute([$l_name, $f_name, $email, $year, $student_id, $usertype, $user_id]);
+            $stmt->execute([$l_name, $f_name, $email, $year, $student_id, $is_admin, $user_id]);
+            
+            echo json_encode(['status' => 'success', 'temp' => $is_admin, 'message' => 'User updated successfully']);
+            // echo json_encode(['status' => 'success']);
+            exit();
         }
-
-        $_SESSION['message'] = "User updated successfully!";
-        $_SESSION['message_type'] = "success";
     } catch (PDOException $e) {
-        $_SESSION['message'] = "Error updating user: " . $e->getMessage();
-        $_SESSION['message_type'] = "error";
+        echo json_encode(['status' => 'error', 'message' => $e]);
+        exit();
     }
-
-    header("Location: ../../users");
-    exit();
 } else {
-    $_SESSION['message'] = "Invalid request!";
-    $_SESSION['message_type'] = "error";
-    header("Location: ../../users");
+    echo json_encode(['status' => 'error', 'message' => 'User failed to update']);
     exit();
 }
