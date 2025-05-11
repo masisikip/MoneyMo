@@ -67,6 +67,9 @@ $path = ($host === 'localhost')
     <nav>
         <ul class="space-y-4">
             <li><a href="<?= $path ?>admin/" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+            <li><a href="<?= $path . 'admin/collection' ?>"
+                    class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fa-solid fa-money-bill-1-wave"></i>
+                    <span>Collection</span></a></li>
             <li><a href="<?= $path ?>admin/inventory" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-box"></i><span>Inventory</span></a></li>
             <li><a href="<?= $path ?>admin/statistics" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fa-solid fa-chart-line"></i><span>Statistics</span></a></li>
             <li><a href="<?= $path ?>admin/scanner" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i class="fas fa-qrcode"></i><span>QR Scanner</span></a></li>
