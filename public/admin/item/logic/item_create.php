@@ -25,10 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt1->execute([$code]);
     $exists = $stmt1->fetchColumn();
 
-    if ($exists == 0) {
-        // safe to insert
-    } else {
-        echo "Item already exists!";
+    if ($exists != 0) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Item already exists'
+        ]);        
         exit();
     }
 

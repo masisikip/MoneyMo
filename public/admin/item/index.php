@@ -375,8 +375,13 @@ try {
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    location.reload();
-                    localStorage.setItem("addSuccess", "true");
+                    if (response['status'] == 'success') {
+                        location.reload();
+                        localStorage.setItem("addSuccess", "true");
+                    } else {
+                        location.reload();
+                        localStorage.setItem("addError", "true");
+                    }
                 },
                 error: function (xhr, status, error) {
                     $('#error').addClass('flex').removeClass('hidden');
