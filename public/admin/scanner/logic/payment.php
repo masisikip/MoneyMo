@@ -37,32 +37,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die('No items selected.');
     }
 
+    $stmt8 = $pdo->prepare('SELECT prefix FROM ctrl_no ORDER BY idctrl_no DESC LIMIT 1');
+    $stmt8->execute();
+    $prefix = $stmt8->fetch();
+
     $pdo->beginTransaction();
 
     foreach ($_POST['iditem'] as $item) {
         $stmt3 = $pdo->prepare('SELECT * FROM item WHERE iditem = ?');
         $stmt3->execute([$item]);
         $cur_item = $stmt3->fetch();
+
+        $stmt7 = $pdo->prepare('SELECT COUNT(*) AS item_count FROM inventory WHERE iditem = ?');
+        $stmt7->execute([$item]);
+        $cur_ref = $stmt7->fetch();
+        $ref_val = strval($cur_ref['item_count'] + 1);
+        $ref_no = str_pad($ref_val, 4, '0', STR_PAD_LEFT);
         
         $val = strval($cur_num);
-        $receipt_no = str_pad($val, 4, '0', STR_PAD_LEFT);
+        $ctrl_no = str_pad($val, 4, '0', STR_PAD_LEFT);
 
         if (!$cur_item) {
             continue; 
         }
 
-        $reference_no = "ACS-" . $cur_item['code'] . "-" . date("Ymd") . "-" . $receipt_no;
+        $price = $cur_item['value'];
+
+        $reference_no = $prefix . "-" . $cur_item['code'] . "-" . $ref_no;
+        $control_no = $prefix . "-" . $ctrl_no;
 
         $stmt4 = $pdo->prepare('INSERT INTO inventory 
-                                (iduser, idofficer, iditem, reference_no) 
-                                VALUES (?, ?, ?, ?)');
-        $stmt4->execute([$student, $officer, $item, $reference_no]);
+                                (iduser, idofficer, iditem, ref_no, ctrl_no, value) 
+                                VALUES (?, ?, ?, ?, ?)');
+        $stmt4->execute([$student, $officer, $item, $reference_no, $control_no, $price]);
 
         $stmt5 = $pdo->prepare('UPDATE item SET stock = stock - 1 WHERE iditem = ?');
         $stmt5->execute([$item]);
 
+        $stmt6 = $pdo->prepare('UPDATE item SET sale_count = sale_count + 1 WHERE iditem = ?');
+        $stmt6->execute([$item]);
+
         $cur_num ++;
-        $amount += $cur_item['value'];
+        $amount += $price;
     }
 
     $pdo->commit(); 
