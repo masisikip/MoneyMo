@@ -75,7 +75,7 @@ $path = ($host === 'localhost')
             <li><a href="<?= $path ?>admin/" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
                         class="fas fa-home"></i><span>Dashboard</span></a></li>
             <li><a href="<?= $path ?>user/" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
-                        class="fa-solid fa-file-invoice-dollar"></i><span>My Receipts</span></a></li>
+                        class="fa-solid fa-file-invoice-dollar"></i><span>My Purchases</span></a></li>
             <li><a href="<?= $path . 'admin/collection' ?>"
                     class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
                         class="fa-solid fa-money-bill-1-wave"></i>
