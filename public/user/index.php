@@ -58,7 +58,7 @@
     ?>
     <!-- Receipts Grid -->
 
-    <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:w-10/12 gap-4 place-items-center">
+    <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 md:w-10/12 gap-4 place-items-center">
       <?php foreach ($purchases as $purchase): ?>
         <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>"
           data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
