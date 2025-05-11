@@ -17,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             $code .= strtoupper(substr($strings[$i], 0, 1));
         }
-        if ($i == 1 && $n > 2) {
-           $code .= "_";
+        if ($i == 1 && $i + 2 < $n) {
+            $code .= "_";
         }
     }
 

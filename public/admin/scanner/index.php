@@ -33,7 +33,7 @@ try {
     </main>
 
     <!-- Items section -->
-    <div id="items" class="fixed w-full h-full bg-gray-500/50 top-0 left-0 justify-center items-center hidden">
+    <div id="items" class="fixed w-full h-full bg-gray-500/50 top-0 left-0 justify-center items-center flex">
         <div id="items-main"
             class="mt-4 w-[20rem] md:w-[30rem] h-[30rem] rounded-md flex flex-col bg-white p-4 overflow-y-auto items-center">
             <div class="w-full items-center flex justify-between">
@@ -48,25 +48,33 @@ try {
                 class="w-full flex flex-col mt-6 items-center">
                 <div id="item-grid" class="grid grid-cols-2 md:grid-cols-3 gap-2">
                     <?php foreach ($items as $item):
-                        if ($item['stock'] > 0):
-                            ?>
-                            <div class="w-30 h-30 border border-gray-300 bg-white rounded-md flex justify-center items-center relative cursor-pointer item-card"
-                                onclick="selectItem(this)">
-                                <input type="checkbox" name="iditem[]" value="<?= $item['iditem'] ?>" class="hidden">
-                                <div class="h-3/4">
-                                    <img src="data:image/jpeg;base64,<?= base64_encode($item['image']) ?>"
-                                        class="w-full h-full object-cover">
-                                </div>
+                        ?>
+                        <div class="w-30 h-30 border-2 border-gray-300 bg-white rounded-md flex justify-center items-center relative cursor-pointer item-card"
+                            <?php if ($item['stock'] > 0)
+                                echo 'onclick="selectItem(this)"'; ?>>
+                            <input type="checkbox" name="iditem[]" value="<?= $item['iditem'] ?>" class="hidden">
+                            <i class="text-green-500 absolute top-1 left-1 fa-solid fa-square-check invisible check"></i>
 
-                                <!-- Overlay Price -->
-                                <div class="w-full absolute top-0 left-0 text-end text-gray-700 pt-1 px-2 text-xs rounded-t-md">
-                                    P <?= $item['value'] ?></div>
-                                <div
-                                    class="w-full h-16 absolute bottom-0 left-0 bg-linear-to-t from-[#000000b1] to-transparent text-white text-xs flex justify-center items-end pb-2 rounded-b-md font-semibold">
-                                    <?= $item['name'] ?>
+                            <?php if ($item['stock'] == 0): ?>
+                                <div class="absolute rounded top-0 left-0 w-full h-full bg-gray-700/50">
                                 </div>
+                                <span class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 text-lg text-white font-bold w-full text-center">Out of Stock</span>
+                            <?php endif; ?>
+                            <div class="h-3/4">
+                                <img src="data:image/jpeg;base64,<?= base64_encode($item['image']) ?>"
+                                    class="w-full h-full object-cover">
                             </div>
-                        <?php endif; endforeach; ?>
+
+                            <!-- Overlay Price -->
+                            <div class="w-full absolute top-0 left-0 text-end text-gray-700 pt-1 px-2 text-xs rounded-t-md">
+                                P <?= $item['value'] ?></div>
+                            <div
+                                class="w-full h-16 absolute bottom-0 left-0 bg-linear-to-t from-[#000000b1] to-transparent <?php if ($item['stock'] > 0)
+                                {echo 'text-white';} else {echo 'text-gray-300';} ?> text-xs flex justify-center text-center items-end pb-2 rounded-b-md font-semibold">
+                                <?= $item['name'] ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
                 <input type="hidden" id="student_id" name="student_id">
                 <button onclick="processPayment(event)"
@@ -89,10 +97,12 @@ try {
         let checkbox = item.find('input[name="iditem[]"]');
 
         if (item.hasClass('border-gray-300')) {
-            item.removeClass('border-gray-300').addClass('border-black');
+            item.removeClass('border-gray-300').addClass('border-green-300');
+            item.find('.check').removeClass('invisible');
             checkbox.prop('checked', true);
         } else {
-            item.addClass('border-gray-300').removeClass('border-black');
+            item.addClass('border-gray-300').removeClass('border-green-300');
+            item.find('.check').addClass('invisible');
             checkbox.prop('checked', false);
         }
     }
