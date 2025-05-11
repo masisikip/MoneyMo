@@ -116,20 +116,20 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
 </head>
 
-<body class="h-screen bg-gray-100">
+<body class="w-full h-full bg-gray-100">
     <div class="flex-1 p-4 md:p-8 overflow-y-auto w-full md:ml-0 pb-24">
         <form method="get" class="w-full">
             <div
                 class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full  mx-auto">
                 <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
-                    <div class="px-3 py-1 text-white border rounded-l-lg bg-zinc-700">
+                    <div class="px-3 py-2 text-white border rounded-l-lg bg-zinc-700">
                         <i class="fas fa-search"></i>
                     </div>
                     <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
                         placeholder="Search inventory..." class="px-2 w-full focus:outline-none py-0">
                 </div>
                 <div class="flex items-center border border-gray-300 rounded-lg w-full md:w-auto">
-                    <button type="submit" class="text-white border bg-zinc-700 rounded-l-lg py-1 px-3">
+                    <button type="submit" class="text-white border bg-zinc-700 rounded-l-lg py-2 px-3">
                         <i class="fas fa-sliders-h"></i>
                     </button>
                     <select name="filter" class="px-2 focus:outline-none w-full md:w-auto">
