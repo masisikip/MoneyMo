@@ -13,7 +13,6 @@ if (!empty($search)) {
     $whereClause .= " AND (item.name LIKE :search)";
 }
 
-// Updated filter logic
 if ($filter === 'in_stock') {
     $whereClause .= " AND stock >= 10";
 } elseif ($filter === 'low_stock') {
@@ -22,7 +21,6 @@ if ($filter === 'in_stock') {
     $whereClause .= " AND stock = 0";
 }
 
-// Count query
 $countQuery = "
     SELECT COUNT(*)
     FROM item
@@ -41,7 +39,6 @@ $total_records = $countStmt->fetchColumn();
 
 $total_pages = ceil($total_records / $limit);
 
-// Main data query
 $query = "
     SELECT *
     FROM item
@@ -222,10 +219,6 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php endif; ?>
             </div>
         </div>
-
-
-
-
     </main>
 
     <!-- Add Item Modal -->
