@@ -40,7 +40,7 @@
           date(date) AS date,
           quantity,
           name,
-          value,
+          item.value,
           idinventory,
           CASE 
           WHEN payment_type = 0 THEN 'Cash'
