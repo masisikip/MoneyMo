@@ -96,57 +96,60 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php include_once '../../includes/partial.php' ?>
 
     <main id="mainContent" class="mt-5 p-6 w-full max-w-full transition-all duration-300">
-        <div class="flex items-center justify-between bg-white p-4 shadow rounded-lg gap-4 relative">
+        <div class="flex items-center justify-between bg-white p-4 shadow rounded-lg relative">
             <!-- Left: Title, Search, Filter -->
-            <div class="flex items-center gap-4 flex-wrap flex-grow">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Users</h1>
-
-                <!-- Search -->
-                <div class="relative w-full max-w-[180px] md:max-w-xs">
-                    <input type="text" id="userSearch" placeholder="Search" autocomplete="off"
-                        value="<?php if (isset($_GET['search'])) {
+            <div class="flex flex-col md:flex-row p-1 gap-4 flex-wrap flex-grow">
+                <div class="flex flex-1 gap-2 max-w-[40rem]">
+                    <!-- Search -->
+                    <div class="relative w-full flex items-center">
+                        <input type="text" id="userSearch" placeholder="Search" autocomplete="off" value="<?php if (isset($_GET['search'])) {
                             echo $_GET['search'];
                         } ?>"
-                        class="border border-gray-300 p-2 pl-8 pr-4 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-black text-base md:text-sm">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            class="border border-gray-300 py-2 pl-10 pr-4 rounded-lg w-full focus:outline-none focus:ring focus:ring-black text-base md:text-sm h-full">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 mr-2"></i>
+                    </div>
+
+                    <!-- Filter Dropdown -->
+                    <div class="relative">
+                        <button id="toggleFilterMenu"
+                            class="bg-gray-100 text-black p-3 rounded-lg flex items-center hover:bg-gray-200 transition">
+                            <i class="fa-solid fa-sliders text-xl"></i>
+                        </button>
+
+                        <div id="filterMenu"
+                            class="hidden absolute top-full mt-2 right-0 bg-white shadow-lg border p-4 rounded-lg z-20 w-64">
+                            <form id="filterForm">
+                                <div class="mb-4">
+                                    <label class="font-semibold mb-2 block">Year</label>
+                                    <label><input type="checkbox" name="year[]" value="1"> 1st</label><br>
+                                    <label><input type="checkbox" name="year[]" value="2"> 2nd</label><br>
+                                    <label><input type="checkbox" name="year[]" value="3"> 3rd</label><br>
+                                    <label><input type="checkbox" name="year[]" value="4"> 4th</label>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="font-semibold mb-2 block">User Type</label>
+                                    <label><input type="checkbox" name="usertype[]" value="0"> Student</label><br>
+                                    <label><input type="checkbox" name="usertype[]" value="1"> Officer</label>
+                                </div>
+                                <button type="submit"
+                                    class="w-full mt-2 bg-black text-white py-2 rounded hover:bg-gray-800">Apply
+                                    Filters</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Filter Dropdown -->
-                <div class="relative">
-                    <button id="toggleFilterMenu"
-                        class="bg-gray-100 text-black p-3 rounded-lg flex items-center hover:bg-gray-200 transition">
-                        <i class="fa-solid fa-sliders  text-xl"></i>
+                <div class="flex flex-grow justify-end">
+                    <!-- Right: Add User Button -->
+                    <button id="openAddUserModal"
+                        class="w-full bg-black text-white rounded-lg flex items-center hover:bg-gray-800 transition md:w-fit md:px-4 py-2 gap-2">
+                        <i class="fas fa-user-plus text-xl ml-4 md:ml-0"></i>
+                        <span class="font-medium mx-auto md:mx-0">Add User</span>
                     </button>
-
-                    <div id="filterMenu"
-                        class="hidden absolute top-full mt-2 right-0 bg-white shadow-lg border p-4 rounded-lg z-20 w-64">
-                        <form id="filterForm">
-                            <div class="mb-4">
-                                <label class="font-semibold mb-2 block">Year</label>
-                                <label><input type="checkbox" name="year[]" value="1"> 1st</label><br>
-                                <label><input type="checkbox" name="year[]" value="2"> 2nd</label><br>
-                                <label><input type="checkbox" name="year[]" value="3"> 3rd</label><br>
-                                <label><input type="checkbox" name="year[]" value="4"> 4th</label>
-                            </div>
-                            <div class="mb-4">
-                                <label class="font-semibold mb-2 block">User Type</label>
-                                <label><input type="checkbox" name="usertype[]" value="0"> Student</label><br>
-                                <label><input type="checkbox" name="usertype[]" value="1"> Officer</label>
-                            </div>
-                            <button type="submit"
-                                class="w-full mt-2 bg-black text-white py-2 rounded hover:bg-gray-800">Apply
-                                Filters</button>
-                        </form>
-                    </div>
                 </div>
             </div>
 
-            <!-- Right: Add User Button -->
-            <button id="openAddUserModal"
-                class="bg-black text-white p-3 rounded-lg flex items-center hover:bg-gray-800 transition md:px-4 md:py-2 md:gap-2 justify-center">
-                <i class="fas fa-user-plus text-xl"></i>
-                <span class="hidden md:block text-sm font-medium">Add User</span>
-            </button>
+
         </div>
 
 
@@ -184,7 +187,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <?= htmlspecialchars($userData['usertype'] == 1 ? 'Officer' : 'Student') ?>
                                     </td>
                                     <td class="px-2 md:px-6 py-2 md:py-3 text-left whitespace-nowrap">
-                                        <a href="#"
+                                        <a href="#" id="user-<?= $userData['iduser'] ?>"
                                             class="edit-btn text-black-500 text-xs md:text-base mx-1 inline-flex items-center"
                                             data-id="<?= $userData['iduser'] ?>"
                                             data-lname="<?= htmlspecialchars($userData['l_name']) ?>"
@@ -196,11 +199,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <span class="text-gray-400 mx-1">|</span>
-                                        <a href="./logic/user_delete.php?id=<?= $userData['iduser'] ?>"
-                                            class="text-black-500 text-xs md:text-base mx-1 inline-flex items-center"
-                                            onclick="return confirm('Are you sure you want to delete this user?');">
+                                        <button type='button' class="cursor-pointer text-black text-xs md:text-base"
+                                            onclick="openDeleteModal(<?= $userData['iduser'] ?>)">
                                             <i class="fas fa-trash-alt"></i>
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -222,7 +224,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?= $userData['student_id'] ?>
                             </p>
                             <p class="font-bold text-sm <?= $userData['usertype'] == 1 ? 'text-black' : 'text-gray-500' ?>">
-                                <?= $userData['year'] ?>
+                                Year <?= $userData['year'] ?>
                             </p>
                             <p class="text-gray-500 text-sm"><?= htmlspecialchars($userData['email']) ?></p>
                         </div>
@@ -236,11 +238,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 data-student_id="<?= htmlspecialchars($userData['student_id']) ?>">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="logic/user_delete.php?id=<?= $userData['iduser'] ?>"
-                                class="text-black text-xs md:text-base"
-                                onclick="return confirm('Are you sure you want to delete this user?');">
+                            <button type='button' class="text-black text-xs md:text-base"
+                                onclick="openDeleteModal(<?= $userData['iduser'] ?>)">
                                 <i class="fas fa-trash-alt"></i>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -288,9 +289,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="bg-white p-6 rounded-lg w-96">
             <h2 class="text-xl font-bold mb-4">Add User</h2>
             <form id="addUserForm" action="./logic/user_add.php" method="POST">
-                <input type="text" name="l_name" placeholder="Last Name" required
-                    class="w-full p-2 border rounded mb-2">
                 <input type="text" name="f_name" placeholder="First Name" required
+                    class="w-full p-2 border rounded mb-2">
+                <input type="text" name="l_name" placeholder="Last Name" required
                     class="w-full p-2 border rounded mb-2">
 
                 <select name="year" id="year" required class="w-full p-2 border rounded mb-2 bg-white text-gray-700">
@@ -334,12 +335,12 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h2 class="text-xl font-semibold mb-4">Edit User/Admin</h2>
             <form id="editForm" method="POST" action="./logic/user_admin_edit.php">
                 <input type="hidden" name="user_id" id="edit_user_id">
+                <label class="block text-gray-700">First Name:</label>
+                <input type="text" name="f_name" id="edit_fname" class="border p-2 w-full rounded mb-2" required>
 
                 <label class="block text-gray-700">Last Name:</label>
                 <input type="text" name="l_name" id="edit_lname" class="border p-2 w-full rounded mb-2" required>
 
-                <label class="block text-gray-700">First Name:</label>
-                <input type="text" name="f_name" id="edit_fname" class="border p-2 w-full rounded mb-2" required>
 
                 <label class="block text-gray-700">Year Level:</label>
                 <select name="year" id="edit_year" required
@@ -369,12 +370,12 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="mb-4">
                     <p class="font-semibold mb-1">User Type:</p>
                     <label class="inline-flex items-center mr-4">
-                        <input type="radio" name="usertype" value="1" id="edit_usertype_officer"
+                        <input type="radio" name="is_admin" value="1" id="edit_usertype_officer"
                             class="form-radio text-black">
                         <span class="ml-2">Officer</span>
                     </label>
                     <label class="inline-flex items-center">
-                        <input type="radio" name="usertype" checked value="0" id="edit_usertype_student"
+                        <input type="radio" name="is_admin" checked value="0" id="edit_usertype_student"
                             class="form-radio text-black">
                         <span class="ml-2">Student</span>
                     </label>
@@ -390,8 +391,69 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
+    <!-- Delete Modal -->
+    <div id="deleteModal"
+        class="fixed top-0 w-full h-full items-center justify-center bg-gray-600/40 backdrop-blur hidden">
+        <div id="delete-main" class="w-10/12 md:w-1/4 bg-white rounded-lg flex flex-col px-4 py-2">
+            <div class="py-2 font-semibold text-xl w-full border-b">Delete Item</div>
+            <div class="w-full my-2 text-lg">
+                <p>Are you sure to delete item <span id="delete-user" class="font-semibold"></span>?</p>
+            </div>
+            <input type="hidden" id="delete-iduser">
+
+            <div class="flex gap-3 justify-center w-full mt-6 my-2">
+                <button type="button" class="w-20 py-1 rounded bg-gray-700 text-white hover:bg-gray-800 cursor-pointer"
+                    onclick="closeDeleteModal()">Cancel</button>
+                <button class="w-20 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer"
+                    onclick="confirmDelete()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!--Success Message -->
+    <div id="success"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div id="success-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
+            <div class="w-full h-fit pb-4 flex justify-center">
+                <i class="fa-solid fa-circle-check text-7xl text-green-500"></i>
+            </div>
+            <div class="mb-2 text-2xl font-semibold text-center">Success!</div>
+            <div id="success-message" class="w-full text-center"></div>
+
+            <div class="w-full mt-5 flex justify-center">
+                <button onclick="hideSuccessMessage()"
+                    class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer">Okay</button>
+            </div>
+        </div>
+    </div>
+
+    <!--Error Message -->
+    <div id="error"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div id="error-main" class="w-80 p-4 bg-white rounded-xl flex flex-col">
+            <div class="w-full h-fit pb-4 flex justify-center">
+                <i class="fa-solid fa-circle-xmark text-7xl text-red-500"></i>
+            </div>
+            <div class="mb-2 text-2xl font-semibold text-center">Error!</div>
+            <div id="error-message" class="w-full text-center"></div>
+
+            <div class="w-full mt-5 flex justify-center">
+                <button onclick="hideErrorMessage()"
+                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">Okay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader"
+        class="fixed top-0 w-full h-full bg-gray-500/50 backdrop-blur-xs justify-center items-center hidden">
+        <div class="w-16 h-16 border-6 border-t-gray-800 border-gray-300 rounded-full animate-spin"></div>
+    </div>
+
+
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 z-50 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden">
+    <div id="loadingOverlay"
+        class="fixed inset-0 z-50 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-2">
             <span class="animate-spin h-5 w-5 border-4 border-blue-500 border-t-transparent rounded-full"></span>
             <p class="text-lg font-semibold">Processing...</p>
@@ -403,6 +465,125 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         function showLoading() {
             $('#loadingOverlay').removeClass('hidden');
         }
+
+
+        function addUser() {
+            let data = new FormData($('#addUserForm')[0]);
+
+            // Show loader
+            $('#loader').addClass('flex').removeClass('hidden');
+
+            $.ajax({
+                url: 'logic/user_add.php',
+                method: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    response = JSON.parse(response);
+                    if (response.status === 'success') {
+                        localStorage.setItem("message", response.message)
+                        location.reload();
+                        localStorage.setItem("addSuccess", "true");
+                    } else {
+                        localStorage.setItem("message", response.message)
+                        location.reload();
+                        localStorage.setItem("addError", "true");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    localStorage.setItem("message", response.message)
+                    location.reload();
+                    localStorage.setItem("addError", "true");
+                }
+            });
+        }
+
+        function updateUser() {
+            let data = new FormData($('#editForm')[0]);
+
+            $('#loader').addClass('flex').removeClass('hidden');
+
+            $.ajax({
+                url: 'logic/user_admin_edit.php',
+                method: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        localStorage.setItem("message", response.message)
+                        localStorage.setItem("editSuccess", "true");
+                        location.reload();
+                    } else {
+                        localStorage.setItem("message", response.message)
+                        localStorage.setItem("editError", "true");
+                        location.reload();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    localStorage.setItem("message", response.message)
+                    localStorage.setItem("editError", "true");
+                    location.reload();
+                }
+            });
+        }
+
+
+
+        function hideSuccessMessage() {
+            $('#success').addClass('hidden').removeClass('flex');
+        }
+
+        function hideErrorMessage() {
+            $('#error').addClass('hidden').removeClass('flex');
+        }
+
+        function openDeleteModal(iduser) {
+            let id = $('#user-' + iduser);
+            let name = id.data('fname') + ' ' + id.data('lname');
+            $('#deleteModal').removeClass('hidden').addClass('flex');
+            $('#delete-user').text(name);
+            $('#delete-iduser').val(iduser);
+            $('body').addClass('overflow-y-hidden');
+        }
+
+        function closeDeleteModal() {
+            $('#deleteModal').addClass('hidden').removeClass('flex');
+            $('body').removeClass('overflow-y-hidden');
+        }
+
+        function confirmDelete() {
+            let iduser = $('#delete-iduser').val();
+            $('#loader').removeClass('hidden').addClass('flex');
+            $.ajax({
+                url: "logic/user_delete.php",
+                method: 'POST',
+                data: { iduser: iduser },
+                dataType: 'json',
+                // processData: false,
+                // contentType: false,
+                success: function (response) {
+                    if (response.status == 'success') {
+                        localStorage.setItem("message", response.message)
+                        localStorage.setItem("deleteSuccess", "true");
+                        location.reload();
+                    } else {
+                        localStorage.setItem("message", response.message)
+                        localStorage.setItem("deleteError", "true");
+                        location.reload();
+
+                    }
+                },
+                error: function (xhr, status, error) {
+                    localStorage.setItem("message", response.message)
+                    location.reload();
+                    localStorage.setItem("deleteError", "true");
+                }
+            })
+        }
+
 
         document.addEventListener("DOMContentLoaded", function () {
             console.log("DOM fully loaded and parsed.");
@@ -485,6 +666,76 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }
             });
         });
+
+        $(document).ready(function () {
+            $('#header-title').text('Users');
+            if (localStorage.getItem('addSuccess') === 'true') {
+                message = localStorage.getItem('message');
+                $('#success').addClass('flex').removeClass('hidden');
+                $('#success-message').text(message);
+                localStorage.removeItem('addSuccess');
+                localStorage.removeItem('message');
+            }
+
+            if (localStorage.getItem('addError') === 'true') {
+                message = localStorage.getItem('message');
+                $('#error').addClass('flex').removeClass('hidden');
+                $('#error-message').text(message);
+                localStorage.removeItem('addError');
+                localStorage.removeItem('message');
+            }
+
+            if (localStorage.getItem('editSuccess') === 'true') {
+                message = localStorage.getItem('message');
+                $('#success').addClass('flex').removeClass('hidden');
+                $('#success-message').text(message);
+                localStorage.removeItem('editSuccess');
+                localStorage.removeItem('message');
+            }
+
+            if (localStorage.getItem('editError') === 'true') {
+                message = localStorage.getItem('message');
+                $('#error-message').text(message);
+                $('#error').addClass('flex').removeClass('hidden');
+                localStorage.removeItem('editError');
+                localStorage.removeItem('message');
+            }
+
+            if (localStorage.getItem('deleteSuccess') === 'true') {
+                message = localStorage.getItem('message');
+                $('#success-message').text(message);
+                $('#success').addClass('flex').removeClass('hidden');
+                localStorage.removeItem('deleteSuccess');
+                localStorage.removeItem('message');
+            }
+
+            if (localStorage.getItem('deleteError') === 'true') {
+                message = localStorage.getItem('message');
+                $('#error').addClass('flex').removeClass('hidden');
+                $('#error-message').text(message);
+                localStorage.removeItem('deleteError');
+                localStorage.removeItem('message');
+            }
+
+
+            $('#addUserForm').on('submit', function (e) {
+                e.preventDefault();
+                addUser();
+            })
+
+            $('#editForm').on('submit', function (e) {
+                e.preventDefault();
+                updateUser();
+            });
+
+            $(document).on('click', function () {
+
+                if ($(event.target).closest('#deleteModal').length && !$(event.target).closest('#delete-main').length) {
+                    closeDeleteModal();
+                }
+            })
+
+        })
 
 
         function getSelectedValues(form) {

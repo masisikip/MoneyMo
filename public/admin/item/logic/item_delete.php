@@ -9,14 +9,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $pdo->prepare("DELETE FROM item WHERE iditem = :iditem");
             $stmt->bindParam(':iditem', $iditem);
             $stmt->execute();
-            header("Location: ../../item/index.php");
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Successfully deleted item'
+            ]);
             exit();
         } catch (PDOException $e) {
-            header("Location: ../../item/index.php?error=1");
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to delete item'
+            ]);
             exit();
         }
     } else {
-        header("Location: ../../item/index.php?error=1");
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'No item found'
+        ]);
         exit();
     }
 }

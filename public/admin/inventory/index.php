@@ -378,6 +378,8 @@
 
 
     $(document).ready(function () {
+        $('#header-title').text('Inventory');
+
         function showLoading() {
             $('#loadingOverlay').removeClass('hidden');
         }

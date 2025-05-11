@@ -19,8 +19,6 @@ try {
     <title>QR Scanner</title>
     <link rel="stylesheet" href="../../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
@@ -129,6 +127,8 @@ try {
     }
 
     $(document).ready(function () {
+        $('#header-title').text('QR Scan');
+
         $('#select-all').on('change', function () {
             if ($(this).prop('checked')) {
                 $('.item-card').removeClass('border-gray-300').addClass('border-black');
