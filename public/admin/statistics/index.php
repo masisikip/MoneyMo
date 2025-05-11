@@ -198,6 +198,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
 <script>
     $(document).ready(() => {
         console.log("Hellow")
+        $('#header-title').text('Statistics');
 
         const today = new Date().toISOString().split('T')[0];
         $('#start-date').attr('max', today);
