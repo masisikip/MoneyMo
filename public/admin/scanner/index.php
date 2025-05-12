@@ -33,7 +33,7 @@ try {
     </main>
 
     <!-- Items section -->
-    <div id="items" class="fixed w-full h-full bg-gray-500/50 top-0 left-0 justify-center items-center flex">
+    <div id="items" class="fixed w-full h-full bg-gray-500/50 top-0 left-0 justify-center items-center hidden">
         <div id="items-main"
             class="mt-4 w-[20rem] md:w-[30rem] h-[30rem] rounded-md flex flex-col bg-white p-4 overflow-y-auto items-center">
             <div class="w-full items-center flex justify-between">
@@ -49,11 +49,14 @@ try {
                 <div id="item-grid" class="grid grid-cols-2 md:grid-cols-3 gap-2">
                     <?php foreach ($items as $item):
                         ?>
-                        <div class="w-30 h-30 border-2 border-gray-300 bg-white rounded-md flex justify-center items-center relative cursor-pointer item-card"
+                        <div data-stock="<?= $item['stock'] ?>" class="w-30 h-30 border-2 border-gray-300 bg-white rounded-md flex justify-center items-center relative cursor-pointer item-card"
                             <?php if ($item['stock'] > 0)
                                 echo 'onclick="selectItem(this)"'; ?>>
-                            <input type="checkbox" name="iditem[]" value="<?= $item['iditem'] ?>" class="hidden">
-                            <i class="text-green-500 absolute top-1 left-1 fa-solid fa-square-check invisible check"></i>
+
+                            <?php if ($item['stock'] > 0): ?>    
+                                <input type="checkbox" name="iditem[]" value="<?= $item['iditem'] ?>" class="hidden">
+                                <i class="text-green-500 absolute top-1 left-1 fa-solid fa-square-check invisible check"></i>
+                            <?php endif; ?>
 
                             <?php if ($item['stock'] == 0): ?>
                                 <div class="absolute rounded top-0 left-0 w-full h-full bg-gray-700/50">
@@ -125,7 +128,7 @@ try {
                 $('#items').addClass('hidden');
                 $('body').append(response);
                 $('#item-form')[0].reset();
-                $('.item-card').addClass('border-gray-300').removeClass('border-black');
+                $('.item-card').addClass('border-gray-300').removeClass('border-green-300');
             },
             error: function (xhr, status, error) {
                 $('#loader').addClass('hidden').removeClass('flex');
@@ -140,13 +143,22 @@ try {
         $('#header-title').text('QR Scan');
 
         $('#select-all').on('change', function () {
-            if ($(this).prop('checked')) {
-                $('.item-card').removeClass('border-gray-300').addClass('border-black');
-                $('.item-card').find('input[name="iditem[]"]').prop('checked', true);
-            } else {
-                $('.item-card').addClass('border-gray-300').removeClass('border-black');
-                $('.item-card').find('input[name="iditem[]"]').prop('checked', false);
-            }
+            let checked = $(this).prop('checked');
+            
+            $('.item-card').each(function () {
+                if ($(this).data('stock') <= 0) return;
+
+                let checkbox = $(this).find('input[name="iditem[]"]');
+                if (checked) {
+                    $(this).removeClass('border-gray-300').addClass('border-green-300');
+                    $(this).find('.check').removeClass('invisible');
+                    checkbox.prop('checked', true);
+                } else {
+                    $(this).addClass('border-gray-300').removeClass('border-green-300');
+                    $(this).find('.check').addClass('invisible');
+                    checkbox.prop('checked', false);
+                }
+            });
         });
 
         const qrReader = $("#qr-reader");
