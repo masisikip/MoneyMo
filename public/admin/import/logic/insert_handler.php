@@ -1,7 +1,6 @@
 <?php
 include '../../../includes/connect-db.php';
 
-// Get JSON data from POST
 if (!isset($_POST['students_json'])) {
     die("No students data received.");
 }
