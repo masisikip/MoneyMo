@@ -97,6 +97,10 @@ $path = ($host === 'localhost')
                         class="fas fa-list"></i><span>Items Management</span></a></li>
             <li><a href="<?= $path ?>admin/users" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
                         class="fas fa-users"></i><span>Users Management</span></a></li>
+            <li><a href="<?= $path ?>admin/import" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
+                        class="fa-solid fa-file-import"></i><span>Import Students</span></a></li>
+            <li><a href="<?= $path ?>admin/export" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
+                        class="fa-solid fa-file-arrow-up"></i><span>Export Collection</span></a></li>
             <li><a href="<?= $path ?>user/profile" class="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded"><i
                         class="fa-solid fa-user"></i><span>Profile</span></a></li>
             <li><a href="<?= $path ?>logout.php" class="flex items-center space-x-2 hover:bg-red-500 p-2 rounded"><i
