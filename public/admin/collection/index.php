@@ -154,22 +154,18 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                         <tr class="bg-gray-200 text-gray-700">
                             <th class="py-2 px-1 md:px-4 text-left text-[9px] md:text-[12px] md:text-xs cursor-pointer">
                                 Student Name
-                                <i class="fas fa-chevron-down ml-1 text-gray-400"></i>
                             </th>
                             <th class="py-2 px-1 md:px-4 text-left text-[9px] md:text-[12px] md:text-xs cursor-pointer">
                                 Date
-                                <i class="fas fa-chevron-down ml-1 text-gray-400"></i>
                             </th>
                             <th class="py-2 px-1 md:px-4 text-left text-[9px] md:text-[12px] md:text-xs cursor-pointer">
                                 Item Category
-                                <i class="fas fa-chevron-down ml-1 text-gray-400"></i>
                             </th>
                             <th class="py-2 px-1 md:px-4 text-left text-[9px] md:text-[12px] md:text-xs cursor-pointer">
                                 Price
-                                <i class="fas fa-chevron-down ml-1 text-gray-400"></i>
                             </th>
                             <th class="py-3 px-4 text-center text-[9px] md:text-[12px] md:text-xs">
-                                Option
+                                Action
                             </th>
                         </tr>
                     </thead>
@@ -281,6 +277,8 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
 
         $(document).ready(function () {
+            $('#header-title').text('Inventory');
+
             // Event listener for table's print buttons
             $('table').on('click', 'button', function () {
                 var $row = $(this).closest('tr');

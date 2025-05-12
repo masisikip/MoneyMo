@@ -40,7 +40,7 @@
           date(date) AS date,
           quantity,
           name,
-          item.value,
+          inventory.value,
           idinventory,
           CASE 
           WHEN payment_type = 0 THEN 'Cash'
@@ -58,23 +58,16 @@
     ?>
     <!-- Receipts Grid -->
 
-    <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:w-10/12 gap-4 place-items-center">
+    <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 md:w-10/12 gap-4 place-items-center">
       <?php foreach ($purchases as $purchase): ?>
-        <div class="clickable-div w-[16rem] h-72 cursor-pointer"   
-          data-reference="<?= $purchase['reference_no'] ?>"
-          data-date="<?= $purchase['date'] ?>" 
-          data-quantity="<?= $purchase['quantity'] ?>"
-          data-item="<?= $purchase['name'] ?>" 
-          data-amount="<?= $purchase['value'] ?>"
-          data-inventory="<?= $purchase['idinventory'] ?>"
-          data-mode="<?= $purchase['payment_type'] ?>">
+        <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>"
+          data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
+          data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
+          data-inventory="<?= $purchase['idinventory'] ?>" data-mode="<?= $purchase['payment_type'] ?>">
 
           <div class="flex rounded-lg h-full bg-white p-6 flex-col hover:shadow-2xl">
-            <div class="flex items-center mb-2 pb-3 border-b-1 border-black">
+            <div class="flex items-center justify-center mb-2 pb-3 border-b-1 border-black">
               <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
-              <div class="inline-flex items-center justify-end flex-shrink-0 ml-auto">
-                <i id="downloadIcon" onclick="downloadReceipt(this)" class="fa-solid fa-download hover:text-gray-700"></i>
-              </div>
             </div>
 
             <div class="pb-3 border-b border-black text-black">
@@ -89,7 +82,7 @@
                 <p class="text-right font-bold"><?= $purchase['payment_type'] ?></p>
 
                 <p>Paid:</p>
-                <p class="text-right font-bold">P <?= $purchase['value'] ?></p>
+                <p class="text-right font-bold">₱ <?= $purchase['value'] ?></p>
               </div>
             </div>
 
@@ -114,7 +107,8 @@
     <!-- hoverlay  -->
     <div id="modalOverlay" class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
 
-    <div class="modal-container flex flex-col items-center h-auto bg-white w-11/12 md:max-w-md my-10 mx-auto shadow-lg z-50 overflow-y-auto">
+    <div
+      class="modal-container flex flex-col items-center h-auto bg-white w-11/12 md:max-w-md my-10 mx-auto shadow-lg z-50 overflow-y-auto">
       <div class="bg-black w-full grid grid-cols-2 gap-x-4">
         <p class="text-white font-medium ml-3 p-2">MoneyMo</p>
         <button type="button" id="closeModal"
@@ -125,7 +119,7 @@
       <!-- Add modal content here -->
       <div class="w-3/4 modal-content py-4 text-left px-6 bg-white">
         <div class="flex justify-center items-center">
-          <p class="text-3xl font-bold">@</p>
+          <img src="../assets/acs_logo.jpg" alt="@" class="h-16 m-2">
         </div>
         <div class="flex justify-center items-center">
           <p class="text-1 font-extralight">
@@ -152,23 +146,17 @@
 
             <p class="font-semibold text-gray-400">Quantity</p>
             <p id="quantity" class="font-semibold">ACS</p>
-          </div>
-        </div>
 
-        <div class="border-b border-gray-400 text-black pt-1 pb-1">
-          <div class="grid grid-cols-2 gap-x-4">
             <p class="font-semibold text-gray-400">Product Price</p>
-            <p id="amount" class="font-semibold">100.00</p>
-
-            <p class="font-semibold text-gray-400">Discount</p>
-            <p class="font-semibold">0.00</p>
+            <p id="amount" class="font-semibold">₱100.00</p>
           </div>
         </div>
+
 
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
             <p class="font-bold">Total</p>
-            <p id="total" class="font-bold">P 100.00</p>
+            <p id="total" class="font-bold">₱ 100.00</p>
           </div>
         </div>
         <p class="pt-1 pb-1 text-center mt-5">This is a cutomer's copy. Thank You!</p>
@@ -202,15 +190,16 @@
 
     function downloadReceipt(element) {
       html2canvas(document.querySelector(".modal-content"), {
-          onrendered: function (canvas) {
-            const imgDataUrl = canvas.toDataURL("image/png");
-            const link = document.createElement("a");
-            link.href = imgDataUrl;
-            link.download = qrFileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          }, });
+        onrendered: function (canvas) {
+          const imgDataUrl = canvas.toDataURL("image/png");
+          const link = document.createElement("a");
+          link.href = imgDataUrl;
+          link.download = qrFileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        },
+      });
     }
 
     $(document).ready(function () {
@@ -228,9 +217,9 @@
         $("#date").text(date);
         $("#quantity").text(quantity);
         $("#item").text(item);
-        $("#amount").text("P " + amount);
+        $("#amount").text("₱ " + amount);
         $("#mode").text(mode);
-        $("#total").text("P " + amount);
+        $("#total").text("₱ " + amount);
 
       });
 
