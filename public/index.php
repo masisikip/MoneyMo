@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h1 class="md:text-4xl text-2xl font-bold mb-1">Login to Your Account</h1>
                 <p class="md:text-lg text-[#545454] mb-8">Enter your credentials to continue</p>
 
-                <form class="space-y-4 flex flex-col items-center md:w-lg w-full" method='post' action="">
+                <form class="space-y-4 flex flex-col items-center md:w-lg w-full" method='post'id="sign-form" action="">
                     <div class="w-full">
                         <input type="text" id="email" name="email" placeholder="Enter your email..." required
                             class="block w-full px-6 py-4 text-[#262626] bg-[#d9d9d9] rounded-full focus:outline-none focus:ring-1 focus:ring-[#545454]"
@@ -183,7 +183,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Forget password modal -->
         <div id="email-modal" class="w-10/12 md:w-90 p-2 flex-col bg-white rounded-lg shadow flex hidden relative">
             <!-- Close Button -->
-            <button onclick="closeEmailModal()" class="absolute cursor-pointer top-2 right-2 text-gray-500 hover:text-gray-700">
+            <button onclick="closeEmailModal()"
+                class="absolute cursor-pointer top-2 right-2 text-gray-500 hover:text-gray-700">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 
             1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 
@@ -198,10 +199,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <input type="email" id="verify-email" name="email"
                     class="w-full pl-2 py-1 border rounded focus:outline-none mb-8" autocomplete="off" required>
-                <button id="submit-btn" type="button" onclick="verifyEmail()"
+                <button id="send-btn" type="button" onclick="verifyEmail()"
                     class="rounded bg-gray-700 h-8 w-1/3 hover:bg-gray-800 cursor-pointer text-white px-2 py-1 font-semibold flex items-center justify-center gap-2">
-                    <span class="btn-text">Send OTP</span>
-                    <svg class="loader hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <span id="send-text">Send OTP</span>
+                    <svg id="send-loader" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
                         </circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
@@ -244,8 +245,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <button id="otp-btn" type="button" onclick="verifyOTP()"
                     class="rounded bg-gray-700 h-8 w-1/4 hover:bg-gray-800 cursor-pointer text-white px-2 py-1 font-semibold flex items-center justify-center gap-2">
-                    <span class="btn-text">Submit</span>
-                    <svg class="loader hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <span id="otp-text">Submit</span>
+                    <svg id="otp-loader" class=" hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
                         </circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
@@ -352,9 +353,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         let email = $('#verify-email').val();
 
         // Disable button + show loader
-        $('#submit-btn').attr('disabled', true).addClass('opacity-50 cursor-not-allowed');
-        $('#submit-btn .loader').removeClass('hidden');
-        $('.btn-text').addClass('hidden');
+        $('#send-btn').attr('disabled', true).addClass('opacity-50 cursor-not-allowed');
+        $('#send-loader').removeClass('hidden');
+        $('#send-text').addClass('hidden');
 
         $.ajax({
             url: 'includes/verify-email.php',
@@ -365,10 +366,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             dataType: 'json',
             success: function (response) {
                 // Enable button + hide loader
-                $('#submit-btn').attr('disabled', false).removeClass('opacity-50 cursor-not-allowed');
-                $('#submit-btn .btn-text').text('Submit');
-                $('.btn-text').removeClass('hidden');
-                $('#submit-btn .loader').addClass('hidden');
+                $('#send-btn').attr('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                $('#send-text').text('Send OTP');
+                $('#send-text').removeClass('hidden');
+                $('#send-loader').addClass('hidden');
 
                 if (response.status === 'success') {
                     showNotification("success", response.message);
@@ -381,9 +382,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             },
             error: function (xhr, status, error) {
                 // Enable button + hide loader
-                $('#submit-btn').attr('disabled', false).removeClass('opacity-50 cursor-not-allowed');
-                $('#submit-btn .btn-text').text('Submit');
-                $('#submit-btn .loader').addClass('hidden');
+                $('#send-btn').attr('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                $('#send-text').text('Send OTP');
+                $('#send-text').removeClass('hidden');
+                $('#send-loader').addClass('hidden');
+
 
                 showNotification("error", error);
             }
@@ -397,8 +400,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Disable button + show loader
         $('#otp-btn').attr('disabled', true).addClass('opacity-50 cursor-not-allowed');
-        $('#otp-btn .loader').removeClass('hidden');
-        $('#otp-btn .btn-text').addClass('hidden');
+        $('#otp-loader').removeClass('hidden');
+        $('#otp-text').addClass('hidden');
 
 
 
@@ -410,9 +413,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             success: function (response) {
                 // Enable button + hide loader
                 $('#otp-btn').attr('disabled', false).removeClass('opacity-50 cursor-not-allowed');
-                $('#otp-btn .btn-text').text('Submit');
-                $('.btn-text').removeClass('hidden');
-                $('#otp-btn .loader').addClass('hidden');
+                $('#otp-text').text('Submit');
+                $('#otp-text').removeClass('hidden');
+                $('#otp-loader').addClass('hidden');
 
                 if (response.status === 'success') {
                     showNotification("success", response.message);
@@ -425,10 +428,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             },
             error: function (xhr, status, error) {
                 // Enable button + hide loader
-                $('#submit-btn').attr('disabled', false).removeClass('opacity-50 cursor-not-allowed');
-                $('#submit-btn .btn-text').text('Submit');
-                $('.btn-text').removeClass('hidden');
-                $('#submit-btn .loader').addClass('hidden');
+                $('#otp-btn').attr('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                $('#otp-text').text('Submit');
+                $('#otp-text').removeClass('hidden');
+                $('#otp-loader').addClass('hidden');
 
                 showNotification("error", error);
             }
@@ -477,7 +480,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $(document).ready(function () {
-        $('form').on('submit', function () {
+        $('#sign-form').on('submit', function () {
             // Disable button + show loader
             $('#login-btn').attr('disabled', true).addClass('opacity-50 cursor-not-allowed');
             $('#signLoader').removeClass('hidden');
