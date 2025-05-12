@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     try {
-        $stmt1 = $pdo->prepare('UPDATE user SET password = SHA2(?, 256) WHERE email = ?');
+        $stmt1 = $pdo->prepare('UPDATE user SET password = ? WHERE email = ?');
         $stmt1->execute([$hashed_password, $email]);
 
         if ($stmt1->rowCount() > 0) {

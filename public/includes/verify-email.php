@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $diff = $time_diff->fetchColumn();
 
             if ($diff < 0 && $diff !== null) {
-                echo json_encode(['status' => 'expired', 'message' => 'OTP expired ' . abs($diff) . ' minutes ago.']);
+                echo json_encode(['status' => 'expired', 'message' => 'OTP request will be available after ' . abs($diff) . ' minutes.']);
                 exit;
             }
 
@@ -41,44 +41,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <meta charset='UTF-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
             <title>OTP Verification</title>
-            <style>
-                @media only screen and (max-width: 600px) {
-                    .container { padding: 20px !important; }
-                    .otp-box { width: 50px !important; height: 50px !important; font-size: 20px !important; }
-                }
-            </style>
             </head>
             <body style='font-family: Segoe UI, Arial, sans-serif; background-color: #f5f7fa; margin: 0; padding: 20px;'>
-            <div class='container' style='max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 4px 10px rgba(0,0,0,0.05);'>
+            <div style='max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 4px 10px rgba(0,0,0,0.05);'>
 
                 <div style='text-align: center; margin-bottom: 20px;'>
-                    <img src='cid:logoimg' alt='MoneyMo Logo' style='width: 80px; height: 80px; border-radius: 50%; border: 2px solid #ddd; margin-bottom: 10px;'>
-                    <h2 style='margin: 0; color: #333;'>MoneyMo</h2>
+                <img src='cid:logoimg' alt='MoneyMo Logo' style='width: 80px; height: 80px; border-radius: 50%; border: 2px solid #ddd; margin-bottom: 10px;'>
+                <h2 style='margin: 0; color: #333;'>MoneyMo</h2>
                 </div>
 
                 <h3 style='text-align: center; color: #222;'>OTP Verification</h3>
                 <p style='text-align: center; font-size: 15px; color: #555; margin-bottom: 25px;'>
-                    Use the following One-Time Password (OTP) to reset your password. This code is valid for only <strong>5 minutes</strong>.
+                Use the following One-Time Password (OTP) to reset your password. This code is valid for only <strong>5 minutes</strong>.
                 </p>
 
-                <div style='display: flex; justify-content: center; gap: 12px; margin: 20px 0;'>
-                    <div style='display: flex; justify-content: center; gap: 12px; margin: 20px 0;'>
-                        <div class='otp-box' style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #333;'>" . $otp[0] . "</div>
-                        <div class='otp-box' style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #333;'>" . $otp[1] . "</div>
-                        <div class='otp-box' style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #333;'>" . $otp[2] . "</div>
-                        <div class='otp-box' style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #333;'>" . $otp[3] . "</div>
-                    </div>
-                </div>
+                <table align='center' style='margin: 20px auto;'>
+                <tr>
+                    <td style='padding: 0 6px;'>
+                    <div style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 60px; font-weight: bold; color: #333;'>" . $otp[0] . "</div>
+                    </td>
+                    <td style='padding: 0 6px;'>
+                    <div style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 60px; font-weight: bold; color: #333;'>" . $otp[1] . "</div>
+                    </td>
+                    <td style='padding: 0 6px;'>
+                    <div style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 60px; font-weight: bold; color: #333;'>" . $otp[2] . "</div>
+                    </td>
+                    <td style='padding: 0 6px;'>
+                    <div style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 60px; font-weight: bold; color: #333;'>" . $otp[3] . "</div>
+                    </td>
+                </tr>
+                </table>
 
                 <p style='text-align: center; font-size: 13px; color: #888;'>
-                    If you didn’t request this, you can safely ignore this email.
+                If you didn’t request this, you can safely ignore this email.
                 </p>
 
                 <p style='text-align: center; font-size: 13px; color: #aaa; margin-top: 30px;'>&copy; 2025 MoneyMo. All rights reserved.</p>
+
             </div>
             </body>
             </html>
             ";
+
 
             $mail = new PHPMailer(true);
 

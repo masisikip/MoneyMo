@@ -275,14 +275,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     const notif = type === "success" ? "#success" : "#error";
     const messageSpan = type === "success" ? "#success-message" : "#error-message";
 
-    $(messageSpan).text(message);
-    $(notif).removeClass("hidden").addClass("flex");
+    // Hide both notifications first
+    $("#success, #error").stop(true, true).hide().addClass("hidden").removeClass("flex");
 
+    // Set the message and show the current notification
+    $(messageSpan).text(message);
+    $(notif).removeClass("hidden").addClass("flex").fadeIn(200);
+
+    // Hide it after 1 second
     setTimeout(() => {
-      $(notif).fadeOut(300, () => {
-        $(notif).addClass("hidden").removeClass("flex").show();
+      $(notif).fadeOut(200, () => {
+        $(notif).addClass("hidden").removeClass("flex");
       });
-    }, 3000);
+    }, 1000);
   }
 
   function verifyEmail() {
@@ -339,7 +344,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       },
       error: function (xhr, status, error) {
         $('#loader').addClass('hidden').removeClass('flex');
-        showNotification("error", "Unexpected error occurred.");
+        showNotification("error", error);
       }
     });
   }
@@ -368,7 +373,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $('#loader').removeClass('hidden').addClass('flex');
 
     $.ajax({
-      url: 'includes/change-password.php',
+      url: 'includes/verify-password.php',
       method: 'POST',
       data: { email: email, password: pass1 },
       dataType: 'json',
@@ -383,7 +388,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       },
       error: function (xhr, status, error) {
         $('#loader').addClass('hidden').removeClass('flex');
-        showNotification("error", "Unexpected error occurred.");
+        showNotification("error", error);
       }
     });
   }
