@@ -25,7 +25,6 @@ if (isset($_FILES['student_file'])) {
     }
     fclose($handle);
 
-    // Display preview table
     echo "<table class='w-full text-sm text-left text-gray-700 border'>";
     echo "<thead class='bg-black text-center text-white'><tr><th>First</th><th>Last</th><th>Year</th><th>Email</th><th>ID</th><th>Status</th></tr></thead><tbody>";
 
@@ -53,13 +52,10 @@ if (isset($_FILES['student_file'])) {
     echo "</tbody></table>";
 
     if (count($students_to_insert) > 0) {
-        // Encode the array into JSON
         $json_students = htmlspecialchars(json_encode($students_to_insert), ENT_QUOTES, 'UTF-8');
 
-        // Hidden input to carry this JSON for next step
         echo "<input type='hidden' id='studentsJson' value='$json_students'>";
 
-        // Confirm button
         echo "<button id='confirmInsert' class='mt-4 cursor-pointer  bg-black text-white py-2 px-4 rounded hover:bg-gray-800'>Confirm Insert</button>";
     } else {
         echo "<p class='mt-4 text-yellow-600'>No new students to insert.</p>";

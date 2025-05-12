@@ -79,7 +79,6 @@
             }, 3000);
         }
 
-        // Handle preview first
         $('#importForm').on('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
@@ -104,11 +103,9 @@
             });
         });
 
-        // Confirm insert
         $(document).on('click', '#confirmInsert', function () {
             showLoader();
 
-            // Get the JSON from hidden input
             var studentsJson = $('#studentsJson').val();
 
             $.ajax({
