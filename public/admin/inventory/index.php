@@ -274,7 +274,7 @@
                                         Claim
                                     </button>
                                 <?php else: ?>
-                                    <span class="text-gray-500 text-center font-semibold min-w-[120px] inline-block">Claimed
+                                    <span class="text-gray-500 text-center font-semibold min-w-[80px] inline-block">Claimed
                                     </span>
                                 <?php endif; ?>
                             </div>
