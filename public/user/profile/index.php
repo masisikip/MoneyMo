@@ -67,7 +67,7 @@ if (!$user) {
                     placeholder="Confirn Password">
 
                 <button id="submitPass"
-                    class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 mb-2 flex items-center justify-center gap-2">
+                    class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 mb-2 flex items-center justify-center gap-2 cursor-pointer">
                     <span id="submitSpan">Update Password</span>
                     <span id="loader"
                         class="hidden border-2 border-white border-t-transparent rounded-full w-4 h-4 animate-spin"></span>

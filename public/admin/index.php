@@ -269,7 +269,7 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                                 <td class="py-3 px-4"><?= htmlspecialchars($purchase['itemname']) ?></td>
                                 <td class="py-3 px-4">₱<?= number_format($purchase['itemvalue'], 2) ?></td>
                                 <td class="py-3 px-4 text-center">
-                                    <button class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-700 print-btn">
+                                    <button class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-700 print-btn cursor-pointer">
                                         Print
                                     </button>
                                 </td>

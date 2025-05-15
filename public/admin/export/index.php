@@ -30,7 +30,7 @@ include_once '../../includes/connect-db.php';
                     <label class="block font-semibold mb-1">End Date</label>
                     <input type="date" id="endDate" name="end_date" class="border p-2 rounded w-full">
                 </div>
-                <button type="submit" class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded w-full">
+                <button type="submit" class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded w-full cursor-pointer">
                     Export to CSV
                 </button>
             </form>

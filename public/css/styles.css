@@ -1708,6 +1708,13 @@
       }
     }
   }
+  .hover\:bg-zinc-800 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-zinc-800);
+      }
+    }
+  }
   .hover\:font-bold {
     &:hover {
       @media (hover: hover) {
@@ -1937,6 +1944,11 @@
   .md\:items-center {
     @media (width >= 48rem) {
       align-items: center;
+    }
+  }
+  .md\:justify-end {
+    @media (width >= 48rem) {
+      justify-content: flex-end;
     }
   }
   .md\:justify-start {

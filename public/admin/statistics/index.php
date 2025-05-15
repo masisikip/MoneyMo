@@ -104,7 +104,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
     <main class="py-8 px-4 md:px-16 space-y-6">
         <!-- Date Picker Container -->
         <form id="date-filter-form">
-            <div class="w-full flex justify-end gap-2">
+            <div class="w-full flex justify-center md:justify-end gap-2">
                 <div class="grid grid-cols-1 text-sm">
                     <label for="start-date">Start</label>
                     <input type="date" name="start-date" id="start-date" class="rounded border border-gray-200 bg-white p-2 w-36 text-center">

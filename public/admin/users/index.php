@@ -142,7 +142,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="flex flex-grow justify-end">
                     <!-- Right: Add User Button -->
                     <button id="openAddUserModal"
-                        class="w-full bg-black text-white rounded-lg flex items-center hover:bg-gray-800 transition md:w-fit md:px-4 py-2 gap-2">
+                        class="w-full cursor-pointer bg-black text-white rounded-lg flex items-center hover:bg-gray-800 transition md:w-fit md:px-4 py-2 gap-2">
                         <i class="fas fa-user-plus text-xl ml-4 md:ml-0"></i>
                         <span class="font-medium mx-auto md:mx-0">Add User</span>
                     </button>
@@ -325,7 +325,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     User</button>
             </form>
             <button id="cancelButton"
-                class="bg-gray-400 cursor-pointer text-white w-full py-2 rounded mt-2">Cancel</button>
+                class="bg-gray-600 cursor-pointer text-white w-full py-2 rounded mt-2">Cancel</button>
         </div>
     </div>
 
@@ -382,10 +382,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
 
                 <div class="flex justify-end space-x-2">
+                    <button type="button" id="closeModal"
+                    class="bg-gray-600 cursor-pointer text-white px-4 py-2 rounded">Cancel</button>
                     <button type="submit" name="update_user"
                         class="bg-black cursor-pointer text-white px-4 py-2 rounded">Update</button>
-                    <button type="button" id="closeModal"
-                        class="bg-gray-400 cursor-pointer text-white px-4 py-2 rounded">Cancel</button>
                 </div>
             </form>
         </div>
