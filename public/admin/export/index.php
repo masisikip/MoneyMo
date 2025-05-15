@@ -37,6 +37,7 @@ include_once '../../includes/connect-db.php';
 
         </div>
     </main>
+    <?php include_once '../../includes/footer.php'; ?>
 
     <script>
         $('#exportForm').on('submit', function (e) {

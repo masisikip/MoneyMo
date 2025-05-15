@@ -106,7 +106,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             echo $_GET['search'];
                         } ?>"
                             class="border border-gray-300 py-2 pl-10 pr-4 rounded-lg w-full focus:outline-none focus:ring focus:ring-black text-base md:text-sm h-full">
-                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 mr-2"></i>
+                        <i
+                            class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 mr-2"></i>
                     </div>
 
                     <!-- Filter Dropdown -->
@@ -460,6 +461,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
+    <?php include_once '../../includes/footer.php'; ?>
 
     <script>
         function showLoading() {

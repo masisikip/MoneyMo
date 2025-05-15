@@ -9,8 +9,8 @@ foreach ($items_raw as $item) {
     $id = $item["iditem"];
     $item_lookup[$id] = [
         "name" => $item["name"],
-        "price" => (int)$item["value"],
-        "stock" => (int)$item["stock"],
+        "price" => (int) $item["value"],
+        "stock" => (int) $item["stock"],
     ];
 }
 
@@ -31,9 +31,10 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 foreach ($transactions as $tx) {
     $id = $tx["iditem"];
-    $qty = (int)$tx["quantity"];
+    $qty = (int) $tx["quantity"];
 
-    if (!isset($item_lookup[$id])) continue;
+    if (!isset($item_lookup[$id]))
+        continue;
 
     $name = $item_lookup[$id]["name"];
     $price = $item_lookup[$id]["price"];
@@ -60,8 +61,10 @@ foreach ($transactions as $tx) {
 foreach ($item_lookup as $id => $data) {
     $stock = $data["stock"];
 
-    if ($stock == 0) $out_of_stock_count++;
-    elseif ($stock <= $low_stock_threshold) $low_stock_count++;
+    if ($stock == 0)
+        $out_of_stock_count++;
+    elseif ($stock <= $low_stock_threshold)
+        $low_stock_count++;
 
     if (!isset($item_stats[$id])) {
         $item_stats[$id] = [
@@ -103,11 +106,13 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
             <div class="w-full flex justify-end gap-2">
                 <div class="grid grid-cols-1 text-sm">
                     <label for="start-date">Start</label>
-                    <input type="date" name="start-date" id="start-date" class="rounded border border-gray-200 bg-white p-2 w-36 text-center">
+                    <input type="date" name="start-date" id="start-date"
+                        class="rounded border border-gray-200 bg-white p-2 w-36 text-center">
                 </div>
                 <div class="grid grid-cols-1 text-sm">
                     <label for="end-date">End</label>
-                    <input type="date" name="end-date" id="end-date" class="rounded border border-gray-200 bg-white p-2 w-36 text-center">
+                    <input type="date" name="end-date" id="end-date"
+                        class="rounded border border-gray-200 bg-white p-2 w-36 text-center">
                 </div>
             </div>
         </form>
@@ -119,7 +124,8 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                     <h3 class="text-gray-800">Total Collected Cash</h3>
                 </div>
                 <div class="grid place-items-center">
-                    <span class="text-3xl font-bold" id="total-collected-cash-value"><?php echo "P $total_collected_cash" ?></span>
+                    <span class="text-3xl font-bold"
+                        id="total-collected-cash-value"><?php echo "P $total_collected_cash" ?></span>
                 </div>
             </div>
             <div class="bg-white pt-4 px-6 pb-12 rounded-lg shadow">
@@ -127,7 +133,8 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                     <h3 class="text-gray-800">Items Sold</h3>
                 </div>
                 <div class="grid place-items-center">
-                    <span id="item-sold-value" class="text-3xl font-bold"><?php echo ($total_items_sold > 1) ? "$total_items_sold items" : "$total_items_sold item" ?></span>
+                    <span id="item-sold-value"
+                        class="text-3xl font-bold"><?php echo ($total_items_sold > 1) ? "$total_items_sold items" : "$total_items_sold item" ?></span>
                 </div>
             </div>
             <div class="bg-white p-4 rounded-lg shadow">
@@ -135,7 +142,8 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                     <h3 class="text-gray-800">Low Stock</h3>
                 </div>
                 <div class="grid place-items-center">
-                    <span id="low-stock-value" class="text-3xl font-bold"><?php echo ($low_stock_count > 1) ? "$low_stock_count items" : "$low_stock_count item" ?></span>
+                    <span id="low-stock-value"
+                        class="text-3xl font-bold"><?php echo ($low_stock_count > 1) ? "$low_stock_count items" : "$low_stock_count item" ?></span>
                 </div>
             </div>
             <div class="bg-white p-4 rounded-lg shadow">
@@ -143,7 +151,8 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                     <h3 class="text-gray-800">Out of Stocks</h3>
                 </div>
                 <div class="grid place-items-center">
-                    <span id="out-of-stock-value" class="text-3xl font-bold"><?php echo ($out_of_stock_count > 1) ? "$out_of_stock_count items" : "$out_of_stock_count item" ?></span>
+                    <span id="out-of-stock-value"
+                        class="text-3xl font-bold"><?php echo ($out_of_stock_count > 1) ? "$out_of_stock_count items" : "$out_of_stock_count item" ?></span>
                 </div>
             </div>
         </div>
@@ -160,10 +169,14 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                     <div id="chartContainer" class="w-full max-w-xl mx-auto mt-4">
                         <canvas id="chartCanvas">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="w-40 my-12 mx-28">
-                                <circle fill="none" stroke-opacity="1" stroke="#000000" stroke-width=".5" cx="100" cy="100" r="0">
-                                    <animate attributeName="r" calcMode="spline" dur="2" values="1;80" keyTimes="0;1" keySplines="0 .2 .5 1" repeatCount="indefinite"></animate>
-                                    <animate attributeName="stroke-width" calcMode="spline" dur="2" values="0;25" keyTimes="0;1" keySplines="0 .2 .5 1" repeatCount="indefinite"></animate>
-                                    <animate attributeName="stroke-opacity" calcMode="spline" dur="2" values="1;0" keyTimes="0;1" keySplines="0 .2 .5 1" repeatCount="indefinite"></animate>
+                                <circle fill="none" stroke-opacity="1" stroke="#000000" stroke-width=".5" cx="100"
+                                    cy="100" r="0">
+                                    <animate attributeName="r" calcMode="spline" dur="2" values="1;80" keyTimes="0;1"
+                                        keySplines="0 .2 .5 1" repeatCount="indefinite"></animate>
+                                    <animate attributeName="stroke-width" calcMode="spline" dur="2" values="0;25"
+                                        keyTimes="0;1" keySplines="0 .2 .5 1" repeatCount="indefinite"></animate>
+                                    <animate attributeName="stroke-opacity" calcMode="spline" dur="2" values="1;0"
+                                        keyTimes="0;1" keySplines="0 .2 .5 1" repeatCount="indefinite"></animate>
                                 </circle>
                             </svg>
                         </canvas>
@@ -180,7 +193,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                 </div>
                 <div id="stock-levels" class="pl-12 max-w-96 text-lg">
                     <?php foreach ($item_stats as $item): ?>
-                        <?php $stock = (int)$item['stock']; ?>
+                        <?php $stock = (int) $item['stock']; ?>
                         <div class="flex justify-between py-2">
                             <span><?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8') ?></span>
                             <span class="<?= $stock === 0 ? 'text-red-500' : '' ?>"><?= $stock ?></span>
@@ -190,6 +203,8 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
             </div>
         </div>
     </main>
+    <?php include_once '../../includes/footer.php'; ?>
+
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -204,14 +219,14 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
         $('#start-date').attr('max', today);
         $('#end-date').attr('max', today);
 
-        $.validator.addMethod("noFuture", function(value, element) {
+        $.validator.addMethod("noFuture", function (value, element) {
             if (!value) return true;
             const today = new Date().setHours(0, 0, 0, 0);
             const inputDate = new Date(value).setHours(0, 0, 0, 0);
             return inputDate <= today;
         }, "Date cannot be in the future");
 
-        $.validator.addMethod("dateOrder", function(value, element) {
+        $.validator.addMethod("dateOrder", function (value, element) {
             const start = $('#start-date').val();
             const end = $('#end-date').val();
             return !(start && end) || new Date(start) <= new Date(end);
@@ -231,13 +246,13 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                 }
             },
             errorClass: "text-red-500 text-xs mt-1",
-            errorPlacement: function(error, element) {
+            errorPlacement: function (error, element) {
                 error.insertAfter(element);
             }
         });
 
         let debounceTimer;
-        $('#start-date, #end-date').on('input', function() {
+        $('#start-date, #end-date').on('input', function () {
             $('#total-collected-cash-value').html(smallCardContainerLoader());
             $('#item-sold-value').html(smallCardContainerLoader());
             $('#low-stock-value').html(smallCardContainerLoader());
@@ -251,7 +266,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
             $('#stock-levels').html(itemStockLevelContainerLoader());
 
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(function() {
+            debounceTimer = setTimeout(function () {
                 if (!$('#date-filter-form').valid()) return;
 
                 const start = $('#start-date').val();
@@ -265,29 +280,29 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                         end_date: end
                     },
                     dataType: 'json',
-                    success: function(response) {
+                    success: function (response) {
                         $('#total-collected-cash-value').text(`P ${response.total_collected_cash}`);
                         $('#item-sold-value').text(
                             response.total_items_sold > 1 ?
-                            `${response.total_items_sold} items` :
-                            `${response.total_items_sold} item`
+                                `${response.total_items_sold} items` :
+                                `${response.total_items_sold} item`
                         );
                         $('#low-stock-value').text(
                             response.low_stock_count > 1 ?
-                            `${response.low_stock_count} items` :
-                            `${response.low_stock_count} item`
+                                `${response.low_stock_count} items` :
+                                `${response.low_stock_count} item`
                         );
                         $('#out-of-stock-value').text(
                             response.out_of_stock_count > 1 ?
-                            `${response.out_of_stock_count} items` :
-                            `${response.out_of_stock_count} item`
+                                `${response.out_of_stock_count} items` :
+                                `${response.out_of_stock_count} item`
                         );
                         renderDonutChart({
                             items: response.items
                         });
                         renderStockLevels(response.items);
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error('AJAX Error:', error);
                     }
                 });
@@ -415,9 +430,9 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                 const $amount = $('<span>')
                     .addClass('font-bold ml-auto')
                     .text(`₱${item.total.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            })}`);
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })}`);
 
                 $row.append($color, $label, $amount);
                 $container.append($row);

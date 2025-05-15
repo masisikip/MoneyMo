@@ -299,6 +299,8 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
         </div>
     </main>
 
+    <?php include_once '../includes/footer.php'; ?>
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         function generateGrayShades(count) {

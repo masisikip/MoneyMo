@@ -51,6 +51,9 @@
             <p class="text-lg font-semibold">Processing...</p>
         </div>
     </div>
+
+    <?php include_once '../../includes/footer.php'; ?>
+
 </body>
 
 

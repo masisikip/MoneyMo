@@ -32,7 +32,7 @@
 
 
   <!--Receipts-->
-  <div class="flex flex-col w-full h-full items-center mt-3 p-4">
+  <div class="flex flex-col w-full h-full min-h-screen items-center mt-3 p-4">
     <?php
     $stmt = $pdo->prepare("
         SELECT 
@@ -172,6 +172,10 @@
       </div>
     </div>
   </div>
+
+  <?php   include_once '../includes/footer.php'; ?>
+
+  
   <script>
     let qrFileName = "";
 

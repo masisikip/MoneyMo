@@ -72,13 +72,13 @@ require_once '../../includes/token.php';
 
         <div class="w-full flex justify-center">
             <?php if (!empty($base64Qr)): ?>
-                <button id="download-btn"
-                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                <button id="download-btn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                     Download QR Code
                 </button>
             <?php endif; ?>
         </div>
     </div>
+    <?php include_once '../../includes/footer.php'; ?>
 
 </body>
 

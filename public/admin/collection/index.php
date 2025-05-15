@@ -253,6 +253,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
 
 
+    <?php include_once '../../includes/footer.php'; ?>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
