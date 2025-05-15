@@ -420,6 +420,10 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
             });
         });
     });
+
+    $(document).ready(function () {
+        $('#header-title').text('Dashboard');
+    })
     </script>
 </body>
 </html>

@@ -31,9 +31,9 @@ $path = ($host === 'localhost')
         <?php endif; ?>
 
         <div class="flex items-center space-x-2">
-            <h1 id="header-title" class="md:text-xl text-lg font-bold">DASHBOARD</h1>
+            <h1 id="header-title" class="md:text-xl text-lg font-bold"></h1>
             <span class="<?= $usertype == 1 ? 'text-gray-600' : 'text-gray-300' ?> md:text-base text-sm">
-                | Hello, <?= $usertype == 1 ? 'Admin' : 'User' ?> <?= htmlspecialchars($username) ?>
+                | Hello, <?= $usertype == 1 ? 'Admin' : '' ?> <?= htmlspecialchars($username) ?>
             </span>
         </div>
     </div>

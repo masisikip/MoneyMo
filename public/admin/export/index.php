@@ -55,6 +55,10 @@ include_once '../../includes/connect-db.php';
 
         });
 
+        $(document).ready(function () {
+            $('#header-title').text('Export Inventory');
+        })
+
     </script>
 </body>
 

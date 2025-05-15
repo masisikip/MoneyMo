@@ -86,7 +86,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Statistics</title>
     <link rel="stylesheet" href="../../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -197,7 +197,6 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script>
     $(document).ready(() => {
-        console.log("Hellow")
         $('#header-title').text('Statistics');
 
         const today = new Date().toISOString().split('T')[0];
