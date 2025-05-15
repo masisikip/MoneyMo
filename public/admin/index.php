@@ -176,37 +176,39 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
 <body class="h-screen bg-gray-100">
     <?php include_once '../includes/partial.php'; ?>
 
-    <main class="py-8 px-16 space-y-6">
+    <main class="py-8 px-8 md:px-16 space-y-6">
         <!-- Date Filter Form -->
         <form method="GET" class="bg-white p-4 rounded-lg shadow">
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col gap-2 md:gap-0 md:flex-row justify-between items-center">
                 <h3 class="text-lg font-semibold">Filter Transactions</h3>
-                <div class="flex gap-4">
+                <div class="flex flex-col md:flex-row gap-4">
                     <div class="flex items-center gap-2">
                         <input type="date" name="start-date" value="<?= htmlspecialchars($start_date) ?>" 
-                               class="rounded border p-2 text-sm">
+                               class="rounded border p-2 text-xs md:text-sm">
                         <span>to</span>
                         <input type="date" name="end-date" value="<?= htmlspecialchars($end_date) ?>" 
-                               class="rounded border p-2 text-sm">
+                               class="rounded border p-2 text-xs md:text-sm">
                     </div>
-                    <button type="submit" 
-                            class="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600">
-                        Apply
-                    </button>
-                    <button type="button" onclick="window.location.href='?'" 
-                            class="bg-gray-100 px-4 py-2 rounded text-sm hover:bg-gray-200">
-                        Clear
-                    </button>
+                    <div class="flex justify-center md:justify-start gap-2">
+                        <button type="submit" 
+                                class="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 cursor-pointer">
+                            Apply
+                        </button>
+                        <button type="button" onclick="window.location.href='?'" 
+                                class="bg-gray-100 px-4 py-2 rounded text-sm hover:bg-gray-200 cursor-pointer">
+                            Clear
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>
 
         <!-- Stats Container -->
-        <div class="grid grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 w-full md:grid-cols-3 gap-8">
             <!-- Left Column -->
-            <div class="col-span-1 bg-white p-4 rounded-lg shadow space-y-8">
+            <div class="md:col-span-1 bg-white p-4 rounded-lg shadow space-y-8">
                 <!-- Total Collected -->
-                <div class="text-center">
+                <div class="text-center w-full md:w-fit">
                     <h3 class="text-lg text-gray-500 mb-2">Total Collected Cash</h3>
                     <p class="text-3xl font-bold">
                         ₱<?= number_format($total_collected_cash, 2) ?>
