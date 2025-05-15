@@ -164,6 +164,9 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                             <th class="py-2 px-1 md:px-4 text-left text-[9px] md:text-[12px] md:text-xs cursor-pointer">
                                 Price
                             </th>
+                            <th class="py-2 px-1 md:px-4 text-left text-[9px] md:text-[12px] md:text-xs cursor-pointer">
+                                Assisted by
+                            </th>
                             <th class="py-3 px-4 text-center text-[9px] md:text-[12px] md:text-xs">
                                 Action
                             </th>
@@ -190,6 +193,9 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                 </td>
                                 <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">₱
                                     <?= $purchase['value'] ?>
+                                </td>
+                                <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
+                                    <?= $purchase['officerName'] ?>
                                 </td>
                                 <td class="py-2 md:py-3 px-2 md:px-4 flex justify-center">
                                     <button
@@ -370,8 +376,6 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                             <hr>
 
                             <div class="line"><strong>Price</strong><span>₱${parseFloat(amount).toFixed(2)}</span></div>
-                            <div class="line"><strong>Discount</strong><span>0.00</span></div>
-
                             <hr>
 
                             <p class="total">Total: ₱${parseFloat(amount).toFixed(2)}</p>
