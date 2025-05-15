@@ -190,11 +190,11 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                                class="rounded border p-2 text-sm">
                     </div>
                     <button type="submit" 
-                            class="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600">
+                            class="bg-black text-white px-4 py-2 rounded text-sm hover:bg-black cursor-pointer">
                         Apply
                     </button>
                     <button type="button" onclick="window.location.href='?'" 
-                            class="bg-gray-100 px-4 py-2 rounded text-sm hover:bg-gray-200">
+                            class="bg-gray-100 px-4 py-2 rounded text-sm hover:bg-gray-200 cursor-pointer">
                         Clear
                     </button>
                 </div>
