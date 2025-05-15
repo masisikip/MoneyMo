@@ -58,16 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <table align='center' style='margin: 20px auto;'>
                 <tr>
                     <td style='padding: 0 6px;'>
-                    <div style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 60px; font-weight: bold; color: #333;'>" . $otp[0] . "</div>
+                    <div style='width: 40px; height: 40px; font-size: 20px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 40px; font-weight: bold; color: #333;'>" . $otp[0] . "</div>
                     </td>
                     <td style='padding: 0 6px;'>
-                    <div style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 60px; font-weight: bold; color: #333;'>" . $otp[1] . "</div>
+                    <div style='width: 40px; height: 40px; font-size: 20px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 40px; font-weight: bold; color: #333;'>" . $otp[1] . "</div>
                     </td>
                     <td style='padding: 0 6px;'>
-                    <div style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 60px; font-weight: bold; color: #333;'>" . $otp[2] . "</div>
+                    <div style='width: 40px; height: 40px; font-size: 20px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 40px; font-weight: bold; color: #333;'>" . $otp[2] . "</div>
                     </td>
                     <td style='padding: 0 6px;'>
-                    <div style='width: 60px; height: 60px; font-size: 24px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 60px; font-weight: bold; color: #333;'>" . $otp[3] . "</div>
+                    <div style='width: 40px; height: 40px; font-size: 20px; background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; text-align: center; line-height: 40px; font-weight: bold; color: #333;'>" . $otp[3] . "</div>
                     </td>
                 </tr>
                 </table>
