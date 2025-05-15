@@ -31,6 +31,7 @@
                 ['https://github.com/vincentvigonte', 'Vincent Vigonte'],
                 ['https://github.com/mrkalilano', 'Mark Joseph Alilano'],
                 ['https://github.com/maico', 'Laurence Michael Maico'],
+                ['https://github.com/tianala', 'Christian Ala'],
             ];
 
             // Shuffle the array to randomize order
