@@ -52,7 +52,7 @@ $total_pages = ceil($total_records / $limit);
 
 $stmt = $pdo->prepare("
     SELECT 
-        reference_no,
+        ctrl_no,
         date(date) AS date,
         CONCAT(u1.f_name, ' ', u1.l_name) AS username,
         quantity,
@@ -70,7 +70,7 @@ $stmt = $pdo->prepare("
     INNER JOIN user u1 ON inventory.iduser = u1.iduser
     INNER JOIN user u2 ON inventory.idofficer = u2.iduser
     $whereClause
-    ORDER BY date desc, reference_no desc   
+    ORDER BY date desc, ctrl_no desc   
     LIMIT :limit OFFSET :offset 
     ");
 
@@ -153,6 +153,9 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     <thead>
                         <tr class="bg-gray-200 text-gray-700">
                             <th class="py-2 px-1 md:px-4 text-left text-[9px] md:text-[12px] md:text-xs cursor-pointer">
+                                Ctrl no
+                            </th>
+                            <th class="py-2 px-1 md:px-4 text-left text-[9px] md:text-[12px] md:text-xs cursor-pointer">
                                 Student Name
                             </th>
                             <th class="py-2 px-1 md:px-4 text-left text-[9px] md:text-[12px] md:text-xs cursor-pointer">
@@ -175,12 +178,16 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     <tbody>
                         <?php foreach ($purchases as $purchase): ?>
 
-                            <tr class="border-b" data-reference="<?= $purchase['reference_no'] ?>"
+                            <tr class="border-b" data-reference="<?= $purchase['ctrl_no'] ?>"
                                 data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
                                 data-item="<?= $purchase['itemname'] ?>" data-amount="<?= $purchase['value'] ?>"
                                 data-inventory="<?= $purchase['idinventory'] ?>"
                                 data-officerName="<?= $purchase['officerName'] ?>"
                                 data-mode="<?= $purchase['payment_type'] ?>">
+
+                                <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
+                                    <?= $purchase['ctrl_no'] ?>
+                                </td>
 
                                 <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
                                     <?= $purchase['username'] ?>

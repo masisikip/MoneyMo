@@ -37,6 +37,7 @@
     $stmt = $pdo->prepare("
         SELECT 
         reference_no,
+        ctrl_no,
           date(date) AS date,
           quantity,
           name,
@@ -61,6 +62,7 @@
     <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 md:w-10/12 gap-4 place-items-center">
       <?php foreach ($purchases as $purchase): ?>
         <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>"
+        data-reference="<?= $purchase['ctrl_no'] ?>"
           data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
           data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
           data-inventory="<?= $purchase['idinventory'] ?>" data-mode="<?= $purchase['payment_type'] ?>">
@@ -129,9 +131,10 @@
         <div class="flex justify-center items-center pb-2">
           <p class="text-2xl font-bold mt-1">PAYMENT RECEIPT</p>
         </div>
-        <div class="flex py-1 gap-2 w-full border-b-1 border-gray-400">
-          <p class="text-xs font-bold text-gray-600">REF</p>
-          <p id="reference" class="text-xs font-bold">131231231231</p>
+        <div class="py-1 gap-2 w-full border-b-1 border-gray-400">
+          <p class="text-xs font-bold text-gray-600">Ref no.   <span id="reference" class="text-xs font-bold">131231231231</span></p>
+          <p class="text-xs font-bold text-gray-600">Ctrl no.   <span id="ctrl" class="text-xs font-bold">131231231231</span></p>
+        
         </div>
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
@@ -205,6 +208,7 @@
     $(document).ready(function () {
       $(document).on("click", ".clickable-div", function () {
         let reference = $(this).data("reference");
+        let ctrl = $(this).data("ctrl");
         let date = $(this).data("date");
         let quantity = $(this).data("quantity");
         let item = $(this).data("item");
@@ -214,6 +218,7 @@
         qrFileName = "QR_" + reference + ".png"
 
         $("#reference").text(reference);
+        $("#ctrl").text(ctrl);
         $("#date").text(date);
         $("#quantity").text(quantity);
         $("#item").text(item);
