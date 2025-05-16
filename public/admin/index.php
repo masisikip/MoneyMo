@@ -166,7 +166,7 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>MoneyMo - Admin Dashboard</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -387,7 +387,7 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                     printWindow.document.write(`
                     <html>
                         <head>
-                            <title>Receipt</title>
+                            <title>MoneyMo - Receipt</title>
                             <style>
                                 body { font-family: Arial, sans-serif; padding: 20px; }
                                 .receipt { width: 300px; margin: 0 auto; }

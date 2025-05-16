@@ -144,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <head>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>Transaction Receipt</title>
+    <title>MoneyMo - Transaction Receipt</title>
     <style>
         @media only screen and (max-width: 600px) {
         .container {
