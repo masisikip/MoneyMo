@@ -192,7 +192,7 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                     </div>
                     <div class="flex justify-center md:justify-start gap-2">
                         <button type="submit"
-                            class="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 cursor-pointer">
+                            class="bg-zinc-600 text-white px-4 py-2 rounded text-sm hover:bg-zinc-700 cursor-pointer">
                             Apply
                         </button>
                         <button type="button" onclick="window.location.href='?'"
@@ -280,6 +280,8 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
             </div>
         </div>
     </main>
+
+    <?php include_once '../includes/footer.php'; ?>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

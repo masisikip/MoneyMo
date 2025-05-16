@@ -19,7 +19,7 @@ include_once '../../includes/connect-db.php';
 <body class="">
     <main class="min-h-screen p-4 flex justify-center items-center">
         <div class="bg-white w-full md:w-96 border rounded-xl p-6">
-            <h2 class="text-xl font-bold mb-4">Export Inventory Records</h2>
+            <h2 class="text-xl font-bold mb-4 w-full text-center">Export Collection</h2>
 
             <form id="exportForm" method="POST" action="logic/export_inventory.php" target="_blank" class="space-y-4">
                 <div>
@@ -37,6 +37,7 @@ include_once '../../includes/connect-db.php';
 
         </div>
     </main>
+    <?php include_once '../../includes/footer.php'; ?>
 
     <script>
         $('#exportForm').on('submit', function (e) {
@@ -56,7 +57,7 @@ include_once '../../includes/connect-db.php';
         });
 
         $(document).ready(function () {
-            $('#header-title').text('Export Inventory');
+            $('#header-title').text('Export Collection');
         })
 
     </script>

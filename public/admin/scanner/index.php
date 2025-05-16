@@ -25,7 +25,7 @@ try {
 
 <body class="flex flex-col w-screen min-h-screen">
     <?php include_once '../../includes/partial.php' ?>
-    <main class="w-full h-full flex flex-col items-center">
+    <main class="w-full h-full flex flex-col items-center min-h-screen">
         <div class="font-bold text-2xl mt-5">Scan QR</div>
         <!-- QR Code Scanner -->
         <div id="qr-reader" class="mt-5 w-[23rem] border-4 border-transparent transition-colors"></div>
@@ -49,11 +49,12 @@ try {
                 <div id="item-grid" class="grid grid-cols-2 md:grid-cols-3 gap-2">
                     <?php foreach ($items as $item):
                         ?>
-                        <div data-stock="<?= $item['stock'] ?>" class="w-30 h-30 border-2 border-gray-300 bg-white rounded-md flex justify-center items-center relative cursor-pointer item-card"
+                        <div data-stock="<?= $item['stock'] ?>"
+                            class="w-30 h-30 border-2 border-gray-300 bg-white rounded-md flex justify-center items-center relative cursor-pointer item-card"
                             <?php if ($item['stock'] > 0)
                                 echo 'onclick="selectItem(this)"'; ?>>
 
-                            <?php if ($item['stock'] > 0): ?>    
+                            <?php if ($item['stock'] > 0): ?>
                                 <input type="checkbox" name="iditem[]" value="<?= $item['iditem'] ?>" class="hidden">
                                 <i class="text-green-500 absolute top-1 left-1 fa-solid fa-square-check invisible check"></i>
                             <?php endif; ?>
@@ -61,7 +62,9 @@ try {
                             <?php if ($item['stock'] == 0): ?>
                                 <div class="absolute rounded top-0 left-0 w-full h-full bg-gray-700/50">
                                 </div>
-                                <span class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 text-lg text-white font-bold w-full text-center">Out of Stock</span>
+                                <span
+                                    class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 text-lg text-white font-bold w-full text-center">Out
+                                    of Stock</span>
                             <?php endif; ?>
                             <div class="h-3/4">
                                 <img src="data:image/jpeg;base64,<?= base64_encode($item['image']) ?>"
@@ -72,8 +75,11 @@ try {
                             <div class="w-full absolute top-0 left-0 text-end text-gray-700 pt-1 px-2 text-xs rounded-t-md">
                                 P <?= $item['value'] ?></div>
                             <div
-                                class="w-full h-16 absolute bottom-0 left-0 bg-linear-to-t from-[#000000b1] to-transparent <?php if ($item['stock'] > 0)
-                                {echo 'text-white';} else {echo 'text-gray-300';} ?> text-xs flex justify-center text-center items-end pb-2 rounded-b-md font-semibold">
+                                class="w-full h-16 absolute bottom-0 left-0 bg-linear-to-t from-[#000000b1] to-transparent <?php if ($item['stock'] > 0) {
+                                    echo 'text-white';
+                                } else {
+                                    echo 'text-gray-300';
+                                } ?> text-xs flex justify-center text-center items-end pb-2 rounded-b-md font-semibold">
                                 <?= $item['name'] ?>
                             </div>
                         </div>
@@ -90,6 +96,8 @@ try {
     <div id="loader" class="w-full h-full fixed items-center justify-center top-0 left-0 bg-gray-700/50 hidden">
         <div class="w-16 h-16 border-4 border-t-black border-gray-300 rounded-full animate-spin"></div>
     </div>
+    <?php include_once '../../includes/footer.php'; ?>
+
 </body>
 
 </html>
@@ -144,7 +152,7 @@ try {
 
         $('#select-all').on('change', function () {
             let checked = $(this).prop('checked');
-            
+
             $('.item-card').each(function () {
                 if ($(this).data('stock') <= 0) return;
 

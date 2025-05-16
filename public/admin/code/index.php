@@ -79,6 +79,7 @@ require_once '../../includes/token.php';
             <?php endif; ?>
         </div>
     </div>
+    <?php include_once '../../includes/footer.php'; ?>
 
 </body>
 

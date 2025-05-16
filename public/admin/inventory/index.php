@@ -114,6 +114,7 @@
         SELECT 
             idinventory,
             DATE(date) AS date,
+            DATE(received_at) AS claimdate,
             item.name AS itemname,
             CONCAT(f_name, ' ', l_name) AS username,
             is_received,
@@ -207,6 +208,7 @@
                                     <tr>
                                         <th class="py-2 px-4 text-left">Item Name</th>
                                         <th class="py-2 px-4 text-left">Date of Purchase</th>
+                                        <th class="py-2 px-4 text-left">Claim Date</th>
                                         <th class="py-2 px-4 text-left">Status</th>
                                     </tr>
                                 </thead>
@@ -215,6 +217,7 @@
                                         <tr class="border-b">
                                             <td class="py-3 px-4"><?= htmlspecialchars($purchase['itemname']) ?></td>
                                             <td class="py-3 px-4"><?= htmlspecialchars($purchase['date']) ?></td>
+                                            <td class="py-3 px-4"><?= htmlspecialchars($purchase['claimdate']) ?></td>
                                             <td class="py-3 px-4">
                                                 <?php if ($purchase['is_received'] == 0): ?>
                                                     <button
@@ -223,7 +226,8 @@
                                                         Claim
                                                     </button>
                                                 <?php else: ?>
-                                                    <span class="text-gray-500 font-semibold min-w-[120px] text-center inline-block">
+                                                    <span
+                                                        class="text-gray-500 font-semibold min-w-[120px] text-center inline-block">
                                                         Claimed
                                                     </span>
                                                 <?php endif; ?>
@@ -257,7 +261,11 @@
                             <div class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
                                 <div>
                                     <p class="font-bold"><?= htmlspecialchars($purchase['itemname']) ?></p>
-                                    <p class="text-gray-500 text-sm"><?= htmlspecialchars($purchase['date']) ?></p>
+                                    <p class="text-gray-500 text-sm">Purchased on <?= htmlspecialchars($purchase['date']) ?></p>
+                                    <?php if ($purchase['claimdate']) { ?>
+                                        <p class="text-gray-500 text-sm">Claimed on <?= htmlspecialchars($purchase['claimdate']) ?>
+                                        </p>
+                                    <?php } ?>
                                 </div>
                                 <?php if ($purchase['is_received'] == 0): ?>
                                     <button
@@ -266,7 +274,7 @@
                                         Claim
                                     </button>
                                 <?php else: ?>
-                                    <span class="text-gray-500 text-center font-semibold min-w-[120px] inline-block">Claimed
+                                    <span class="text-gray-500 text-center font-semibold min-w-[80px] inline-block">Claimed
                                     </span>
                                 <?php endif; ?>
                             </div>
@@ -331,6 +339,8 @@
             <p class="text-lg font-semibold">Processing...</p>
         </div>
     </div>
+
+    <?php include_once '../../includes/footer.php'; ?>
 
 </body>
 

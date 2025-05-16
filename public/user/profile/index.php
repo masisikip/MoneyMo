@@ -80,7 +80,7 @@ if (!$user) {
     </main>
 
 
-
+    <?php include_once '../../includes/footer.php'; ?>
     <script>
         $(document).ready(function () {
             $('#header-title').text('Profile');

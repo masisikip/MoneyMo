@@ -21,10 +21,10 @@
     ?>
 
     <main class="min-h-screen p-4 flex justify-center items-center">
-        <div class="bg-white w-full md:w-1/3 border rounded-xl p-6">
+        <div class="bg-white w-full md:w-1/2   justify-center flex flex-col items-center border rounded-xl p-6">
             <h2 class="text-2xl font-bold mb-4">Import Students</h2>
 
-            <form id="importForm" class="space-y-4">
+            <form id="importForm" class="space-y-4 md:w-1/2">
                 <input type="file" name="student_file" accept=".csv" required class="border rounded-full cursor-pointer block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 
                           file:rounded-full file:border-0 file:text-sm file:font-semibold 
                           file:bg-black file:text-white hover:file:bg-gray-800">
@@ -51,6 +51,9 @@
             <p class="text-lg font-semibold">Processing...</p>
         </div>
     </div>
+
+    <?php include_once '../../includes/footer.php'; ?>
+
 </body>
 
 
@@ -131,7 +134,7 @@
     });
 
     $(document).ready(function () {
-        $('#header-title').text('Import Data');
+        $('#header-title').text('Import Students');
     })
 </script>
 

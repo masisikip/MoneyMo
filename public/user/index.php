@@ -32,11 +32,12 @@
 
 
   <!--Receipts-->
-  <div class="flex flex-col w-full h-full items-center mt-3 p-4">
+  <div class="flex flex-col w-full h-full min-h-screen items-center mt-3 p-4">
     <?php
     $stmt = $pdo->prepare("
         SELECT 
         reference_no,
+        ctrl_no,
           date(date) AS date,
           quantity,
           name,
@@ -61,7 +62,8 @@
 
     <div class="w-full p-4 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 md:w-10/12 gap-4 md:gap-5 place-items-center">
       <?php foreach ($purchases as $purchase): ?>
-        <div class="clickable-div w-[16rem] h-auto md:h-72 cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>" data-ctrl_no="<?= $purchase['ctrl_no'] ?>"
+        <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>"
+        data-reference="<?= $purchase['ctrl_no'] ?>"
           data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
           data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
           data-inventory="<?= $purchase['idinventory'] ?>" data-mode="<?= $purchase['payment_type'] ?>">
@@ -130,15 +132,10 @@
         <div class="flex justify-center items-center pb-2">
           <p class="text-2xl font-bold mt-1">PAYMENT RECEIPT</p>
         </div>
-        <div class="flex flex-col py-1 w-full border-b-1 border-gray-400">
-          <div class="mb-0">
-            <span class="text-xs font-bold text-gray-600">REF </span>
-            <span id="reference" class="text-xs font-bold">131231231231</span>
-          </div>
-          <div class="mt-0">
-            <span class="text-xs font-bold text-gray-600">CTRL</span>
-            <span id="ctrl_no" class="text-xs font-bold"></span>
-          </div>
+        <div class="py-1 gap-2 w-full border-b-1 border-gray-400">
+          <p class="text-xs font-bold text-gray-600">Ref no.   <span id="reference" class="text-xs font-bold">131231231231</span></p>
+          <p class="text-xs font-bold text-gray-600">Ctrl no.   <span id="ctrl" class="text-xs font-bold">131231231231</span></p>
+        
         </div>
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
@@ -176,6 +173,10 @@
       </div>
     </div>
   </div>
+
+  <?php   include_once '../includes/footer.php'; ?>
+
+  
   <script>
     let qrFileName = "";
 
@@ -212,6 +213,7 @@
     $(document).ready(function () {
       $(document).on("click", ".clickable-div", function () {
         let reference = $(this).data("reference");
+        let ctrl = $(this).data("ctrl");
         let date = $(this).data("date");
         let quantity = $(this).data("quantity");
         let item = $(this).data("item");
@@ -222,7 +224,7 @@
         qrFileName = "QR_" + reference + ".png"
 
         $("#reference").text(reference);
-        $("#ctrl_no").text(ctrl_no);
+        $("#ctrl").text(ctrl);
         $("#date").text(date);
         $("#quantity").text(quantity);
         $("#item").text(item);
