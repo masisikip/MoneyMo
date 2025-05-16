@@ -42,6 +42,7 @@
           name,
           inventory.value,
           idinventory,
+          ctrl_no,
           CASE 
           WHEN payment_type = 0 THEN 'Cash'
               WHEN payment_type = 1 THEN 'Gcash'
@@ -50,7 +51,7 @@
       FROM inventory
       INNER JOIN item on inventory.iditem = item.iditem
       WHERE iduser = ?
-      ORDER BY date desc    ");
+      ORDER BY date DESC, ctrl_no DESC");
 
     $stmt->execute([$iduser]);
     $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -58,9 +59,9 @@
     ?>
     <!-- Receipts Grid -->
 
-    <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 md:w-10/12 gap-4 place-items-center">
+    <div class="w-full p-4 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 md:w-10/12 gap-4 md:gap-5 place-items-center">
       <?php foreach ($purchases as $purchase): ?>
-        <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>"
+        <div class="clickable-div w-[16rem] h-auto md:h-72 cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>" data-ctrl_no="<?= $purchase['ctrl_no'] ?>"
           data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
           data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
           data-inventory="<?= $purchase['idinventory'] ?>" data-mode="<?= $purchase['payment_type'] ?>">
@@ -129,9 +130,15 @@
         <div class="flex justify-center items-center pb-2">
           <p class="text-2xl font-bold mt-1">PAYMENT RECEIPT</p>
         </div>
-        <div class="flex py-1 gap-2 w-full border-b-1 border-gray-400">
-          <p class="text-xs font-bold text-gray-600">REF</p>
-          <p id="reference" class="text-xs font-bold">131231231231</p>
+        <div class="flex flex-col py-1 w-full border-b-1 border-gray-400">
+          <div class="mb-0">
+            <span class="text-xs font-bold text-gray-600">REF </span>
+            <span id="reference" class="text-xs font-bold">131231231231</span>
+          </div>
+          <div class="mt-0">
+            <span class="text-xs font-bold text-gray-600">CTRL</span>
+            <span id="ctrl_no" class="text-xs font-bold"></span>
+          </div>
         </div>
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
@@ -210,10 +217,12 @@
         let item = $(this).data("item");
         let amount = $(this).data("amount");
         let mode = $(this).data("mode");
+        let ctrl_no = $(this).data("ctrl_no");
 
         qrFileName = "QR_" + reference + ".png"
 
         $("#reference").text(reference);
+        $("#ctrl_no").text(ctrl_no);
         $("#date").text(date);
         $("#quantity").text(quantity);
         $("#item").text(item);

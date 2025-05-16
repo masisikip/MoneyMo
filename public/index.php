@@ -303,6 +303,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script>
     function closeEmailModal() {
         $('#forget-pass').addClass('hidden');
+        $('#verify-email-form')[0].reset();
     }
 
 
@@ -376,6 +377,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $('#otp-email').val(email);
                     $('#email-modal').addClass('hidden');
                     $('#otp-modal').removeClass('hidden');
+                    $('#verify-email-form')[0].reset();
                 } else {
                     showNotification("error", response.message);
                 }
@@ -468,6 +470,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (response.status === 'success') {
                     showNotification("success", response.message);
                     $('#forget-pass').addClass('hidden');
+                    $('#password-form')[0].reset();
+                    $('#password-modal').addClass('hidden');
                 } else {
                     showNotification("error", response.message);
                 }
