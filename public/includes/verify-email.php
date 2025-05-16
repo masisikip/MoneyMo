@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <head>
             <meta charset='UTF-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <title>OTP Verification</title>
+            <title>MoneyMo - OTP Verification</title>
             </head>
             <body style='font-family: Segoe UI, Arial, sans-serif; background-color: #f5f7fa; margin: 0; padding: 20px;'>
             <div style='max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 4px 10px rgba(0,0,0,0.05);'>

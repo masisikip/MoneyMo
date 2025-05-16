@@ -68,7 +68,7 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../css/styles.css">
-    <title>Admin Dashboard</title>
+    <title>MoneyMo - Items</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
@@ -100,7 +100,7 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="w-full flex justify-end mt-5 mr-20 pr-10">
 
-        <button class="text-white  bg-black px-4 py-2 rounded flex items-center add-item-button"
+        <button class="text-white  bg-black px-4 py-2 rounded flex items-center add-item-button cursor-pointer"
             onclick="openAddModal()">
             <i class="fas fa-plus mr-2"></i> <span>Add Item</span>
         </button>
@@ -249,9 +249,9 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         required>
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2"
+                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2 cursor-pointer"
                         onclick="closeAddModal()">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
+                    <button type="submit" class="px-4 py-2 bg-black text-white rounded cursor-pointer">Save</button>
                 </div>
             </form>
         </div>
@@ -297,9 +297,9 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         class="w-full p-2 border border-gray-300 rounded mt-1" required>
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2"
+                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2 cursor-pointer"
                         onclick="closeUpdateModal()">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-black text-white rounded">Save</button>
+                    <button type="submit" class="px-4 py-2 bg-black text-white rounded cursor-pointer">Save</button>
                 </div>
             </form>
         </div>

@@ -11,7 +11,7 @@ require_once '../../includes/token.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code</title>
+    <title>MoneyMo - QR Code</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/styles.css">
@@ -73,7 +73,7 @@ require_once '../../includes/token.php';
         <div class="w-full flex justify-center">
             <?php if (!empty($base64Qr)): ?>
                 <button id="download-btn"
-                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                    class="px-4 py-2 bg-zinc-700 cursor-pointer text-white rounded-md hover:bg-zinc-800">
                     Download QR Code
                 </button>
             <?php endif; ?>

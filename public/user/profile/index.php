@@ -28,7 +28,7 @@ if (!$user) {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MoneyMo</title>
+    <title>MoneyMo - Profile</title>
     <link rel="stylesheet" href="../../css/styles.css" />
     <link rel="icon" href="./assets/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
@@ -67,7 +67,7 @@ if (!$user) {
                     placeholder="Confirn Password">
 
                 <button id="submitPass"
-                    class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 mb-2 flex items-center justify-center gap-2">
+                    class="w-full bg-black text-white py-2 rounded hover:bg-gray-800 mb-2 flex items-center justify-center gap-2 cursor-pointer">
                     <span id="submitSpan">Update Password</span>
                     <span id="loader"
                         class="hidden border-2 border-white border-t-transparent rounded-full w-4 h-4 animate-spin"></span>
@@ -83,6 +83,7 @@ if (!$user) {
 
     <script>
         $(document).ready(function () {
+            $('#header-title').text('Profile');
 
             function isStrongPassword(pw) {
                 if (pw.length < 8) {
