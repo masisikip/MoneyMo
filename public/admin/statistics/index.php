@@ -18,7 +18,7 @@ $total_collected_cash = 0;
 $total_items_sold = 0;
 $out_of_stock_count = 0;
 $low_stock_count = 0;
-$low_stock_threshold = 10;
+$low_stock_threshold = 15;
 $item_stats = [];
 
 $query = "SELECT iditem, quantity FROM inventory WHERE is_received = 1";
@@ -73,9 +73,13 @@ foreach ($item_lookup as $id => $data) {
         ];
     }
 
+    
     $item_stats[$id]["total"] = number_format($item_stats[$id]["total"], 2, '.', '');
 }
 
+usort($item_stats, function ($a, $b) {
+    return $b['stock'] <=> $a['stock']; 
+});
 $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
 ?>
 
@@ -86,7 +90,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>MoneyMo - Statistics</title>
     <link rel="stylesheet" href="../../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -97,10 +101,10 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
     include_once '../../includes/partial.php';
     ?>
 
-    <main class="py-8 px-16 space-y-6">
+    <main class="py-8 px-4 md:px-16 space-y-6">
         <!-- Date Picker Container -->
         <form id="date-filter-form">
-            <div class="w-full flex justify-end gap-2">
+            <div class="w-full flex justify-center md:justify-end gap-2">
                 <div class="grid grid-cols-1 text-sm">
                     <label for="start-date">Start</label>
                     <input type="date" name="start-date" id="start-date" class="rounded border border-gray-200 bg-white p-2 w-36 text-center">
@@ -113,7 +117,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
         </form>
 
         <!-- Small Cards Container -->
-        <div class="grid grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="bg-white p-4 rounded-lg shadow">
                 <div class="mb-6">
                     <h3 class="text-gray-800">Total Collected Cash</h3>
@@ -149,13 +153,13 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
         </div>
 
         <!-- Big Cards Container -->
-        <div class="w-full grid grid-cols-3 gap-8">
+        <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Collection Breakdown -->
-            <div class="col-span-2 bg-white p-4 rounded-lg shadow min-h-80">
+            <div class="col-span-1 md:col-span-2 bg-white p-4 rounded-lg shadow min-h-80">
                 <div>
                     <h3 class="text-lg text-gray-800">Collection Breakdown</h3>
                 </div>
-                <div class="flex gap-6">
+                <div class="flex flex-col md:flex-row gap-6 p-2">
                     <!-- Pie Chart -->
                     <div id="chartContainer" class="w-full max-w-xl mx-auto mt-4">
                         <canvas id="chartCanvas">
@@ -174,16 +178,16 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                 </div>
             </div>
             <!-- Item Stock Levels -->
-            <div class="col-span-1 bg-white p-4 rounded-lg shadow min-h-80">
+            <div class="col-span-1 bg-white p-8 rounded-lg shadow min-h-80">
                 <div class="mb-4">
-                    <h3 class="text-lg text-gray-800">Item Stock Levels</h3>
+                    <h3 class="text-lg text-gray-800 font-semibold">Item Stock Levels</h3>
                 </div>
-                <div id="stock-levels" class="pl-12 max-w-96 text-lg">
+                <div id="stock-levels" class="pl-6 max-w-96 text-lg flex flex-col">
                     <?php foreach ($item_stats as $item): ?>
                         <?php $stock = (int)$item['stock']; ?>
                         <div class="flex justify-between py-2">
-                            <span><?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8') ?></span>
-                            <span class="<?= $stock === 0 ? 'text-red-500' : '' ?>"><?= $stock ?></span>
+                            <span class="<?= $stock === 0 ? 'text-red-500' : ( $stock < 15 && $stock > 0 ? 'text-amber-600' : '') ?>"><?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="<?= $stock === 0 ? 'text-red-500' : ( $stock < 15 && $stock > 0 ? 'text-amber-600' : '') ?>"><?= $stock ?></span>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -197,7 +201,6 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script>
     $(document).ready(() => {
-        console.log("Hellow")
         $('#header-title').text('Statistics');
 
         const today = new Date().toISOString().split('T')[0];

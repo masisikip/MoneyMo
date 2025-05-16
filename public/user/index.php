@@ -7,7 +7,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MoneyMo</title>
+  <title>MoneyMo - Purchases</title>
   <link rel="stylesheet" href="../css/styles.css" />
   <link rel="icon" href="./assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
@@ -242,6 +242,10 @@
         $("#myModal").addClass("hidden").removeClass("flex");
       });
     });
+
+    $(document).ready(function () {
+      $('#header-title').text('My Purchases');
+    })
   </script>
 </body>
 
