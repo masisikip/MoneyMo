@@ -4,11 +4,11 @@
         <div class="md:col-span-1 w-3/4">
             <h2 class="font-bold text-lg">MoneyMo</h2>
             <p class="mt-2 text-justify">
-                Money Monitor: An automated cash collection and inventory ttracking system.
+                Money Monitor: An automated cash collection and inventory tracking system.
 
             </p>
             <p class="mt-2 text-justify">
-                Developed by passionate computer science students at Pangasinan State University.
+                Developed by computer science students at Palawan State University.
             </p>
         </div>
 

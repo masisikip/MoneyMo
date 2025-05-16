@@ -20,6 +20,8 @@ if (isset($_SESSION['auth_token'])) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $student_id = $_POST['student_id'] ?? ''; 
+    $datetime = date('Y-m-d H:i:s', strtotime('+6 hours'));
+    $date = date('F d, Y - h:i A', strtotime('+6 hours'));
 
     $stmt1 = $pdo->prepare('SELECT * FROM user WHERE student_id = ?');
     $stmt1->execute([$student_id]);
@@ -50,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pdo->beginTransaction();
 
     $itemRefCount = [];
+    $total_items = 0;
 
     foreach ($_POST['iditem'] as $item) {
         $stmt3 = $pdo->prepare('SELECT * FROM item WHERE iditem = ?');
@@ -69,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         $itemRefCount[$item]++; // increment for current transaction
+        $total_items++;
         $ref_val = strval($itemRefCount[$item]);
         $ref_no = str_pad($ref_val, 4, '0', STR_PAD_LEFT);
 
@@ -76,13 +80,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $ctrl_no = str_pad($val, 4, '0', STR_PAD_LEFT);
 
         $price = $cur_item['value'];
-        $reference_no = $prefix['prefix'] . "-" . $cur_item['code'] . "-" . $ref_no;
+        $reference_no = $cur_item['code'] . "-" . $ref_no;
         $control_no = $prefix['prefix'] . "-" . $ctrl_no;
 
         $stmt4 = $pdo->prepare('INSERT INTO inventory 
-                            (iduser, idofficer, iditem, reference_no, ctrl_no, value) 
-                            VALUES (?, ?, ?, ?, ?, ?)');
-        $stmt4->execute([$student, $officer, $item, $reference_no, $control_no, $price]);
+                            (iduser, idofficer, iditem, reference_no, ctrl_no, value, date) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $stmt4->execute([$student, $officer, $item, $reference_no, $control_no, $price, $datetime]);
 
         $stmt5 = $pdo->prepare('UPDATE item SET stock = stock - 1 WHERE iditem = ?');
         $stmt5->execute([$item]);
@@ -105,23 +109,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $officer_data = $stmt9->fetch();
     $officer_name = $officer_data ? $officer_data['f_name'] . ' ' . $officer_data['l_name'] : 'Unknown';
 
+   $stmt10 = $pdo->prepare('
+        SELECT i.*, it.name 
+        FROM inventory i
+        JOIN item it ON i.iditem = it.iditem
+        WHERE i.iduser = ? AND i.idofficer = ?
+        ORDER BY i.idinventory DESC
+        LIMIT ?');
+    $stmt10->execute([$student, $officer, count($_POST['iditem'])]);
+    $items = $stmt10->fetchAll(PDO::FETCH_ASSOC);
+
     // Fetch all transaction items again for email
     $items_html = '';
     $total = 0;
-    $cur_num = $control_num + 1;
 
-    foreach ($_POST['iditem'] as $item) {
-        $stmt = $pdo->prepare('SELECT * FROM item WHERE iditem = ?');
-        $stmt->execute([$item]);
+    foreach ($items as $item) {
+        $stmt = $pdo->prepare('SELECT name FROM item WHERE iditem = ?');
+        $stmt->execute([$item['iditem']]);
         $it = $stmt->fetch();
 
-        $itemRefCount[$item]++; // Use same reference count as above
-        $ref_no = str_pad(strval($itemRefCount[$item]), 4, '0', STR_PAD_LEFT);
-        $ctrl_no = str_pad(strval($cur_num), 4, '0', STR_PAD_LEFT);
-
-        $reference_no = $prefix['prefix'] . "-" . $it['code'] . "-" . $ref_no;
-        $control_no = $prefix['prefix'] . "-" . $ctrl_no;
-        $price = number_format($it['value'], 2);
+        $reference_no = $item['reference_no'];
+        $control_no = $item['ctrl_no'];
+        $price = number_format($item['value'], 2);
 
         $items_html .= "<tr>
             <td>{$it['name']}</td>
@@ -130,11 +139,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <td>₱ {$price}</td>
         </tr>";
 
-        $total += $it['value'];
-        $cur_num++;
+        $total += $item['value'];
     }
 
-    $date = date('F d, Y - h:i A');
     $total_html = number_format($total, 2);
 
     // Create the email body
@@ -144,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <head>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>Transaction Receipt</title>
+    <title>MoneyMo - Transaction Receipt</title>
     <style>
         @media only screen and (max-width: 600px) {
         .container {

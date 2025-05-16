@@ -7,7 +7,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MoneyMo</title>
+  <title>MoneyMo - Purchases</title>
   <link rel="stylesheet" href="../css/styles.css" />
   <link rel="icon" href="./assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
@@ -43,6 +43,7 @@
           name,
           inventory.value,
           idinventory,
+          ctrl_no,
           CASE 
           WHEN payment_type = 0 THEN 'Cash'
               WHEN payment_type = 1 THEN 'Gcash'
@@ -51,7 +52,7 @@
       FROM inventory
       INNER JOIN item on inventory.iditem = item.iditem
       WHERE iduser = ?
-      ORDER BY date desc    ");
+      ORDER BY date DESC, ctrl_no DESC");
 
     $stmt->execute([$iduser]);
     $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -59,7 +60,7 @@
     ?>
     <!-- Receipts Grid -->
 
-    <div class="w-full p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 md:w-10/12 gap-4 place-items-center">
+    <div class="w-full p-4 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 md:w-10/12 gap-4 md:gap-5 place-items-center">
       <?php foreach ($purchases as $purchase): ?>
         <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>"
         data-reference="<?= $purchase['ctrl_no'] ?>"
@@ -218,6 +219,7 @@
         let item = $(this).data("item");
         let amount = $(this).data("amount");
         let mode = $(this).data("mode");
+        let ctrl_no = $(this).data("ctrl_no");
 
         qrFileName = "QR_" + reference + ".png"
 
@@ -242,6 +244,10 @@
         $("#myModal").addClass("hidden").removeClass("flex");
       });
     });
+
+    $(document).ready(function () {
+      $('#header-title').text('My Purchases');
+    })
   </script>
 </body>
 

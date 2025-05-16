@@ -9,7 +9,7 @@ include_once '../../includes/connect-db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Export Inventory</title>
+    <title>MoneyMo - Export</title>
     <link rel="stylesheet" href="../../css/styles.css">
     <script src="https://kit.fontawesome.com/YOUR-FONT-AWESOME-KEY.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -19,7 +19,7 @@ include_once '../../includes/connect-db.php';
 <body class="">
     <main class="min-h-screen p-4 flex justify-center items-center">
         <div class="bg-white w-full md:w-96 border rounded-xl p-6">
-            <h2 class="text-xl font-bold mb-4">Export Inventory Records</h2>
+            <h2 class="text-xl font-bold mb-4 w-full text-center">Export Collection</h2>
 
             <form id="exportForm" method="POST" action="logic/export_inventory.php" target="_blank" class="space-y-4">
                 <div>
@@ -30,7 +30,7 @@ include_once '../../includes/connect-db.php';
                     <label class="block font-semibold mb-1">End Date</label>
                     <input type="date" id="endDate" name="end_date" class="border p-2 rounded w-full">
                 </div>
-                <button type="submit" class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded w-full">
+                <button type="submit" class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded w-full cursor-pointer">
                     Export to CSV
                 </button>
             </form>
@@ -55,6 +55,10 @@ include_once '../../includes/connect-db.php';
             }
 
         });
+
+        $(document).ready(function () {
+            $('#header-title').text('Export Collection');
+        })
 
     </script>
 </body>
