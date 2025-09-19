@@ -30,11 +30,11 @@
 
   ?>
 
-
-  <!--Receipts-->
-  <div class="flex flex-col w-full h-full min-h-screen items-center mt-3 p-4">
-    <?php
-    $stmt = $pdo->prepare("
+  <!-- Testing -->
+  <div class="container px-12 w-full h-full min-h-screen items-center">
+    <div class="container mx-auto pt-10 md:px-10">
+      <?php
+      $stmt = $pdo->prepare("
         SELECT 
         reference_no,
         ctrl_no,
@@ -54,26 +54,25 @@
       WHERE iduser = ?
       ORDER BY date DESC, ctrl_no DESC");
 
-    $stmt->execute([$iduser]);
-    $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $stmt->execute([$iduser]);
+      $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    ?>
-    <!-- Receipts Grid -->
+      ?>
 
-    <div class="w-full p-4 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 md:w-10/12 gap-4 md:gap-5 place-items-center">
-      <?php foreach ($purchases as $purchase): ?>
-        <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>"
-        data-reference="<?= $purchase['ctrl_no'] ?>"
-          data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
-          data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
-          data-inventory="<?= $purchase['idinventory'] ?>" data-mode="<?= $purchase['payment_type'] ?>">
-
-          <div class="flex rounded-lg h-full bg-white p-6 flex-col hover:shadow-2xl">
-            <div class="flex items-center justify-center mb-2 pb-3 border-b-1 border-black">
+      <!-- Receipts Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-x-5 gap-y-10 mx-0 md:mx-2 px-0 md:px-5">
+        <!-- Receipt 1 -->
+        <?php foreach ($purchases as $purchase): ?>
+          <div class="clickable-div relative p-3 bg-white md:w-[16rem] w-11/12 h-auto md:h-72 rounded-lg shadow-md hover:shadow-xl place-items-center cursor-pointer transform transition-transform duration-300 hover:scale-110 hover:z-10" data-reference="<?= $purchase['reference_no'] ?>"
+            data-reference="<?= $purchase['ctrl_no'] ?>"
+            data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
+            data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
+            data-inventory="<?= $purchase['idinventory'] ?>" data-mode="<?= $purchase['payment_type'] ?>">
+            <div class="flex items-center justify-center mb-2 pb-2">
               <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
             </div>
 
-            <div class="pb-3 border-b border-black text-black">
+            <div class="pb-3 border-b border-black text-black border-t pt-2">
               <div class="grid grid-cols-2 gap-x-4">
                 <p>Date:</p>
                 <p class="text-right font-bold"><?= $purchase['date'] ?></p>
@@ -88,25 +87,25 @@
                 <p class="text-right font-bold">₱ <?= $purchase['value'] ?></p>
               </div>
             </div>
-
             <div class="flex flex-col justify-between flex-grow text-center">
               <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
                 Tap to see full details
               </p>
             </div>
           </div>
-        </div>
-      <?php endforeach; ?>
+        <?php endforeach; ?>
+      </div>
+
     </div>
-
-
   </div>
+
+
 
   <script src="https://superal.github.io/canvas2image/canvas2image.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 
   <!-- Receipt Modal -->
-  <div id="myModal" class="modal fixed w-full h-full top-0 left-0 hidden items-center justify-center">
+  <div id="myModal" class="modal fixed w-full h-full top-0 left-0 hidden items-center justify-center z-20">
     <!-- hoverlay  -->
     <div id="modalOverlay" class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
 
@@ -133,9 +132,9 @@
           <p class="text-2xl font-bold mt-1">PAYMENT RECEIPT</p>
         </div>
         <div class="py-1 gap-2 w-full border-b-1 border-gray-400">
-          <p class="text-xs font-bold text-gray-600">Ref no.   <span id="reference" class="text-xs font-bold">131231231231</span></p>
-          <p class="text-xs font-bold text-gray-600">Ctrl no.   <span id="ctrl" class="text-xs font-bold">131231231231</span></p>
-        
+          <p class="text-xs font-bold text-gray-600">Ref no. <span id="reference" class="text-xs font-bold">131231231231</span></p>
+          <p class="text-xs font-bold text-gray-600">Ctrl no. <span id="ctrl" class="text-xs font-bold">131231231231</span></p>
+
         </div>
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
@@ -174,17 +173,17 @@
     </div>
   </div>
 
-  <?php   include_once '../includes/footer.php'; ?>
+  <?php include_once '../includes/footer.php'; ?>
 
-  
+
   <script>
     let qrFileName = "";
 
     document
       .querySelector("#downloadButton")
-      .addEventListener("click", function () {
+      .addEventListener("click", function() {
         html2canvas(document.querySelector(".modal-content"), {
-          onrendered: function (canvas) {
+          onrendered: function(canvas) {
             const imgDataUrl = canvas.toDataURL("image/png");
             const link = document.createElement("a");
             link.href = imgDataUrl;
@@ -198,7 +197,7 @@
 
     function downloadReceipt(element) {
       html2canvas(document.querySelector(".modal-content"), {
-        onrendered: function (canvas) {
+        onrendered: function(canvas) {
           const imgDataUrl = canvas.toDataURL("image/png");
           const link = document.createElement("a");
           link.href = imgDataUrl;
@@ -210,8 +209,8 @@
       });
     }
 
-    $(document).ready(function () {
-      $(document).on("click", ".clickable-div", function () {
+    $(document).ready(function() {
+      $(document).on("click", ".clickable-div", function() {
         let reference = $(this).data("reference");
         let ctrl = $(this).data("ctrl");
         let date = $(this).data("date");
@@ -235,17 +234,17 @@
       });
 
       // Show modal when button is clicked
-      $(".clickable-div").click(function () {
+      $(".clickable-div").click(function() {
         $("#myModal").removeClass("hidden").addClass("flex");
       });
 
       // Hide modal when close button is clicked
-      $("#closeModal").click(function () {
+      $("#closeModal").click(function() {
         $("#myModal").addClass("hidden").removeClass("flex");
       });
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
       $('#header-title').text('My Purchases');
     })
   </script>
