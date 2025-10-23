@@ -2,6 +2,7 @@
 include_once '../../includes/partial.php';
 include_once '../../includes/connect-db.php';
 
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 $limit = $_GET['limit'] ?? 10;
 $page = $_GET['page'] ?? 1;
@@ -19,7 +20,6 @@ if (!empty($filter)) {
     $whereClause .= " AND item.iditem = :filter";
 }
 
-
 $countQuery = "
     SELECT COUNT(*)
     FROM inventory
@@ -27,7 +27,6 @@ $countQuery = "
     INNER JOIN user u1 ON inventory.iduser = u1.iduser
     $whereClause
     ";
-
 
 $countStmt = $pdo->prepare($countQuery);
 
@@ -38,17 +37,14 @@ if (!empty($search)) {
     $countStmt->bindValue(':search3', $searchTerm);
 }
 
-
 if (!empty($filter)) {
     $countStmt->bindValue(':filter', $filter, PDO::PARAM_INT);
 }
-
 
 $countStmt->execute();
 $total_records = $countStmt->fetchColumn();
 
 $total_pages = ceil($total_records / $limit);
-
 
 $stmt = $pdo->prepare("
     SELECT 
@@ -61,10 +57,11 @@ $stmt = $pdo->prepare("
         idinventory,
         CONCAT(u2.f_name, ' ', u2.l_name) AS officerName,
         CASE 
-        WHEN payment_type = 0 THEN 'Cash'
+            WHEN payment_type = 0 THEN 'Cash'
             WHEN payment_type = 1 THEN 'Gcash'
             ELSE 'unknown'
-        END AS 	payment_type
+        END AS payment_type,
+        is_void
     FROM inventory
     INNER JOIN item on inventory.iditem = item.iditem
     INNER JOIN user u1 ON inventory.iduser = u1.iduser
@@ -73,7 +70,6 @@ $stmt = $pdo->prepare("
     ORDER BY date desc, ctrl_no desc   
     LIMIT :limit OFFSET :offset 
     ");
-
 
 if (!empty($search)) {
     $stmt->bindValue(':search1', $searchTerm);
@@ -85,13 +81,10 @@ if (!empty($filter)) {
     $stmt->bindValue(':filter', $filter, PDO::PARAM_INT);
 }
 
-
 $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
 $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
 
 $stmt2 = $pdo->query("
     SELECT 
@@ -112,15 +105,14 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     <title>MoneyMo - Collections</title>
     <link rel="stylesheet" href="../../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body class="w-full h-full bg-gray-100">
     <div class="flex-1 p-4 md:p-8 overflow-y-auto w-full md:ml-0 pb-24">
+        <!-- Your existing form and table content remains the same -->
         <form method="get" class="w-full">
-            <div
-                class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full  mx-auto">
+            <div class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full  mx-auto">
                 <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
                     <div class="px-3 py-2 text-white border rounded-l-lg bg-zinc-700">
                         <i class="fas fa-search"></i>
@@ -133,15 +125,12 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                         <i class="fas fa-sliders-h"></i>
                     </button>
                     <select name="filter" class="px-2 focus:outline-none w-full md:w-auto">
-
                         <option value="" <?= (($_GET['filter'] ?? '') === '') ? 'selected' : '' ?>>All</option>
-
                         <?php foreach ($items as $item) { ?>
                             <option value="<?= $item['iditem'] ?>" <?= (isset($_GET['filter']) && $_GET['filter'] == $item['iditem']) ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($item['name']) ?>
                             </option>
                         <?php } ?>
-
                     </select>
                 </div>
             </div>
@@ -177,16 +166,22 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     </thead>
                     <tbody>
                         <?php foreach ($purchases as $purchase): ?>
-
-                            <tr class="border-b" data-reference="<?= $purchase['ctrl_no'] ?>"
-                                data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
-                                data-item="<?= $purchase['itemname'] ?>" data-amount="<?= $purchase['value'] ?>"
+                            <tr class="border-b <?= $purchase['is_void'] ? 'bg-gray-100 text-gray-500' : '' ?>" 
+                                data-reference="<?= $purchase['ctrl_no'] ?>"
+                                data-date="<?= $purchase['date'] ?>" 
+                                data-quantity="<?= $purchase['quantity'] ?>"
+                                data-item="<?= $purchase['itemname'] ?>" 
+                                data-amount="<?= $purchase['value'] ?>"
                                 data-inventory="<?= $purchase['idinventory'] ?>"
                                 data-officerName="<?= $purchase['officerName'] ?>"
-                                data-mode="<?= $purchase['payment_type'] ?>">
+                                data-mode="<?= $purchase['payment_type'] ?>"
+                                data-void="<?= $purchase['is_void'] ?>">
 
                                 <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
                                     <?= $purchase['ctrl_no'] ?>
+                                    <?php if ($purchase['is_void']): ?>
+                                        <span class="text-red-500 text-[8px] md:text-[10px]">(VOIDED)</span>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
@@ -204,13 +199,25 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                 <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
                                     <?= $purchase['officerName'] ?>
                                 </td>
-                                <td class="py-2 md:py-3 px-2 md:px-4 flex justify-center">
-                                    <button
-                                        class="bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-gray-700 transition duration-300 cursor-pointer">Print</button>
+                                <td class="py-2 md:py-3 px-2 md:px-4">
+                                    <div class="flex justify-center gap-2">
+                                        <button 
+                                            class="print-btn bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-gray-700 transition duration-300 <?= $purchase['is_void'] ? 'opacity-50 cursor-not-allowed' : '' ?>"
+                                            <?= $purchase['is_void'] ? 'disabled' : '' ?>>
+                                            Print
+                                        </button>
+                                        <button 
+                                            class="void-btn bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-red-700 transition duration-300 <?= $purchase['is_void'] ? 'opacity-50 cursor-not-allowed' : '' ?>"
+                                            <?= $purchase['is_void'] ? 'disabled' : '' ?>
+                                            data-inventory-id="<?= $purchase['idinventory'] ?>"
+                                            data-reference="<?= $purchase['ctrl_no'] ?>"
+                                            data-student-name="<?= htmlspecialchars($purchase['username']) ?>">
+                                            Void
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
-
                     </tbody>
                 </table>
             </div>
@@ -239,19 +246,66 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
+    <!-- Void Confirmation Modal -->
+    <div id="voidModal" class="fixed inset-0 hidden z-50">
+        <!-- Blurred background overlay -->
+        <div id="voidModalOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-2">
-            <span class="animate-spin h-5 w-5 border-4 border-blue-500 border-t-transparent rounded-full"></span>
-            <p class="text-lg font-semibold">Processing...</p>
+        <!-- Modal container -->
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="relative w-full max-w-md mx-auto bg-white rounded-xl shadow-2xl z-50 border border-gray-200">
+                <!-- Modal Content -->
+                <div class="p-6 text-center pt-10">
+                    <!-- Warning Icon -->
+                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    </div>
+
+                    <!-- Title -->
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Void Transaction</h3>
+
+                    <!-- Message -->
+                    <div class="mb-6">
+                        <p class="text-sm text-gray-600" id="voidModalMessage">
+                            Are you sure you want to void this transaction?
+                        </p>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="mb-6 text-left">
+                        <label for="adminPassword" class="block text-sm font-medium text-gray-700 mb-2">Admin Password</label>
+                        <input type="password" id="adminPassword"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                            placeholder="Enter your password">
+                        
+                        <!-- Red error text -->
+                        <p id="passwordError" class="text-red-600 font-medium text-sm mt-2 hidden">
+                            Incorrect password. Please try again.
+                        </p>
+                    </div>
+
+                    <!-- Confirm Button -->
+                    <div class="flex justify-center">
+                        <button id="confirmVoid"
+                            class="px-8 py-3 bg-black text-white rounded-lg hover:bg-red-700 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                            Confirm Void
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
 
 
 
-
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden z-40">
+        <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-2">
+            <span class="animate-spin h-5 w-5 border-4 border-blue-500 border-t-transparent rounded-full"></span>
+            <p class="text-lg font-semibold">Processing...</p>
+        </div>
+    </div>
 
     <?php include_once '../../includes/footer.php'; ?>
 
@@ -288,16 +342,212 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             });
         });
 
-
-
         $(document).ready(function () {
+            console.log('jQuery loaded, version:', $.fn && $.fn.jquery);
+            console.log('confirmVoid element:', $('#confirmVoid').length);
+
             $('#header-title').text('Collections');
 
+            // Void Modal Handling
+            const voidModal = $('#voidModal');  
+            const voidModalOverlay = $('#voidModalOverlay');
+            const voidModalMessage = $('#voidModalMessage');
+            const adminPassword = $('#adminPassword');
+            const passwordError = $('#passwordError');
+            const confirmVoid = $('#confirmVoid');
+            
+            let currentInventoryId = null;
+            let currentVoidBtn = null;
+
+            // Event listener for void buttons
+            $('table').on('click', '.void-btn:not(:disabled)', function () {
+                const inventoryId = $(this).data('inventory-id');
+                const reference = $(this).data('reference');
+                const studentName = $(this).data('student-name');
+
+                currentInventoryId = inventoryId;
+                currentVoidBtn = $(this);
+
+                // Set modal content
+                voidModalMessage.html(
+                    `Are you sure you want to void transaction <strong>${reference}</strong> for <strong>${studentName}</strong>?<br><br>
+                    <span class="text-red-600 font-semibold text-sm">This action cannot be undone.</span>`
+                );
+                
+                // Reset form
+                adminPassword.val('');
+                passwordError.addClass('hidden');
+                
+                // Show modal
+                voidModal.removeClass('hidden');
+                
+                // Focus on password input
+                setTimeout(() => {
+                    adminPassword.focus();
+                }, 100);
+            });
+
+            // Confirm void action
+            confirmVoid.on('click', function() {
+                const password = adminPassword.val().trim();
+                
+                if (!password) {
+                    passwordError.text('Please enter your password').removeClass('hidden');
+                    adminPassword.focus();
+                    return;
+                }
+
+                showLoading();
+                
+                console.log('Sending AJAX request...');
+                console.log('Inventory ID:', currentInventoryId);
+                
+                // Verify password and void transaction
+                $.ajax({
+                    url: 'logic/void_transaction.php',
+                    type: 'POST',
+                    data: {
+                        inventory_id: currentInventoryId,
+                        admin_password: password
+                    },
+                    success: function(response) {
+                        console.log('=== RAW RESPONSE START ===');
+                        console.log(response);
+                        console.log('=== RAW RESPONSE END ===');
+                        
+                        // Check if response is empty
+                        if (!response || response.trim() === '') {
+                            console.error('Response is empty!');
+                            showErrorMessage('Error: Server returned empty response');
+                            return;
+                        }
+                        
+                        // Check if response looks like JSON
+                        const trimmedResponse = response.trim();
+                        const looksLikeJson = (trimmedResponse.startsWith('{') && trimmedResponse.endsWith('}')) || 
+                                            (trimmedResponse.startsWith('[') && trimmedResponse.endsWith(']'));
+                        
+                        console.log('Looks like JSON:', looksLikeJson);
+                        
+                        if (!looksLikeJson) {
+                            console.error('Response does not look like JSON');
+                            console.error('First 200 chars:', response.substring(0, 200));
+                            showErrorMessage('Server returned non-JSON response. Check console for details.');
+                            return;
+                        }
+                        
+                        try {
+                            const result = JSON.parse(response);
+                            console.log('Parsed Result:', result);
+                            
+                            if (result.success) {
+                                // Update UI to show voided state
+                                updateRowToVoided(currentVoidBtn);
+                                showSuccessMessage('Transaction voided successfully!');
+                                // Close modal and reset on success
+                                voidModal.addClass('hidden');
+                                resetModal();
+                            } else {
+                                console.log('Server returned error:', result.message);
+                                passwordError.text(result.message || 'Incorrect password').removeClass('hidden');
+                                adminPassword.focus();
+                                // Keep modal open but hide loading on error
+                            }
+                        } catch (e) {
+                            console.error('JSON Parse Error:', e);
+                            console.error('Raw Response that failed to parse:', response);
+                            showErrorMessage('Error: Invalid JSON response from server. Check console for details.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error Details:');
+                        console.error('Status:', status);
+                        console.error('Error:', error);
+                        console.error('Status Code:', xhr.status);
+                        console.error('Response Text:', xhr.responseText);
+                        
+                        let errorMessage = 'Error voiding transaction. Please try again.';
+                        
+                        if (xhr.status === 404) {
+                            errorMessage = 'Error: void_transaction.php file not found.';
+                        } else if (xhr.status === 500) {
+                            errorMessage = 'Error: Server error occurred. Check PHP error logs.';
+                        } else if (xhr.status === 0) {
+                            errorMessage = 'Error: Network connection failed.';
+                        }
+                        
+                        showErrorMessage(errorMessage);
+                    },
+                    complete: function() {
+                        // Always hide loading overlay when request completes
+                        $('#loadingOverlay').addClass('hidden');
+                    }
+                });
+            });
+
+            // Update row to show voided state
+            function updateRowToVoided($voidBtn) {
+                const $row = $voidBtn.closest('tr');
+                $row.addClass('bg-gray-100 text-gray-500');
+                $row.find('.print-btn, .void-btn')
+                    .addClass('opacity-50 cursor-not-allowed')
+                    .prop('disabled', true);
+                    
+                // Add VOIDED label if not already present
+                if (!$row.find('td:first .text-red-500').length) {
+                    $row.find('td:first').append(' <span class="text-red-500 text-[8px] md:text-[10px]">(VOIDED)</span>');
+                }
+            }
+
+            // Success message function
+            function showSuccessMessage(message) {
+                // You can replace this with a toast notification if preferred
+                alert(message);
+            }
+
+            // Error message function
+            function showErrorMessage(message) {
+                alert(message);
+            }
+
+            function resetModal() {
+                adminPassword.val('');
+                passwordError.addClass('hidden');
+                currentInventoryId = null;
+                currentVoidBtn = null;
+                // Ensure loading overlay is hidden when modal resets
+                $('#loadingOverlay').addClass('hidden');
+            }
+
+            // Close when clicking the overlay (outside modal)
+            voidModalOverlay.on('click', function() {
+                voidModal.addClass('hidden');
+                $('#loadingOverlay').addClass('hidden'); // Ensure loading is hidden
+                resetModal();
+            });
+
+            // Also add escape key handler to close modal
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape' && !voidModal.hasClass('hidden')) {
+                    voidModal.addClass('hidden');
+                    $('#loadingOverlay').addClass('hidden'); // Ensure loading is hidden
+                    resetModal();
+                }
+            });
+
+            // Allow pressing Enter in password field to confirm
+            adminPassword.on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    e.preventDefault();
+                    confirmVoid.trigger('click');
+                }
+            });
+
             // Event listener for table's print buttons
-            $('table').on('click', 'button', function () {
+            $('table').on('click', '.print-btn:not(:disabled)', function () {
                 var $row = $(this).closest('tr');
 
-                var studentName = $row.find('td').eq(0).text().trim();
+                var studentName = $row.find('td').eq(1).text().trim();
                 var officerName = $row.data('officername');
                 var date = $row.data('date');
                 var item = $row.data('item');
@@ -408,11 +658,6 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 }, 500);
             }
 
-
-
-
-
-
             function showLoading() {
                 $('#loadingOverlay').removeClass('hidden');
             }
@@ -448,5 +693,4 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
         });
     </script>
 </body>
-
 </html>
