@@ -111,6 +111,58 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
         border-color: #ef4444 !important;
         border-width: 2px !important;
     }
+    
+    /* Enhanced button hover effects */
+    .print-btn {
+        background-color: #000000;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .print-btn:hover:not(:disabled) {
+        background-color: #374151 !important; /* gray-700 */
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .print-btn:active:not(:disabled) {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .void-btn {
+        background-color: #000000;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .void-btn:hover:not(:disabled) {
+        background-color: #dc2626 !important; /* red-700 */
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+    }
+    
+    .void-btn:active:not(:disabled) {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
+    }
+    
+    /* Disabled state for both buttons */
+    .print-btn:disabled,
+    .void-btn:disabled {
+        background-color: #9ca3af !important; /* gray-400 */
+        color: #6b7280 !important; /* gray-500 */
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Focus states for accessibility */
+    .print-btn:focus:not(:disabled),
+    .void-btn:focus:not(:disabled) {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
     </style>
 </head>
 
@@ -207,12 +259,12 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                 <td class="py-2 md:py-3 px-2 md:px-4">
                                     <div class="flex justify-center gap-2">
                                         <button 
-                                            class="print-btn bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-gray-700 transition duration-300 <?= $purchase['is_void'] ? 'opacity-50 cursor-not-allowed' : '' ?>"
+                                            class="print-btn text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs transition duration-300 <?= $purchase['is_void'] ? 'opacity-50 cursor-not-allowed' : '' ?>"
                                             <?= $purchase['is_void'] ? 'disabled' : '' ?>>
                                             Print
                                         </button>
                                         <button 
-                                            class="void-btn bg-black text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs hover:bg-red-700 transition duration-300 <?= $purchase['is_void'] ? 'opacity-50 cursor-not-allowed' : '' ?>"
+                                            class="void-btn text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs transition duration-300 <?= $purchase['is_void'] ? 'opacity-50 cursor-not-allowed' : '' ?>"
                                             <?= $purchase['is_void'] ? 'disabled' : '' ?>
                                             data-inventory-id="<?= $purchase['idinventory'] ?>"
                                             data-reference="<?= $purchase['ctrl_no'] ?>"
@@ -233,19 +285,19 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             <div class="flex items-center space-x-2">
                 <?php if ($page > 1): ?>
                     <a href="?page=<?= $page - 1 ?>"
-                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&lt;</a>
+                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400 transition duration-300">&lt;</a>
                 <?php endif; ?>
 
                 <?php for ($i = 1; $i <= $total_pages; $i++): ?>
                     <a href="?page=<?= $i ?>"
-                        class="px-3 py-2 rounded-lg <?= $i == $page ? 'bg-black text-white' : 'bg-gray-300 text-black hover:bg-gray-400' ?>">
+                        class="px-3 py-2 rounded-lg transition duration-300 <?= $i == $page ? 'bg-black text-white' : 'bg-gray-300 text-black hover:bg-gray-400' ?>">
                         <?= $i ?>
                     </a>
                 <?php endfor; ?>
 
                 <?php if ($page < $total_pages): ?>
                     <a href="?page=<?= $page + 1 ?>"
-                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400">&gt;</a>
+                        class="bg-gray-300 text-black px-3 py-2 rounded-lg hover:bg-gray-400 transition duration-300">&gt;</a>
                 <?php endif; ?>
             </div>
         </div>
