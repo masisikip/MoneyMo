@@ -191,9 +191,13 @@ try {
 
         Html5Qrcode.getCameras().then(function (cameras) {
             if (cameras.length > 0) {
-                const cameraId = cameras[1].id;
-                qrScanner.start(cameraId, { fps: 10, qrbox: { width: 250, height: 250 } }, onScanSuccess, onScanFailure)
-                    .then(() => console.log("Camera started successfully"))
+                let backCamera = cameras.find(cam => cam.label.toLowerCase().includes('back') || cam.label.toLowerCase().includes('rear'));
+                let frontCamera = cameras.find(cam => cam.label.toLowerCase().includes('front') || cam.label.toLowerCase().includes('user'));
+
+                let selectedCamera = backCamera || frontCamera || cameras[0];
+
+                qrScanner.start(selectedCamera.id, { fps: 10, qrbox: { width: 250, height: 250 } }, onScanSuccess, onScanFailure)
+                    .then(() => console.log("Camera started successfully:", selectedCamera.label))
                     .catch(err => alert("Error starting camera: " + err));
             } else {
                 alert("No camera found.");
@@ -201,6 +205,7 @@ try {
         }).catch(function (err) {
             alert("Error accessing cameras: " + err);
         });
+
 
         $(document).on('click', function (event) {
             if (!$(event.target).closest('#items-main').length && $(event.target).closest('#items').length) {
