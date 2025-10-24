@@ -3,8 +3,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Include database connection
+// Include database connection and token functions
 include_once __DIR__ . '/../../../includes/connect-db.php';
+include_once __DIR__ . '/../../../includes/token.php';
 
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
@@ -17,10 +18,19 @@ header('Content-Type: application/json');
 // DEBUG: Log the request
 error_log("Void transaction request received: inventory_id=" . ($_POST['inventory_id'] ?? 'empty') . ", method=" . $_SERVER['REQUEST_METHOD']);
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
+// Check if user is logged in using token
+if (!isset($_SESSION['auth_token'])) {
     $response = ['success' => false, 'message' => 'Unauthorized access - Please log in'];
-    error_log("Unauthorized access - user_id not set in session");
+    error_log("Unauthorized access - auth_token not set in session");
+    echo json_encode($response);
+    exit;
+}
+
+// Verify the token
+$payload = decryptToken($_SESSION['auth_token']);
+if (!$payload || !isset($payload['user_id'])) {
+    $response = ['success' => false, 'message' => 'Invalid session - Please log in again'];
+    error_log("Invalid token in session");
     echo json_encode($response);
     exit;
 }
@@ -39,6 +49,7 @@ $admin_password = $_POST['admin_password'] ?? '';
 
 // DEBUG: Log received data
 error_log("Received data - inventory_id: $inventory_id, admin_password length: " . strlen($admin_password));
+error_log("User ID from token: " . $payload['user_id']);
 
 // Validate input
 if (empty($inventory_id) || empty($admin_password)) {
@@ -49,14 +60,25 @@ if (empty($inventory_id) || empty($admin_password)) {
 }
 
 try {
-    // Verify admin password
-    $stmt = $pdo->prepare("SELECT password FROM user WHERE iduser = ?");
-    $stmt->execute([$_SESSION['user_id']]);
+    // Get user ID from token payload
+    $user_id = $payload['user_id'];
+    
+    // Verify admin password for the current logged-in user
+    $stmt = $pdo->prepare("SELECT password, usertype FROM user WHERE iduser = ?");
+    $stmt->execute([$user_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
         $response = ['success' => false, 'message' => 'User not found'];
-        error_log("User not found for id: " . $_SESSION['user_id']);
+        error_log("User not found for id: " . $user_id);
+        echo json_encode($response);
+        exit;
+    }
+
+    // Check if user has admin privileges (usertype = 1)
+    if ($user['usertype'] != 1) {
+        $response = ['success' => false, 'message' => 'Insufficient privileges - Admin access required'];
+        error_log("User does not have admin privileges. User type: " . $user['usertype']);
         echo json_encode($response);
         exit;
     }
@@ -64,7 +86,7 @@ try {
     // Verify password
     if (!password_verify($admin_password, $user['password'])) {
         $response = ['success' => false, 'message' => 'Incorrect password'];
-        error_log("Password verification failed for user: " . $_SESSION['user_id']);
+        error_log("Password verification failed for user: " . $user_id);
         echo json_encode($response);
         exit;
     }
@@ -94,7 +116,7 @@ try {
 
     if ($updateStmt->rowCount() > 0) {
         $response = ['success' => true, 'message' => 'Transaction voided successfully'];
-        error_log("Transaction voided successfully: " . $inventory_id);
+        error_log("Transaction voided successfully: " . $inventory_id . " by user: " . $user_id);
         echo json_encode($response);
     } else {
         $response = ['success' => false, 'message' => 'Failed to void transaction'];

@@ -110,7 +110,6 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
 <body class="w-full h-full bg-gray-100">
     <div class="flex-1 p-4 md:p-8 overflow-y-auto w-full md:ml-0 pb-24">
-        <!-- Your existing form and table content remains the same -->
         <form method="get" class="w-full">
             <div class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full  mx-auto">
                 <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
@@ -278,10 +277,14 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
                             placeholder="Enter your password">
                         
-                        <!-- Red error text -->
-                        <p id="passwordError" class="text-red-600 font-medium text-sm mt-2 hidden">
-                            Incorrect password. Please try again.
-                        </p>
+                        <!-- Enhanced error display -->
+                        <div id="passwordError" class="mt-2 hidden">
+                            <div class="flex items-center text-red-600">
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                <span class="text-sm font-medium" id="passwordErrorText">Incorrect password</span>
+                            </div>
+                            <p class="text-red-500 text-xs mt-1">Please check your password and try again.</p>
+                        </div>
                     </div>
 
                     <!-- Confirm Button -->
@@ -295,9 +298,6 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
     </div>
-
-
-
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="fixed inset-0 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden z-40">
@@ -389,6 +389,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
             // Confirm void action
             confirmVoid.on('click', function() {
+                console.log('Confirm void button clicked!');
                 const password = adminPassword.val().trim();
                 
                 if (!password) {
@@ -401,6 +402,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 
                 console.log('Sending AJAX request...');
                 console.log('Inventory ID:', currentInventoryId);
+                console.log('Password length:', password.length);
                 
                 // Verify password and void transaction
                 $.ajax({
@@ -411,28 +413,14 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                         admin_password: password
                     },
                     success: function(response) {
-                        console.log('=== RAW RESPONSE START ===');
-                        console.log(response);
-                        console.log('=== RAW RESPONSE END ===');
+                        console.log('=== AJAX SUCCESS ===');
+                        console.log('Raw Response:', response);
                         
                         // Check if response is empty
                         if (!response || response.trim() === '') {
                             console.error('Response is empty!');
                             showErrorMessage('Error: Server returned empty response');
-                            return;
-                        }
-                        
-                        // Check if response looks like JSON
-                        const trimmedResponse = response.trim();
-                        const looksLikeJson = (trimmedResponse.startsWith('{') && trimmedResponse.endsWith('}')) || 
-                                            (trimmedResponse.startsWith('[') && trimmedResponse.endsWith(']'));
-                        
-                        console.log('Looks like JSON:', looksLikeJson);
-                        
-                        if (!looksLikeJson) {
-                            console.error('Response does not look like JSON');
-                            console.error('First 200 chars:', response.substring(0, 200));
-                            showErrorMessage('Server returned non-JSON response. Check console for details.');
+                            hideLoading();
                             return;
                         }
                         
@@ -441,26 +429,40 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                             console.log('Parsed Result:', result);
                             
                             if (result.success) {
+                                console.log('Transaction voided successfully!');
                                 // Update UI to show voided state
                                 updateRowToVoided(currentVoidBtn);
                                 showSuccessMessage('Transaction voided successfully!');
-                                // Close modal and reset on success
                                 voidModal.addClass('hidden');
                                 resetModal();
                             } else {
                                 console.log('Server returned error:', result.message);
-                                passwordError.text(result.message || 'Incorrect password').removeClass('hidden');
+                                // Show the error message from server - UPDATED FOR NEW STRUCTURE
+                                passwordError.find('#passwordErrorText').text(result.message || 'Incorrect password');
+                                passwordError.removeClass('hidden');
                                 adminPassword.focus();
-                                // Keep modal open but hide loading on error
+                                adminPassword.val(''); // Clear password field
+                                adminPassword.addClass('border-red-500'); // Add red border for visual feedback
+                                
+                                // Remove red border when user starts typing again
+                                setTimeout(() => {
+                                    adminPassword.on('input', function() {
+                                        $(this).removeClass('border-red-500');
+                                        passwordError.addClass('hidden');
+                                    });
+                                }, 100);
                             }
                         } catch (e) {
                             console.error('JSON Parse Error:', e);
                             console.error('Raw Response that failed to parse:', response);
                             showErrorMessage('Error: Invalid JSON response from server. Check console for details.');
                         }
+                        
+                        // Always hide loading regardless of success or failure
+                        hideLoading();
                     },
                     error: function(xhr, status, error) {
-                        console.error('AJAX Error Details:');
+                        console.error('=== AJAX ERROR ===');
                         console.error('Status:', status);
                         console.error('Error:', error);
                         console.error('Status Code:', xhr.status);
@@ -469,7 +471,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                         let errorMessage = 'Error voiding transaction. Please try again.';
                         
                         if (xhr.status === 404) {
-                            errorMessage = 'Error: void_transaction.php file not found.';
+                            errorMessage = 'Error: void_transaction.php file not found. Check the file path.';
                         } else if (xhr.status === 500) {
                             errorMessage = 'Error: Server error occurred. Check PHP error logs.';
                         } else if (xhr.status === 0) {
@@ -477,52 +479,130 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                         }
                         
                         showErrorMessage(errorMessage);
-                    },
-                    complete: function() {
-                        // Always hide loading overlay when request completes
-                        $('#loadingOverlay').addClass('hidden');
+                        hideLoading();
                     }
                 });
             });
 
-            // Update row to show voided state
+            // Update row to show voided state - SIMPLIFIED AND FIXED
             function updateRowToVoided($voidBtn) {
+                console.log('Updating row to voided state...');
+                
+                if (!$voidBtn || !$voidBtn.length) {
+                    console.error('Invalid void button provided');
+                    return;
+                }
+                
                 const $row = $voidBtn.closest('tr');
+                console.log('Row found:', $row.length);
+                
+                if (!$row.length) {
+                    console.error('Row not found for void button');
+                    return;
+                }
+                
+                // 1. Update the row background and text color
                 $row.addClass('bg-gray-100 text-gray-500');
+                
+                // 2. Update the first cell to show VOIDED
+                const $firstCell = $row.find('td:first');
+                const currentText = $firstCell.text().replace('(VOIDED)', '').trim();
+                $firstCell.html(currentText + ' <span class="text-red-500 text-[8px] md:text-[10px]">(VOIDED)</span>');
+                
+                // 3. Disable both buttons
                 $row.find('.print-btn, .void-btn')
                     .addClass('opacity-50 cursor-not-allowed')
                     .prop('disabled', true);
-                    
-                // Add VOIDED label if not already present
-                if (!$row.find('td:first .text-red-500').length) {
-                    $row.find('td:first').append(' <span class="text-red-500 text-[8px] md:text-[10px]">(VOIDED)</span>');
-                }
+                
+                // 4. Update void button text or styling to indicate it's voided
+                $row.find('.void-btn')
+                    .text('Voided')
+                    .removeClass('bg-black hover:bg-red-700')
+                    .addClass('bg-gray-400');
+                
+                // 5. Update data attribute
+                $row.attr('data-void', '1');
+                
+                console.log('UI successfully updated for voided transaction');
             }
 
-            // Success message function
+            // Success message function with toast notification
             function showSuccessMessage(message) {
-                // You can replace this with a toast notification if preferred
-                alert(message);
+                // Remove any existing toasts
+                $('.success-toast').remove();
+                
+                // Create a toast notification
+                const toast = $(`
+                    <div class="success-toast fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <span>${message}</span>
+                        </div>
+                    </div>
+                `);
+                
+                // Add to page with animation
+                $('body').append(toast);
+                toast.hide().fadeIn(300);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toast.fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                }, 3000);
             }
 
-            // Error message function
+            // Error message function with toast notification
             function showErrorMessage(message) {
-                alert(message);
+                // Remove any existing toasts
+                $('.error-toast').remove();
+                
+                // Create a toast notification
+                const toast = $(`
+                    <div class="error-toast fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            <span>${message}</span>
+                        </div>
+                    </div>
+                `);
+                
+                // Add to page with animation
+                $('body').append(toast);
+                toast.hide().fadeIn(300);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toast.fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                }, 3000);
+            }
+
+            function showLoading() {
+                $('#loadingOverlay').removeClass('hidden');
+            }
+
+            function hideLoading() {
+                $('#loadingOverlay').addClass('hidden');
             }
 
             function resetModal() {
                 adminPassword.val('');
+                adminPassword.removeClass('border-red-500'); // Remove any red border
                 passwordError.addClass('hidden');
                 currentInventoryId = null;
                 currentVoidBtn = null;
-                // Ensure loading overlay is hidden when modal resets
-                $('#loadingOverlay').addClass('hidden');
+                hideLoading();
+                
+                // Remove any input event listeners to prevent memory leaks
+                adminPassword.off('input');
             }
 
             // Close when clicking the overlay (outside modal)
             voidModalOverlay.on('click', function() {
                 voidModal.addClass('hidden');
-                $('#loadingOverlay').addClass('hidden'); // Ensure loading is hidden
                 resetModal();
             });
 
@@ -530,7 +610,6 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             $(document).on('keydown', function(e) {
                 if (e.key === 'Escape' && !voidModal.hasClass('hidden')) {
                     voidModal.addClass('hidden');
-                    $('#loadingOverlay').addClass('hidden'); // Ensure loading is hidden
                     resetModal();
                 }
             });
@@ -610,6 +689,9 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                     font-size: 8px;
                                     margin: 0;
                                 }
+                                .border-red-500 {
+                                    border-color: #ef4444 !important;
+                                }
                             }
                         </style>
                     </head>
@@ -656,10 +738,6 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     printWindow.print();
                     printWindow.close();
                 }, 500);
-            }
-
-            function showLoading() {
-                $('#loadingOverlay').removeClass('hidden');
             }
 
             $('select[name="filter"]').on('change', function () {
