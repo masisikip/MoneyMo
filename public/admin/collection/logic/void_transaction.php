@@ -1,7 +1,7 @@
 <?php
 // Enable error reporting for debugging
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 // Include database connection and token functions
 include_once __DIR__ . '/../../../includes/connect-db.php';

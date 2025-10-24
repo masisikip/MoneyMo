@@ -106,6 +106,12 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+    .border-red-500 {
+        border-color: #ef4444 !important;
+        border-width: 2px !important;
+    }
+    </style>
 </head>
 
 <body class="w-full h-full bg-gray-100">
@@ -246,7 +252,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- Void Confirmation Modal -->
-    <div id="voidModal" class="fixed inset-0 hidden z-50">
+    <div id="voidModal" class="fixed inset-0 hidden" style="z-index: 100;">
         <!-- Blurred background overlay -->
         <div id="voidModalOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
 
@@ -277,13 +283,15 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
                             placeholder="Enter your password">
                         
-                        <!-- Enhanced error display -->
-                        <div id="passwordError" class="mt-2 hidden">
-                            <div class="flex items-center text-red-600">
-                                <i class="fas fa-exclamation-circle mr-2"></i>
-                                <span class="text-sm font-medium" id="passwordErrorText">Incorrect password</span>
+                        <!-- Enhanced error display - MAKE SURE THIS IS EXACTLY LIKE THIS -->
+                        <div id="passwordError" class="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg hidden">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-500 mt-0.5 mr-2"></i>
+                                <div>
+                                    <p class="text-red-800 font-medium text-sm" id="passwordErrorText">Incorrect password</p>
+                                    <p class="text-red-600 text-xs mt-1">Please check your password and try again.</p>
+                                </div>
                             </div>
-                            <p class="text-red-500 text-xs mt-1">Please check your password and try again.</p>
                         </div>
                     </div>
 
@@ -300,10 +308,16 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-gray-300/50 bg-opacity-50 flex items-center justify-center hidden z-40">
-        <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-2">
-            <span class="animate-spin h-5 w-5 border-4 border-blue-500 border-t-transparent rounded-full"></span>
-            <p class="text-lg font-semibold">Processing...</p>
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden" style="z-index: 9999;">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 min-w-[200px] border border-gray-300">
+            <div class="relative">
+                <div class="w-12 h-12 border-4 border-gray-200 rounded-full"></div>
+                <div class="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+            </div>
+            <div class="text-center">
+                <p class="text-lg font-semibold text-gray-800 mb-1">Processing</p>
+                <p class="text-xs text-gray-500">This will just take a moment</p>
+            </div>
         </div>
     </div>
 
@@ -393,18 +407,14 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 const password = adminPassword.val().trim();
                 
                 if (!password) {
-                    passwordError.text('Please enter your password').removeClass('hidden');
+                    showPasswordError('Please enter your password');
                     adminPassword.focus();
                     return;
                 }
 
                 showLoading();
-                
-                console.log('Sending AJAX request...');
-                console.log('Inventory ID:', currentInventoryId);
-                console.log('Password length:', password.length);
-                
-                // Verify password and void transaction
+
+                // AJAX call with complete handler
                 $.ajax({
                     url: 'logic/void_transaction.php',
                     type: 'POST',
@@ -413,76 +423,61 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                         admin_password: password
                     },
                     success: function(response) {
-                        console.log('=== AJAX SUCCESS ===');
-                        console.log('Raw Response:', response);
-                        
-                        // Check if response is empty
-                        if (!response || response.trim() === '') {
-                            console.error('Response is empty!');
-                            showErrorMessage('Error: Server returned empty response');
-                            hideLoading();
-                            return;
-                        }
-                        
+                        console.log('Raw response:', response);
+
                         try {
-                            const result = JSON.parse(response);
-                            console.log('Parsed Result:', result);
-                            
-                            if (result.success) {
-                                console.log('Transaction voided successfully!');
-                                // Update UI to show voided state
+                            const result = typeof response === 'string' ? JSON.parse(response) : response;
+                            console.log('Parsed result:', result);
+
+                            // Accept both boolean true and string "true"
+                            if (result.success === true || result.success === "true") {
                                 updateRowToVoided(currentVoidBtn);
                                 showSuccessMessage('Transaction voided successfully!');
                                 voidModal.addClass('hidden');
                                 resetModal();
+
+                                // Reload page after short delay (optional)
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 1200);
                             } else {
-                                console.log('Server returned error:', result.message);
-                                // Show the error message from server - UPDATED FOR NEW STRUCTURE
-                                passwordError.find('#passwordErrorText').text(result.message || 'Incorrect password');
-                                passwordError.removeClass('hidden');
-                                adminPassword.focus();
-                                adminPassword.val(''); // Clear password field
-                                adminPassword.addClass('border-red-500'); // Add red border for visual feedback
-                                
-                                // Remove red border when user starts typing again
-                                setTimeout(() => {
-                                    adminPassword.on('input', function() {
-                                        $(this).removeClass('border-red-500');
-                                        passwordError.addClass('hidden');
-                                    });
-                                }, 100);
+                                showPasswordError(result.message || 'Operation failed. Please try again.');
                             }
                         } catch (e) {
-                            console.error('JSON Parse Error:', e);
-                            console.error('Raw Response that failed to parse:', response);
-                            showErrorMessage('Error: Invalid JSON response from server. Check console for details.');
+                            console.error('JSON parse error:', e);
+                            showPasswordError('Server returned invalid response. Please try again.');
                         }
-                        
-                        // Always hide loading regardless of success or failure
-                        hideLoading();
                     },
+                    
                     error: function(xhr, status, error) {
-                        console.error('=== AJAX ERROR ===');
-                        console.error('Status:', status);
-                        console.error('Error:', error);
-                        console.error('Status Code:', xhr.status);
-                        console.error('Response Text:', xhr.responseText);
-                        
-                        let errorMessage = 'Error voiding transaction. Please try again.';
-                        
-                        if (xhr.status === 404) {
-                            errorMessage = 'Error: void_transaction.php file not found. Check the file path.';
-                        } else if (xhr.status === 500) {
-                            errorMessage = 'Error: Server error occurred. Check PHP error logs.';
-                        } else if (xhr.status === 0) {
-                            errorMessage = 'Error: Network connection failed.';
-                        }
-                        
-                        showErrorMessage(errorMessage);
+                        // AJAX ERROR (file not found, etc.)
+                        console.error('AJAX error:', status, error);
+                        showPasswordError('Cannot connect to server. Please check your connection.');
+                    },
+                    complete: function() {
+                        // This runs ALWAYS - whether success or error
                         hideLoading();
                     }
                 });
             });
+
+            // NEW FUNCTION TO SHOW PASSWORD ERRORS PROPERLY
+            function showPasswordError(message) {
+                // Update the error text
+                $('#passwordErrorText').text(message);
+                // Show the error container
+                $('#passwordError').removeClass('hidden');
+                // Add red border to input
+                $('#adminPassword').addClass('border-red-500');
+                // Focus on password field
+                $('#adminPassword').focus().val('');
+                
+                // Remove error when user starts typing again
+                $('#adminPassword').off('input').on('input', function() {
+                    $(this).removeClass('border-red-500');
+                    $('#passwordError').addClass('hidden');
+                });
+            }
 
             // Update row to show voided state - SIMPLIFIED AND FIXED
             function updateRowToVoided($voidBtn) {
@@ -514,9 +509,8 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     .addClass('opacity-50 cursor-not-allowed')
                     .prop('disabled', true);
                 
-                // 4. Update void button text or styling to indicate it's voided
                 $row.find('.void-btn')
-                    .text('Voided')
+                    .text('Voiding')
                     .removeClass('bg-black hover:bg-red-700')
                     .addClass('bg-gray-400');
                 
@@ -688,9 +682,6 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                 .spacer {
                                     font-size: 8px;
                                     margin: 0;
-                                }
-                                .border-red-500 {
-                                    border-color: #ef4444 !important;
                                 }
                             }
                         </style>
