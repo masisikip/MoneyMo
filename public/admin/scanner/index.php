@@ -28,11 +28,12 @@ try {
     <main class="w-full h-full flex flex-col items-center min-h-screen">
         <div class="font-bold text-2xl mt-5">Scan QR</div>
         <!-- QR Code Scanner -->
-        <div id="qr-reader" class="mt-5 w-92 border-4 border-transparent transition-colors"></div>
+        <div id="qr-reader" class="mt-5 w-72 border-4 border-transparent transition-colors"></div>
         <!-- Manual Type Button -->
         <button id="manual_btn" type="button" onclick="openManualType()"
-            class="mt-10 w-92 rounded p-2 text-center text-white bg-black hover:bg-gray-800 cursor-pointer">
-            Manual Input
+            class="relative mt-10 w-72 flex items-center justify-center rounded p-2 text-white bg-black hover:bg-gray-800 cursor-pointer">
+            <i class="fa-regular fa-keyboard absolute left-4 text-lg"></i>
+            <span>Manual Input</span>
         </button>
 
     </main>
@@ -64,7 +65,7 @@ try {
                                 <i class="text-green-500 absolute top-1 left-1 fa-solid fa-square-check invisible check"></i>
                             <?php endif; ?>
 
-                            <?php if ($item['stock'] == 0): ?>
+                            <?php if ($item['stock'] <= 0): ?>
                                 <div class="absolute rounded top-0 left-0 w-full h-full bg-gray-700/50">
                                 </div>
                                 <span
@@ -118,8 +119,7 @@ try {
     </div>
 
     <!-- Error User Modal -->
-    <div id="error_user_modal"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm items-center justify-center hidden">
+    <div id="error_user_modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm items-center justify-center hidden">
         <div class="bg-white rounded-lg p-6 w-80 flex flex-col items-center shadow-lg">
             <div class="text-red-500 text-6xl mb-3">
                 <i class="fa-regular fa-circle-xmark"></i>
@@ -184,10 +184,18 @@ try {
                 $('#items').addClass('hidden');
                 $('body').append(response);
                 $('#item-form')[0].reset();
-                $('.item-card').addClass('border-gray-300').removeClass('border-green-300');
+                $('.item-card').each(function () {
+                    $(this)
+                        .addClass('border-gray-300')
+                        .removeClass('border-green-300');
+                    $(this).find('.check').addClass('invisible');
+                    $(this).find('input[name="iditem[]"]').prop('checked', false);
+                });
+                $("#student_id").val('');
                 startCamera();
             },
             error: function (xhr, status, error) {
+                $("#student_id").val('');
                 $('#loader').addClass('hidden').removeClass('flex');
                 console.error("AJAX Error: ", error);
                 console.error("Status: ", status);
@@ -230,10 +238,9 @@ try {
             data: {
                 student_id: student_id
             },
-            processData: false,
-            contentType: false,
             dataType: "json",
             success: function (response) {
+                console.log(response.status);
                 $('#loader').addClass('hidden').removeClass('flex');
                 if (response.status == "success") {
                     $('#items').removeClass('hidden').addClass('flex');
@@ -241,10 +248,12 @@ try {
                 } else if (response.status == "error") {
                     $("#error_user_modal").removeClass("hidden").addClass("flex");
                     console.log(response.status)
+                    $("#student_id").val('');
                 }
             },
             error: function (xhr, status, error) {
                 $('#loader').addClass('hidden').removeClass('flex');
+                $("#student_id").val('');
                 console.error("AJAX Error: ", error);
                 console.error("Status: ", status);
                 console.error("Response Text: ", xhr.responseText);
@@ -309,7 +318,7 @@ try {
 
                 return qrScanner.start(
                     selectedCameraId,
-                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    { fps: 10, qrbox: { width: 250, height: 250}, aspectRatio: 1.0 },
                     onScanSuccess,
                     onScanFailure
                 );
