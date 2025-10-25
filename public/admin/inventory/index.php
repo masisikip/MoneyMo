@@ -40,7 +40,7 @@
     $search = $_GET['search'] ?? '';
     $filter = $_GET['filter'] ?? '';
 
-    $whereClause = "WHERE 1 = 1";
+    $whereClause = "WHERE inventory.is_void = 0"; // Only show non-voided transactions
 
     if (!empty($search)) {
         $whereClause .= " AND (item.name LIKE :search1 OR f_name LIKE :search2 OR l_name LIKE :search3)";
@@ -118,6 +118,7 @@
             item.name AS itemname,
             CONCAT(f_name, ' ', l_name) AS username,
             is_received,
+            inventory.is_void,
             CASE 
                 WHEN is_received = 1 THEN 'Claimed'
                 WHEN is_received = 0 THEN 'Claim'
