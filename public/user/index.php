@@ -44,11 +44,12 @@
           inventory.value,
           idinventory,
           ctrl_no,
+          is_void,
           CASE 
           WHEN payment_type = 0 THEN 'Cash'
               WHEN payment_type = 1 THEN 'Gcash'
               ELSE 'unknown'
-        END AS 	payment_type
+        END AS payment_type
       FROM inventory
       INNER JOIN item on inventory.iditem = item.iditem
       WHERE iduser = ?
@@ -62,18 +63,33 @@
 
     <div class="w-full p-4 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 md:w-10/12 gap-4 md:gap-5 place-items-center">
       <?php foreach ($purchases as $purchase): ?>
-        <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>"
-        data-reference="<?= $purchase['ctrl_no'] ?>"
-          data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
-          data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
-          data-inventory="<?= $purchase['idinventory'] ?>" data-mode="<?= $purchase['payment_type'] ?>">
+        <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer <?= $purchase['is_void'] ? 'opacity-50 cursor-not-allowed' : '' ?>" 
+          data-reference="<?= $purchase['reference_no'] ?>"
+          data-ctrl="<?= $purchase['ctrl_no'] ?>"
+          data-date="<?= $purchase['date'] ?>" 
+          data-quantity="<?= $purchase['quantity'] ?>"
+          data-item="<?= $purchase['name'] ?>" 
+          data-amount="<?= $purchase['value'] ?>"
+          data-inventory="<?= $purchase['idinventory'] ?>" 
+          data-mode="<?= $purchase['payment_type'] ?>"
+          data-void="<?= $purchase['is_void'] ?>"
+          <?= $purchase['is_void'] ? 'style="pointer-events: none;"' : '' ?>>
 
-          <div class="flex rounded-lg h-full bg-white p-6 flex-col hover:shadow-2xl">
-            <div class="flex items-center justify-center mb-2 pb-3 border-b-1 border-black">
-              <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
+          <div class="flex rounded-lg h-full bg-white p-6 flex-col hover:shadow-2xl relative <?= $purchase['is_void'] ? 'bg-gray-100' : '' ?>">
+            <!-- VOIDED Watermark -->
+            <?php if ($purchase['is_void']): ?>
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <div class="transform -rotate-45">
+                  <span class="text-red-500 text-4xl font-bold opacity-40">VOIDED</span>
+                </div>
+              </div>
+            <?php endif; ?>
+
+            <div class="flex items-center justify-center mb-2 pb-3 border-b-1 border-black <?= $purchase['is_void'] ? 'text-gray-500' : 'text-black' ?>">
+              <h2 class="text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
             </div>
 
-            <div class="pb-3 border-b border-black text-black">
+            <div class="pb-3 border-b border-black <?= $purchase['is_void'] ? 'text-gray-500' : 'text-black' ?>">
               <div class="grid grid-cols-2 gap-x-4">
                 <p>Date:</p>
                 <p class="text-right font-bold"><?= $purchase['date'] ?></p>
@@ -90,16 +106,18 @@
             </div>
 
             <div class="flex flex-col justify-between flex-grow text-center">
-              <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
-                Tap to see full details
+              <p class="leading-relaxed text-base <?= $purchase['is_void'] ? 'text-gray-500' : 'text-gray-800' ?> my-3 font-light">
+                <?php if ($purchase['is_void']): ?>
+                  Transaction voided
+                <?php else: ?>
+                  Tap to see full details
+                <?php endif; ?>
               </p>
             </div>
           </div>
         </div>
       <?php endforeach; ?>
     </div>
-
-
   </div>
 
   <script src="https://superal.github.io/canvas2image/canvas2image.js"></script>
@@ -107,7 +125,7 @@
 
   <!-- Receipt Modal -->
   <div id="myModal" class="modal fixed w-full h-full top-0 left-0 hidden items-center justify-center">
-    <!-- hoverlay  -->
+    <!-- overlay  -->
     <div id="modalOverlay" class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
 
     <div
@@ -135,7 +153,6 @@
         <div class="py-1 gap-2 w-full border-b-1 border-gray-400">
           <p class="text-xs font-bold text-gray-600">Ref no.   <span id="reference" class="text-xs font-bold">131231231231</span></p>
           <p class="text-xs font-bold text-gray-600">Ctrl no.   <span id="ctrl" class="text-xs font-bold">131231231231</span></p>
-        
         </div>
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
@@ -156,7 +173,6 @@
           </div>
         </div>
 
-
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
             <p class="font-bold">Total</p>
@@ -174,9 +190,8 @@
     </div>
   </div>
 
-  <?php   include_once '../includes/footer.php'; ?>
+  <?php include_once '../includes/footer.php'; ?>
 
-  
   <script>
     let qrFileName = "";
 
@@ -211,7 +226,7 @@
     }
 
     $(document).ready(function () {
-      $(document).on("click", ".clickable-div", function () {
+      $(document).on("click", ".clickable-div:not(.opacity-50)", function () {
         let reference = $(this).data("reference");
         let ctrl = $(this).data("ctrl");
         let date = $(this).data("date");
@@ -219,7 +234,12 @@
         let item = $(this).data("item");
         let amount = $(this).data("amount");
         let mode = $(this).data("mode");
-        let ctrl_no = $(this).data("ctrl_no");
+        let isVoid = $(this).data("void");
+
+        // Don't open modal if transaction is voided
+        if (isVoid) {
+          return;
+        }
 
         qrFileName = "QR_" + reference + ".png"
 
@@ -232,15 +252,17 @@
         $("#mode").text(mode);
         $("#total").text("₱ " + amount);
 
-      });
-
-      // Show modal when button is clicked
-      $(".clickable-div").click(function () {
+        // Show modal when button is clicked
         $("#myModal").removeClass("hidden").addClass("flex");
       });
 
       // Hide modal when close button is clicked
       $("#closeModal").click(function () {
+        $("#myModal").addClass("hidden").removeClass("flex");
+      });
+
+      // Also hide modal when clicking overlay
+      $("#modalOverlay").click(function () {
         $("#myModal").addClass("hidden").removeClass("flex");
       });
     });
@@ -250,5 +272,4 @@
     })
   </script>
 </body>
-
 </html>
