@@ -189,6 +189,13 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
 <body class="w-full h-full bg-gray-100">
     <div class="flex-1 p-4 md:p-8 overflow-y-auto w-full md:ml-0 pb-24">
+
+        <div class="w-full flex justify-end">
+            <button onclick="openDateSelect()" class="px-5 py-2 bg-black text-white hover:cursor-pointer font-medium rounded-lg shadow-md hover:bg-gray-900 active:scale-95 transition-all duration-150">
+                Batch Print <i class="fa-solid fa-print"></i>
+            </button>
+        </div>
+
         <form method="get" class="w-full">
             <div class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full  mx-auto">
                 <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
@@ -371,7 +378,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     <!-- Confirm Button -->
                     <div class="flex justify-center">
                         <button id="confirmVoid"
-                            class="px-8 py-3 bg-black text-white rounded-lg hover:bg-red-700 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                            class="px-8 py-3  bg-black text-white rounded-lg hover:bg-red-700 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                             Confirm Void
                         </button>
                     </div>
@@ -379,6 +386,40 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
     </div>
+
+
+    <!-- Date Select Modal -->
+    <div id="dateModal" class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-xs p-6 m-6 relative">
+
+        <button id="closeModal" class="absolute top-3 right-3 text-gray-500 hover:text-black hover:cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Select Date Range</h2>
+
+        <!-- Date Inputs -->
+        <div class="space-y-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+            <input type="date" id="fromDate" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-black focus:outline-none">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+            <input type="date" id="endDate" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-black focus:outline-none">
+        </div>
+        </div>
+
+        <!-- Go Button -->
+        <div class="mt-6 flex justify-end">
+        <button id="goBtn" class="px-5 py-2 hover:cursor-pointer bg-black text-white rounded-lg font-medium hover:bg-gray-900 active:scale-95 transition-all duration-150">
+            Go
+        </button>
+        </div>
+    </div>
+    </div>
+
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden" style="z-index: 9999;">
@@ -397,6 +438,35 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     <?php include_once '../../includes/footer.php'; ?>
 
     <script>
+            function openDateSelect() {
+                $('#dateModal').removeClass('hidden').addClass('flex');
+            }
+
+            $('#closeModal').on('click', function() {
+                $('#dateModal').addClass('hidden').removeClass('flex');
+            });
+
+            $('#goBtn').on('click', function() {
+                const from = $('#fromDate').val();
+                const to = $('#endDate').val();
+
+                if (!from || !to) {
+                alert('Please select both dates.');
+                return;
+                }
+
+                alert(`Batch printing from ${from} to ${to}`);
+                $('#dateModal').addClass('hidden').removeClass('flex');
+            });
+            
+            $('#dateModal').on('click', function(e) {
+                if ($(e.target).is('#dateModal')) {
+                closeModal();
+                }
+            });
+
+
+
         document.addEventListener('DOMContentLoaded', function () {
             const mobileMenuToggle = document.getElementById('mobileMenuToggle');
             const sidebar = document.getElementById('sidebar');
