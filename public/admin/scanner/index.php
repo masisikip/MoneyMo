@@ -362,7 +362,13 @@ try {
             if (!$(event.target).closest('#items-main').length && $(event.target).closest('#items').length) {
                 $('#items').addClass('hidden').removeClass('flex');
                 $('#item-form')[0].reset();
-                $('.item-card').addClass('border-gray-300').removeClass('border-black');
+                $('.item-card').each(function () {
+                    $(this)
+                        .addClass('border-gray-300')
+                        .removeClass('border-green-300');
+                    $(this).find('.check').addClass('invisible');
+                    $(this).find('input[name="iditem[]"]').prop('checked', false);
+                });
                 startCamera();
             }
         });
