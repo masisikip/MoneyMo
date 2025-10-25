@@ -2,7 +2,8 @@
 include_once '../../includes/partial.php';
 include_once '../../includes/connect-db.php';
 
-if (session_status() === PHP_SESSION_NONE) session_start();
+if (session_status() === PHP_SESSION_NONE)
+    session_start();
 
 $limit = $_GET['limit'] ?? 10;
 $page = $_GET['page'] ?? 1;
@@ -107,83 +108,88 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-    .border-red-500 {
-        border-color: #ef4444 !important;
-        border-width: 2px !important;
-    }
-    
-    /* Enhanced button hover effects */
-    .print-btn {
-        background-color: #000000;
-        color: white;
-        transition: all 0.3s ease;
-    }
-    
-    .print-btn:hover:not(:disabled) {
-        background-color: #374151 !important; /* gray-700 */
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-    
-    .print-btn:active:not(:disabled) {
-        transform: translateY(0);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .void-btn {
-        background-color: #000000;
-        color: white;
-        transition: all 0.3s ease;
-    }
-    
-    .void-btn:hover:not(:disabled) {
-        background-color: #dc2626 !important; /* red-700 */
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
-    }
-    
-    .void-btn:active:not(:disabled) {
-        transform: translateY(0);
-        box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
-    }
-    
-    /* Disabled state for both buttons */
-    .print-btn:disabled,
-    .void-btn:disabled {
-        background-color: #9ca3af !important; /* gray-400 */
-        color: #6b7280 !important; /* gray-500 */
-        cursor: not-allowed;
-        transform: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* Focus states for accessibility */
-    .print-btn:focus:not(:disabled),
-    .void-btn:focus:not(:disabled) {
-        outline: 2px solid #3b82f6;
-        outline-offset: 2px;
-    }
+        .border-red-500 {
+            border-color: #ef4444 !important;
+            border-width: 2px !important;
+        }
 
-    /* Voided receipt styles */
-    .voided-receipt {
-        filter: grayscale(100%);
-        opacity: 0.7;
-        position: relative;
-    }
-    .void-overlay {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotate(-45deg);
-        font-size: 24px;
-        font-weight: bold;
-        color: #dc2626;
-        background: rgba(255, 255, 255, 0.9);
-        padding: 10px 20px;
-        border: 3px solid #dc2626;
-        border-radius: 5px;
-        z-index: 100;
-    }
+        /* Enhanced button hover effects */
+        .print-btn {
+            background-color: #000000;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .print-btn:hover:not(:disabled) {
+            background-color: #374151 !important;
+            /* gray-700 */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .print-btn:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .void-btn {
+            background-color: #000000;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .void-btn:hover:not(:disabled) {
+            background-color: #dc2626 !important;
+            /* red-700 */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+        }
+
+        .void-btn:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
+        }
+
+        /* Disabled state for both buttons */
+        .print-btn:disabled,
+        .void-btn:disabled {
+            background-color: #9ca3af !important;
+            /* gray-400 */
+            color: #6b7280 !important;
+            /* gray-500 */
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Focus states for accessibility */
+        .print-btn:focus:not(:disabled),
+        .void-btn:focus:not(:disabled) {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Voided receipt styles */
+        .voided-receipt {
+            filter: grayscale(100%);
+            opacity: 0.7;
+            position: relative;
+        }
+
+        .void-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 24px;
+            font-weight: bold;
+            color: #dc2626;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border: 3px solid #dc2626;
+            border-radius: 5px;
+            z-index: 100;
+        }
     </style>
 </head>
 
@@ -191,13 +197,15 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     <div class="flex-1 p-4 md:p-8 overflow-y-auto w-full md:ml-0 pb-24">
 
         <div class="w-full flex justify-end">
-            <button onclick="openDateSelect()" class="px-5 py-2 bg-black text-white hover:cursor-pointer font-medium rounded-lg shadow-md hover:bg-gray-900 active:scale-95 transition-all duration-150">
+            <button onclick="openDateSelect()"
+                class="px-5 py-2 bg-black text-white hover:cursor-pointer font-medium rounded-lg shadow-md hover:bg-gray-900 active:scale-95 transition-all duration-150">
                 Batch Print <i class="fa-solid fa-print"></i>
             </button>
         </div>
 
         <form method="get" class="w-full">
-            <div class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full  mx-auto">
+            <div
+                class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full  mx-auto">
                 <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
                     <div class="px-3 py-2 text-white border rounded-l-lg bg-zinc-700">
                         <i class="fas fa-search"></i>
@@ -251,16 +259,12 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     </thead>
                     <tbody>
                         <?php foreach ($purchases as $purchase): ?>
-                            <tr class="border-b <?= $purchase['is_void'] ? 'bg-gray-100 text-gray-500' : '' ?>" 
-                                data-reference="<?= $purchase['ctrl_no'] ?>"
-                                data-date="<?= $purchase['date'] ?>" 
-                                data-quantity="<?= $purchase['quantity'] ?>"
-                                data-item="<?= $purchase['itemname'] ?>" 
-                                data-amount="<?= $purchase['value'] ?>"
-                                data-inventory="<?= $purchase['idinventory'] ?>"
+                            <tr class="border-b <?= $purchase['is_void'] ? 'bg-gray-100 text-gray-500' : '' ?>"
+                                data-reference="<?= $purchase['ctrl_no'] ?>" data-date="<?= $purchase['date'] ?>"
+                                data-quantity="<?= $purchase['quantity'] ?>" data-item="<?= $purchase['itemname'] ?>"
+                                data-amount="<?= $purchase['value'] ?>" data-inventory="<?= $purchase['idinventory'] ?>"
                                 data-officerName="<?= $purchase['officerName'] ?>"
-                                data-mode="<?= $purchase['payment_type'] ?>"
-                                data-void="<?= $purchase['is_void'] ?>">
+                                data-mode="<?= $purchase['payment_type'] ?>" data-void="<?= $purchase['is_void'] ?>">
 
                                 <td class="py-2 md:py-3 px-1 md:px-4 text-[9px] md:text-[12px] md:text-xs">
                                     <?= $purchase['ctrl_no'] ?>
@@ -286,12 +290,12 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                 </td>
                                 <td class="py-2 md:py-3 px-2 md:px-4">
                                     <div class="flex justify-center gap-2">
-                                        <button 
+                                        <button
                                             class="print-btn text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs transition duration-300 <?= $purchase['is_void'] ? 'opacity-50 cursor-not-allowed' : '' ?>"
                                             <?= $purchase['is_void'] ? 'disabled' : '' ?>>
                                             Print
                                         </button>
-                                        <button 
+                                        <button
                                             class="void-btn text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs transition duration-300 <?= $purchase['is_void'] ? 'opacity-50 cursor-not-allowed' : '' ?>"
                                             <?= $purchase['is_void'] ? 'disabled' : '' ?>
                                             data-inventory-id="<?= $purchase['idinventory'] ?>"
@@ -358,17 +362,19 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
                     <!-- Password Input -->
                     <div class="mb-6 text-left">
-                        <label for="adminPassword" class="block text-sm font-medium text-gray-700 mb-2">Admin Password</label>
+                        <label for="adminPassword" class="block text-sm font-medium text-gray-700 mb-2">Admin
+                            Password</label>
                         <input type="password" id="adminPassword"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
                             placeholder="Enter your password">
-                        
+
                         <!-- Enhanced error display - MAKE SURE THIS IS EXACTLY LIKE THIS -->
                         <div id="passwordError" class="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg hidden">
                             <div class="flex items-start">
                                 <i class="fas fa-exclamation-triangle text-red-500 mt-0.5 mr-2"></i>
                                 <div>
-                                    <p class="text-red-800 font-medium text-sm" id="passwordErrorText">Incorrect password</p>
+                                    <p class="text-red-800 font-medium text-sm" id="passwordErrorText">Incorrect
+                                        password</p>
                                     <p class="text-red-600 text-xs mt-1">Please check your password and try again.</p>
                                 </div>
                             </div>
@@ -390,43 +396,50 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- Date Select Modal -->
     <div id="dateModal" class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-xs p-6 m-6 relative">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-xs p-6 m-6 relative">
 
-        <button id="closeModal" class="absolute top-3 right-3 text-gray-500 hover:text-black hover:cursor-pointer">
-        <i class="fa-solid fa-xmark"></i>
-        </button>
+            <button id="closeModal" class="absolute top-3 right-3 text-gray-500 hover:text-black hover:cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
 
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Select Date Range</h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Select Date Range</h2>
 
-        <!-- Date Inputs -->
-        <div class="space-y-4">
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
-            <input type="date" id="fromDate" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-black focus:outline-none">
+            <!-- Date Inputs -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                    <input type="date" id="fromDate"
+                        class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-black focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                    <input type="date" id="endDate"
+                        class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-black focus:outline-none">
+                </div>
+            </div>
+
+            <!-- Go Button -->
+            <div class="mt-6 flex justify-end">
+                <button id="goBtn"
+                    class="px-5 py-2 hover:cursor-pointer bg-black text-white rounded-lg font-medium hover:bg-gray-900 active:scale-95 transition-all duration-150">
+                    Go
+                </button>
+            </div>
         </div>
-
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-            <input type="date" id="endDate" class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-black focus:outline-none">
-        </div>
-        </div>
-
-        <!-- Go Button -->
-        <div class="mt-6 flex justify-end">
-        <button id="goBtn" class="px-5 py-2 hover:cursor-pointer bg-black text-white rounded-lg font-medium hover:bg-gray-900 active:scale-95 transition-all duration-150">
-            Go
-        </button>
-        </div>
-    </div>
     </div>
 
 
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden" style="z-index: 9999;">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 min-w-[200px] border border-gray-300">
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden"
+        style="z-index: 9999;">
+        <div
+            class="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 min-w-[200px] border border-gray-300">
             <div class="relative">
                 <div class="w-12 h-12 border-4 border-gray-200 rounded-full"></div>
-                <div class="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+                <div
+                    class="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin absolute top-0 left-0">
+                </div>
             </div>
             <div class="text-center">
                 <p class="text-lg font-semibold text-gray-800 mb-1">Processing</p>
@@ -438,32 +451,40 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     <?php include_once '../../includes/footer.php'; ?>
 
     <script>
-            function openDateSelect() {
-                $('#dateModal').removeClass('hidden').addClass('flex');
+
+        function showLoading() {
+            $('#loadingOverlay').removeClass('hidden');
+        }
+
+        function hideLoading() {
+            $('#loadingOverlay').addClass('hidden');
+        }
+
+
+        function openDateSelect() {
+            $('#dateModal').removeClass('hidden').addClass('flex');
+        }
+
+        $('#closeModal').on('click', function () {
+            $('#dateModal').addClass('hidden').removeClass('flex');
+        });
+
+        $('#goBtn').on('click', function () {
+            const from = $('#fromDate').val();
+            const to = $('#endDate').val();
+
+            if (!from || !to) {
+                return;
             }
 
-            $('#closeModal').on('click', function() {
-                $('#dateModal').addClass('hidden').removeClass('flex');
-            });
+            $('#dateModal').addClass('hidden').removeClass('flex');
+        });
 
-            $('#goBtn').on('click', function() {
-                const from = $('#fromDate').val();
-                const to = $('#endDate').val();
-
-                if (!from || !to) {
-                alert('Please select both dates.');
-                return;
-                }
-
-                alert(`Batch printing from ${from} to ${to}`);
-                $('#dateModal').addClass('hidden').removeClass('flex');
-            });
-            
-            $('#dateModal').on('click', function(e) {
-                if ($(e.target).is('#dateModal')) {
+        $('#dateModal').on('click', function (e) {
+            if ($(e.target).is('#dateModal')) {
                 closeModal();
-                }
-            });
+            }
+        });
 
 
 
@@ -506,13 +527,13 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             $('#header-title').text('Collections');
 
             // Void Modal Handling
-            const voidModal = $('#voidModal');  
+            const voidModal = $('#voidModal');
             const voidModalOverlay = $('#voidModalOverlay');
             const voidModalMessage = $('#voidModalMessage');
             const adminPassword = $('#adminPassword');
             const passwordError = $('#passwordError');
             const confirmVoid = $('#confirmVoid');
-            
+
             let currentInventoryId = null;
             let currentVoidBtn = null;
 
@@ -530,14 +551,14 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     `Are you sure you want to void transaction <strong>${reference}</strong> for <strong>${studentName}</strong>?<br><br>
                     <span class="text-red-600 font-semibold text-sm">This action cannot be undone.</span>`
                 );
-                
+
                 // Reset form
                 adminPassword.val('');
                 passwordError.addClass('hidden');
-                
+
                 // Show modal
                 voidModal.removeClass('hidden');
-                
+
                 // Focus on password input
                 setTimeout(() => {
                     adminPassword.focus();
@@ -545,10 +566,10 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             });
 
             // Confirm void action
-            confirmVoid.on('click', function() {
+            confirmVoid.on('click', function () {
                 console.log('Confirm void button clicked!');
                 const password = adminPassword.val().trim();
-                
+
                 if (!password) {
                     showPasswordError('Please enter your password');
                     adminPassword.focus();
@@ -565,7 +586,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                         inventory_id: currentInventoryId,
                         admin_password: password
                     },
-                    success: function(response) {
+                    success: function (response) {
                         console.log('Raw response:', response);
 
                         try {
@@ -580,7 +601,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                 resetModal();
 
                                 // Reload page after short delay (optional)
-                                setTimeout(function() {
+                                setTimeout(function () {
                                     location.reload();
                                 }, 1200);
                             } else {
@@ -591,13 +612,13 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                             showPasswordError('Server returned invalid response. Please try again.');
                         }
                     },
-                    
-                    error: function(xhr, status, error) {
+
+                    error: function (xhr, status, error) {
                         // AJAX ERROR (file not found, etc.)
                         console.error('AJAX error:', status, error);
                         showPasswordError('Cannot connect to server. Please check your connection.');
                     },
-                    complete: function() {
+                    complete: function () {
                         // This runs ALWAYS - whether success or error
                         hideLoading();
                     }
@@ -614,9 +635,9 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 $('#adminPassword').addClass('border-red-500');
                 // Focus on password field
                 $('#adminPassword').focus().val('');
-                
+
                 // Remove error when user starts typing again
-                $('#adminPassword').off('input').on('input', function() {
+                $('#adminPassword').off('input').on('input', function () {
                     $(this).removeClass('border-red-500');
                     $('#passwordError').addClass('hidden');
                 });
@@ -625,41 +646,41 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             // Update row to show voided state - SIMPLIFIED AND FIXED
             function updateRowToVoided($voidBtn) {
                 console.log('Updating row to voided state...');
-                
+
                 if (!$voidBtn || !$voidBtn.length) {
                     console.error('Invalid void button provided');
                     return;
                 }
-                
+
                 const $row = $voidBtn.closest('tr');
                 console.log('Row found:', $row.length);
-                
+
                 if (!$row.length) {
                     console.error('Row not found for void button');
                     return;
                 }
-                
+
                 // 1. Update the row background and text color
                 $row.addClass('bg-gray-100 text-gray-500');
-                
+
                 // 2. Update the first cell to show VOIDED
                 const $firstCell = $row.find('td:first');
                 const currentText = $firstCell.text().replace('(VOIDED)', '').trim();
                 $firstCell.html(currentText + ' <span class="text-red-500 text-[8px] md:text-[10px]">(VOIDED)</span>');
-                
+
                 // 3. Disable both buttons
                 $row.find('.print-btn, .void-btn')
                     .addClass('opacity-50 cursor-not-allowed')
                     .prop('disabled', true);
-                
+
                 $row.find('.void-btn')
                     .text('Voiding')
                     .removeClass('bg-black hover:bg-red-700')
                     .addClass('bg-gray-400');
-                
+
                 // 5. Update data attribute
                 $row.attr('data-void', '1');
-                
+
                 console.log('UI successfully updated for voided transaction');
             }
 
@@ -667,7 +688,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             function showSuccessMessage(message) {
                 // Remove any existing toasts
                 $('.success-toast').remove();
-                
+
                 // Create a toast notification
                 const toast = $(`
                     <div class="success-toast fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
@@ -677,14 +698,14 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
                 `);
-                
+
                 // Add to page with animation
                 $('body').append(toast);
                 toast.hide().fadeIn(300);
-                
+
                 // Remove after 3 seconds
                 setTimeout(() => {
-                    toast.fadeOut(300, function() {
+                    toast.fadeOut(300, function () {
                         $(this).remove();
                     });
                 }, 3000);
@@ -694,7 +715,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             function showErrorMessage(message) {
                 // Remove any existing toasts
                 $('.error-toast').remove();
-                
+
                 // Create a toast notification
                 const toast = $(`
                     <div class="error-toast fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
@@ -704,26 +725,19 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
                 `);
-                
+
                 // Add to page with animation
                 $('body').append(toast);
                 toast.hide().fadeIn(300);
-                
+
                 // Remove after 3 seconds
                 setTimeout(() => {
-                    toast.fadeOut(300, function() {
+                    toast.fadeOut(300, function () {
                         $(this).remove();
                     });
                 }, 3000);
             }
 
-            function showLoading() {
-                $('#loadingOverlay').removeClass('hidden');
-            }
-
-            function hideLoading() {
-                $('#loadingOverlay').addClass('hidden');
-            }
 
             function resetModal() {
                 adminPassword.val('');
@@ -732,19 +746,19 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 currentInventoryId = null;
                 currentVoidBtn = null;
                 hideLoading();
-                
+
                 // Remove any input event listeners to prevent memory leaks
                 adminPassword.off('input');
             }
 
             // Close when clicking the overlay (outside modal)
-            voidModalOverlay.on('click', function() {
+            voidModalOverlay.on('click', function () {
                 voidModal.addClass('hidden');
                 resetModal();
             });
 
             // Also add escape key handler to close modal
-            $(document).on('keydown', function(e) {
+            $(document).on('keydown', function (e) {
                 if (e.key === 'Escape' && !voidModal.hasClass('hidden')) {
                     voidModal.addClass('hidden');
                     resetModal();
@@ -752,7 +766,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             });
 
             // Allow pressing Enter in password field to confirm
-            adminPassword.on('keypress', function(e) {
+            adminPassword.on('keypress', function (e) {
                 if (e.which === 13) { // Enter key
                     e.preventDefault();
                     confirmVoid.trigger('click');
@@ -779,7 +793,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             function printDynamicReceipt(studentName, officerName, date, item, amount, reference, mode, isVoid) {
                 var printWindow = window.open('', '', 'width=300,height=400');
                 printWindow.document.open();
-                
+
                 // Add voided styles and content
                 const voidedStyle = isVoid ? `
                     .receipt {
@@ -802,7 +816,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                         z-index: 100;
                     }
                 ` : '';
-                
+
                 const voidedContent = isVoid ? `<div class="void-overlay">VOIDED</div>` : '';
 
                 printWindow.document.write(`
@@ -933,6 +947,214 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 }
             });
         });
+
+        $('#goBtn').on('click', function () {
+            showLoading();
+            const from = $('#fromDate').val();
+            const to = $('#endDate').val();
+
+            console.log(`js: ${from}, ${to}`);
+
+            if (!from || !to) {
+                alert('Please select both dates.');
+                return;
+            }
+
+            // Hide modal when Go is clicked
+            $('#dateModal').addClass('hidden');
+
+            $.ajax({
+                url: './logic/get_receipts.php',
+                method: 'POST',
+                data: { from, to },
+                dataType: 'json',
+                success: function (res) {
+                    console.log('Response:', res);
+
+                    if (res.status === 'success') {
+                        if (res.data.length === 0) {
+                            alert(`No receipts found from ${from} to ${to}`);
+                            return;
+                        }
+
+                        console.log(`Found ${res.data.length} receipts from ${from} to ${to}`);
+                        hideLoading();
+                        batchPrint(res.data);
+                    } else {
+                        alert(res.message || 'Unknown error occurred.');
+                    }
+                },
+                error: function (xhr, status, err) {
+                    console.error('AJAX error:', err);
+                    hideLoading();
+                    alert('Error fetching receipts. Check console for details.');
+                }
+            });
+        });
+
+
+        function batchPrint(receipts) {
+            const printDateTime = new Date().toLocaleString('en-PH', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+
+            const totalReceipts = receipts.length;
+
+            const printHTML = `
+    <html>
+    <head>
+      <title>MoneyMo - Batch Print</title>
+      <style>
+        @media print {
+          @page { margin: 8mm; }
+          body {
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 8mm;
+          }
+
+          header {
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 4px;
+            font-size: 11px;
+            font-weight: bold;
+          }
+
+          footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 9px;
+            color: #333;
+            border-top: 1px solid #000;
+            padding-top: 4px;
+          }
+
+          footer::after {
+            content: "Page " counter(page);
+          }
+
+          .page {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 6px;
+            align-content: start;
+          }
+
+          .receipt {
+            position: relative;
+            border: 1px dashed #000;
+            padding: 6px 5px;
+            box-sizing: border-box;
+            page-break-inside: avoid;
+            overflow: hidden;
+            min-height: 140px;
+          }
+
+          .title {
+            font-weight: bold;
+            font-size: 11px;
+            text-align: center;
+            line-height: 1.2;
+          }
+
+          .info {
+            font-size: 9px;
+            margin: 1px 0;
+          }
+
+          .line {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+          }
+
+          .total {
+            font-weight: bold;
+            margin-top: 3px;
+            font-size: 10px;
+          }
+
+          .voided::before {
+            content: "VOIDED";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            color: rgba(255, 0, 0, 0.15);
+            font-size: 40px;
+            font-weight: bold;
+            white-space: nowrap;
+            pointer-events: none;
+          }
+
+          hr {
+            border: none;
+            border-top: 1px dashed #000;
+            margin: 3px 0;
+          }
+        }
+      </style>
+    </head>
+    <body>
+
+      <div class="page">
+        ${receipts.map(r => `
+          <div class="receipt ${r.is_void ? 'voided' : ''}">
+            <div class="title">👽 Association of Computer Scientists</div>
+            <div class="title">PAYMENT RECEIPT</div>
+            <div class="info">#${r.ctrl_no}</div>
+            <hr>
+            <div class="line"><strong>Date</strong><span>${r.date}</span></div>
+            <div class="line"><strong>Name</strong><span>${r.username}</span></div>
+            <div class="line"><strong>Item</strong><span>${r.itemname}</span></div>
+            <div class="line"><strong>Qty</strong><span>${r.quantity}</span></div>
+            <div class="line"><strong>Method</strong><span>${r.payment_type}</span></div>
+            <div class="line"><strong>Assisted by</strong><span>${r.officerName}</span></div>
+            <hr>
+            <div class="line"><strong>Price</strong><span>₱${parseFloat(r.value).toFixed(2)}</span></div>
+            <p class="total">Total: ₱${parseFloat(r.value).toFixed(2)}</p>
+          </div>
+        `).join('')}
+      </div>
+
+    </body>
+    </html>
+  `;
+
+            // ✅ Silent print using hidden iframe
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = '0';
+            document.body.appendChild(iframe);
+
+            const doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write(printHTML);
+            doc.close();
+
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+
+            setTimeout(() => document.body.removeChild(iframe), 1000);
+        }
+
+
+
     </script>
 </body>
+
 </html>
