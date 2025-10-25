@@ -80,7 +80,7 @@ foreach ($transactions as $tx) {
 // Pagination Setup
 $limit = 15;
 
-// Build Main Query with Date Filters
+// Build Main Query with Date Filters - UPDATED TO INCLUDE is_void
 $base_query = "
     SELECT 
         reference_no,
@@ -94,7 +94,9 @@ $base_query = "
             WHEN payment_type = 0 THEN 'Cash'
             WHEN payment_type = 1 THEN 'Gcash'
             ELSE 'unknown'
-        END AS payment_type
+        END AS payment_type,
+        inventory.is_void,
+        inventory.ctrl_no
     FROM inventory
     INNER JOIN item ON inventory.iditem = item.iditem
     INNER JOIN user u1 ON inventory.iduser = u1.iduser
@@ -263,13 +265,34 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                     </thead>
                     <tbody>
                         <?php foreach ($purchases as $purchase): ?>
-                            <tr class="border-b">
-                                <td class="py-3 px-4"><?= htmlspecialchars($purchase['username']) ?></td>
+                            <tr class="border-b <?= $purchase['is_void'] ? 'bg-gray-100 text-gray-500' : '' ?>" 
+                                data-reference="<?= $purchase['ctrl_no'] ?>"
+                                data-date="<?= $purchase['date'] ?>" 
+                                data-item="<?= $purchase['itemname'] ?>" 
+                                data-amount="<?= $purchase['itemvalue'] ?>"
+                                data-officerName="<?= $purchase['officerName'] ?>"
+                                data-mode="<?= $purchase['payment_type'] ?>"
+                                data-void="<?= $purchase['is_void'] ?>">
+                                <td class="py-3 px-4">
+                                    <?= htmlspecialchars($purchase['username']) ?>
+                                    <?php if ($purchase['is_void']): ?>
+                                        <span class="text-red-500 text-xs">(VOIDED)</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td class="py-3 px-4"><?= htmlspecialchars($purchase['date']) ?></td>
                                 <td class="py-3 px-4"><?= htmlspecialchars($purchase['itemname']) ?></td>
                                 <td class="py-3 px-4">₱<?= number_format($purchase['itemvalue'], 2) ?></td>
                                 <td class="py-3 px-4 text-center">
-                                    <button class="bg-black text-white px-4 py-1 rounded-full hover:bg-gray-700 print-btn cursor-pointer">
+                                    <button class="print-btn text-white px-4 py-1 rounded-full hover:bg-gray-700 cursor-pointer <?= $purchase['is_void'] ? 'bg-gray-400 opacity-50 cursor-not-allowed' : 'bg-black' ?>"
+                                            <?= $purchase['is_void'] ? 'disabled' : '' ?>
+                                            data-student-name="<?= htmlspecialchars($purchase['username']) ?>"
+                                            data-date="<?= $purchase['date'] ?>"
+                                            data-item="<?= htmlspecialchars($purchase['itemname']) ?>"
+                                            data-amount="<?= $purchase['itemvalue'] ?>"
+                                            data-reference="<?= $purchase['ctrl_no'] ?>"
+                                            data-officer-name="<?= htmlspecialchars($purchase['officerName']) ?>"
+                                            data-mode="<?= $purchase['payment_type'] ?>"
+                                            data-void="<?= $purchase['is_void'] ?>">
                                         Print
                                     </button>
                                 </td>
@@ -374,53 +397,167 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                 items: <?= json_encode(array_values($item_stats)) ?>
             });
 
-            // Print Receipt Handler
+            // Print Receipt Handler - UPDATED TO INCLUDE VOID STATUS
             document.querySelectorAll('.print-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const row = e.target.closest('tr');
+                    const isVoid = e.target.getAttribute('data-void') === '1';
                     const data = {
-                        studentName: row.children[0].textContent.trim(),
-                        date: row.children[1].textContent.trim(),
-                        item: row.children[2].textContent.trim(),
-                        amount: row.children[3].textContent.trim(),
+                        studentName: e.target.getAttribute('data-student-name'),
+                        date: e.target.getAttribute('data-date'),
+                        item: e.target.getAttribute('data-item'),
+                        amount: e.target.getAttribute('data-amount'),
+                        reference: e.target.getAttribute('data-reference'),
+                        officerName: e.target.getAttribute('data-officer-name'),
+                        mode: e.target.getAttribute('data-mode'),
+                        isVoid: isVoid
                     };
 
-                    const printWindow = window.open('', '_blank');
-                    printWindow.document.write(`
+                    printReceipt(data);
+                });
+            });
+
+            // Enhanced Receipt Printing Function with Void Status
+            function printReceipt(data) {
+                const printWindow = window.open('', '_blank');
+                
+                // Voided receipt styling
+                const voidedStyle = data.isVoid ? `
+                    .receipt {
+                        filter: grayscale(100%);
+                        opacity: 0.7;
+                        position: relative;
+                        background: #f9f9f9;
+                    }
+                    .void-overlay {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%) rotate(-45deg);
+                        font-size: 32px;
+                        font-weight: bold;
+                        color: #dc2626;
+                        background: rgba(255, 255, 255, 0.95);
+                        padding: 15px 30px;
+                        border: 4px solid #dc2626;
+                        border-radius: 8px;
+                        z-index: 100;
+                        text-transform: uppercase;
+                        letter-spacing: 2px;
+                    }
+                    .void-watermark {
+                        color: #dc2626;
+                        font-weight: bold;
+                        font-size: 14px;
+                        text-align: center;
+                        margin-top: 10px;
+                        border-top: 2px dashed #dc2626;
+                        padding-top: 5px;
+                    }
+                ` : '';
+
+                const voidedContent = data.isVoid ? `
+                    <div class="void-overlay">VOIDED</div>
+                    <div class="void-watermark">TRANSACTION CANCELLED</div>
+                ` : '';
+
+                printWindow.document.write(`
                     <html>
                         <head>
                             <title>MoneyMo - Receipt</title>
                             <style>
-                                body { font-family: Arial, sans-serif; padding: 20px; }
-                                .receipt { width: 300px; margin: 0 auto; }
-                                .header { text-align: center; margin-bottom: 20px; }
-                                .details { margin-bottom: 15px; }
-                                .total { font-weight: bold; margin-top: 10px; }
+                                body { 
+                                    font-family: 'Courier New', monospace; 
+                                    padding: 20px;
+                                    margin: 0;
+                                }
+                                .receipt { 
+                                    width: 300px; 
+                                    margin: 0 auto;
+                                    border: 1px solid #000;
+                                    padding: 20px;
+                                    position: relative;
+                                    background: white;
+                                }
+                                .header { 
+                                    text-align: center; 
+                                    margin-bottom: 20px;
+                                    border-bottom: 1px dashed #000;
+                                    padding-bottom: 10px;
+                                }
+                                .details { 
+                                    margin-bottom: 15px; 
+                                }
+                                .detail-row {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    margin-bottom: 5px;
+                                    font-size: 14px;
+                                }
+                                .total { 
+                                    font-weight: bold; 
+                                    margin-top: 10px;
+                                    border-top: 2px solid #000;
+                                    padding-top: 10px;
+                                    text-align: center;
+                                    font-size: 16px;
+                                }
+                                .footer {
+                                    text-align: center;
+                                    margin-top: 15px;
+                                    font-size: 12px;
+                                    color: #666;
+                                }
+                                ${voidedStyle}
                             </style>
                         </head>
                         <body>
                             <div class="receipt">
+                                ${voidedContent}
                                 <div class="header">
-                                    <h2>Payment Receipt</h2>
+                                    <h2>👽 ACS Payment Receipt</h2>
                                     <p>Association of Computer Scientists</p>
+                                    <p><strong>Ref: ${data.reference}</strong></p>
                                 </div>
                                 <div class="details">
-                                    <p>Student: ${data.studentName}</p>
-                                    <p>Date: ${data.date}</p>
-                                    <p>Item: ${data.item}</p>
-                                    <p>Amount: ${data.amount}</p>
+                                    <div class="detail-row">
+                                        <span>Date:</span>
+                                        <span>${new Date(data.date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>Student:</span>
+                                        <span>${data.studentName}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>Item:</span>
+                                        <span>${data.item}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>Method:</span>
+                                        <span>${data.mode}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>Officer:</span>
+                                        <span>${data.officerName}</span>
+                                    </div>
                                 </div>
                                 <div class="total">
-                                    Total Paid: ${data.amount}
+                                    Total Paid: ₱${parseFloat(data.amount).toFixed(2)}
+                                </div>
+                                <div class="footer">
+                                    <p>This is a customer's copy.</p>
+                                    <p>Thank you for your payment!</p>
                                 </div>
                             </div>
                         </body>
                     </html>
                 `);
-                    printWindow.document.close();
+                printWindow.document.close();
+                
+                setTimeout(() => {
                     printWindow.print();
-                });
-            });
+                    printWindow.close();
+                }, 500);
+            }
         });
 
         $(document).ready(function () {
@@ -428,5 +565,4 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
         })
     </script>
 </body>
-
 </html>

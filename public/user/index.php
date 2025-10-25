@@ -1,4 +1,14 @@
 <?php
+include_once '../includes/partial.php';
+include_once '../includes/connect-db.php';
+include_once '../includes/token.php';
+
+if (isset($_SESSION['auth_token'])) {
+    $payload = decryptToken($_SESSION['auth_token']);
+    if ($payload && isset($payload['user_type'])) {
+        $iduser = $payload['user_id'];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -12,24 +22,30 @@
   <link rel="icon" href="./assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
   <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .voided-receipt {
+        filter: grayscale(100%);
+        opacity: 0.7;
+        pointer-events: none;
+    }
+    .void-text {
+        color: #dc2626 !important;
+        font-weight: bold;
+        font-size: 16px;
+        text-align: center;
+        margin-top: 8px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .non-clickable {
+        pointer-events: none;
+        cursor: default;
+    }
+  </style>
 </head>
 
 <body class="bg-[#d9d9d9] flex flex-col w-screen min-h-screen overflow-x-hidden">
-  <?php
-  include_once '../includes/partial.php';
-  include_once '../includes/connect-db.php';
-  include_once '../includes/token.php';
-
-
-  if (isset($_SESSION['auth_token'])) {
-    $payload = decryptToken($_SESSION['auth_token']);
-    if ($payload && isset($payload['user_type'])) {
-      $iduser = $payload['user_id'];
-    }
-  }
-
-  ?>
-
+  <?php include_once '../includes/partial.php'; ?>
 
   <!--Receipts-->
   <div class="flex flex-col w-full h-full min-h-screen items-center mt-3 p-4">
@@ -44,11 +60,12 @@
           inventory.value,
           idinventory,
           ctrl_no,
+          is_void,
           CASE 
           WHEN payment_type = 0 THEN 'Cash'
               WHEN payment_type = 1 THEN 'Gcash'
               ELSE 'unknown'
-        END AS 	payment_type
+        END AS payment_type
       FROM inventory
       INNER JOIN item on inventory.iditem = item.iditem
       WHERE iduser = ?
@@ -56,19 +73,24 @@
 
     $stmt->execute([$iduser]);
     $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     ?>
-    <!-- Receipts Grid -->
 
+    <!-- Receipts Grid -->
     <div class="w-full p-4 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 md:w-10/12 gap-4 md:gap-5 place-items-center">
       <?php foreach ($purchases as $purchase): ?>
-        <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer" data-reference="<?= $purchase['reference_no'] ?>"
-        data-reference="<?= $purchase['ctrl_no'] ?>"
-          data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
-          data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
-          data-inventory="<?= $purchase['idinventory'] ?>" data-mode="<?= $purchase['payment_type'] ?>">
+        <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer <?= $purchase['is_void'] ? 'voided-receipt non-clickable' : '' ?>" 
+             data-reference="<?= $purchase['reference_no'] ?>"
+             data-ctrl="<?= $purchase['ctrl_no'] ?>"
+             data-date="<?= $purchase['date'] ?>" 
+             data-quantity="<?= $purchase['quantity'] ?>"
+             data-item="<?= $purchase['name'] ?>" 
+             data-amount="<?= $purchase['value'] ?>"
+             data-inventory="<?= $purchase['idinventory'] ?>" 
+             data-mode="<?= $purchase['payment_type'] ?>"
+             data-void="<?= $purchase['is_void'] ?>"
+             <?= $purchase['is_void'] ? 'onclick="return false;"' : '' ?>>
 
-          <div class="flex rounded-lg h-full bg-white p-6 flex-col hover:shadow-2xl">
+          <div class="flex rounded-lg h-full bg-white p-6 flex-col hover:shadow-2xl relative">
             <div class="flex items-center justify-center mb-2 pb-3 border-b-1 border-black">
               <h2 class="text-black text-lg font-bold mr-1">PAYMENT RECEIPT</h2>
             </div>
@@ -93,13 +115,14 @@
               <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
                 Tap to see full details
               </p>
+              <?php if ($purchase['is_void']): ?>
+                <div class="void-text" style="color: #dc2626;">VOIDED</div>
+              <?php endif; ?>
             </div>
           </div>
         </div>
       <?php endforeach; ?>
     </div>
-
-
   </div>
 
   <script src="https://superal.github.io/canvas2image/canvas2image.js"></script>
@@ -110,8 +133,7 @@
     <!-- hoverlay  -->
     <div id="modalOverlay" class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
 
-    <div
-      class="modal-container flex flex-col items-center h-auto bg-white w-11/12 md:max-w-md my-10 mx-auto shadow-lg z-50 overflow-y-auto">
+    <div class="modal-container flex flex-col items-center h-auto bg-white w-11/12 md:max-w-md my-10 mx-auto shadow-lg z-50 overflow-y-auto relative">
       <div class="bg-black w-full grid grid-cols-2 gap-x-4">
         <p class="text-white font-medium ml-3 p-2">MoneyMo</p>
         <button type="button" id="closeModal"
@@ -135,7 +157,6 @@
         <div class="py-1 gap-2 w-full border-b-1 border-gray-400">
           <p class="text-xs font-bold text-gray-600">Ref no.   <span id="reference" class="text-xs font-bold">131231231231</span></p>
           <p class="text-xs font-bold text-gray-600">Ctrl no.   <span id="ctrl" class="text-xs font-bold">131231231231</span></p>
-        
         </div>
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
@@ -156,7 +177,6 @@
           </div>
         </div>
 
-
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
             <p class="font-bold">Total</p>
@@ -164,6 +184,12 @@
           </div>
         </div>
         <p class="pt-1 pb-1 text-center mt-5">This is a cutomer's copy. Thank You!</p>
+        
+        <!-- Void message for modal -->
+        <div id="voidMessage" class="hidden">
+          <div class="void-text mt-4" style="color: #dc2626;">VOIDED</div>
+          <p class="text-center text-gray-600 text-sm mt-2">This receipt has been voided and cannot be downloaded.</p>
+        </div>
       </div>
       <div class="my-4 flex justify-center">
         <button id="downloadButton"
@@ -174,15 +200,20 @@
     </div>
   </div>
 
-  <?php   include_once '../includes/footer.php'; ?>
+  <?php include_once '../includes/footer.php'; ?>
 
-  
   <script>
     let qrFileName = "";
+    let currentIsVoid = false;
 
     document
       .querySelector("#downloadButton")
       .addEventListener("click", function () {
+        if (currentIsVoid) {
+          alert("This receipt has been voided and cannot be downloaded.");
+          return false;
+        }
+        
         html2canvas(document.querySelector(".modal-content"), {
           onrendered: function (canvas) {
             const imgDataUrl = canvas.toDataURL("image/png");
@@ -211,7 +242,7 @@
     }
 
     $(document).ready(function () {
-      $(document).on("click", ".clickable-div", function () {
+      $(document).on("click", ".clickable-div:not(.non-clickable)", function () {
         let reference = $(this).data("reference");
         let ctrl = $(this).data("ctrl");
         let date = $(this).data("date");
@@ -219,8 +250,9 @@
         let item = $(this).data("item");
         let amount = $(this).data("amount");
         let mode = $(this).data("mode");
-        let ctrl_no = $(this).data("ctrl_no");
+        let isVoid = $(this).data("void");
 
+        currentIsVoid = isVoid;
         qrFileName = "QR_" + reference + ".png"
 
         $("#reference").text(reference);
@@ -232,16 +264,39 @@
         $("#mode").text(mode);
         $("#total").text("₱ " + amount);
 
+        // Update modal for void status
+        if (isVoid) {
+          $('.modal-content').addClass('opacity-70');
+          $('#voidMessage').removeClass('hidden');
+          $('#downloadButton').addClass('opacity-50 cursor-not-allowed').prop('disabled', true);
+        } else {
+          $('.modal-content').removeClass('opacity-70');
+          $('#voidMessage').addClass('hidden');
+          $('#downloadButton').removeClass('opacity-50 cursor-not-allowed').prop('disabled', false);
+        }
       });
 
-      // Show modal when button is clicked
-      $(".clickable-div").click(function () {
+      // Show modal when button is clicked (only for non-voided receipts)
+      $(document).on("click", ".clickable-div:not(.non-clickable)", function () {
         $("#myModal").removeClass("hidden").addClass("flex");
       });
 
       // Hide modal when close button is clicked
       $("#closeModal").click(function () {
         $("#myModal").addClass("hidden").removeClass("flex");
+        // Reset modal state
+        $('.modal-content').removeClass('opacity-70');
+        $('#voidMessage').addClass('hidden');
+        $('#downloadButton').removeClass('opacity-50 cursor-not-allowed').prop('disabled', false);
+      });
+
+      // Also close modal when clicking overlay
+      $("#modalOverlay").click(function () {
+        $("#myModal").addClass("hidden").removeClass("flex");
+        // Reset modal state
+        $('.modal-content').removeClass('opacity-70');
+        $('#voidMessage').addClass('hidden');
+        $('#downloadButton').removeClass('opacity-50 cursor-not-allowed').prop('disabled', false);
       });
     });
 
@@ -250,5 +305,4 @@
     })
   </script>
 </body>
-
 </html>

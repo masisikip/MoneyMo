@@ -163,6 +163,27 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
         outline: 2px solid #3b82f6;
         outline-offset: 2px;
     }
+
+    /* Voided receipt styles */
+    .voided-receipt {
+        filter: grayscale(100%);
+        opacity: 0.7;
+        position: relative;
+    }
+    .void-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 24px;
+        font-weight: bold;
+        color: #dc2626;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 10px 20px;
+        border: 3px solid #dc2626;
+        border-radius: 5px;
+        z-index: 100;
+    }
     </style>
 </head>
 
@@ -679,14 +700,41 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 var amount = $row.data('amount');
                 var reference = $row.data('reference');
                 var mode = $row.data('mode');
+                var isVoid = $row.data('void');
 
-                printDynamicReceipt(studentName, officerName, date, item, amount, reference, mode);
+                printDynamicReceipt(studentName, officerName, date, item, amount, reference, mode, isVoid);
             });
 
-            // Dynamic receipt print function
-            function printDynamicReceipt(studentName, officerName, date, item, amount, reference, mode) {
+            // Dynamic receipt print function - UPDATED TO INCLUDE VOID STATUS
+            function printDynamicReceipt(studentName, officerName, date, item, amount, reference, mode, isVoid) {
                 var printWindow = window.open('', '', 'width=300,height=400');
                 printWindow.document.open();
+                
+                // Add voided styles and content
+                const voidedStyle = isVoid ? `
+                    .receipt {
+                        filter: grayscale(100%);
+                        opacity: 0.7;
+                        position: relative;
+                    }
+                    .void-overlay {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%) rotate(-45deg);
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #dc2626;
+                        background: rgba(255, 255, 255, 0.9);
+                        padding: 10px 20px;
+                        border: 3px solid #dc2626;
+                        border-radius: 5px;
+                        z-index: 100;
+                    }
+                ` : '';
+                
+                const voidedContent = isVoid ? `<div class="void-overlay">VOIDED</div>` : '';
+
                 printWindow.document.write(`
                     <html>
                     <head>
@@ -702,6 +750,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                 }
                                 .receipt {
                                     padding: 3px;
+                                    position: relative;
                                 }
                                 .address {
                                     font-size: 10px;
@@ -735,11 +784,13 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                     font-size: 8px;
                                     margin: 0;
                                 }
+                                ${voidedStyle}
                             }
                         </style>
                     </head>
                     <body>
                         <div class="receipt">
+                            ${voidedContent}
                             <p class="spacer">...</p>
                             <br>
                             <p class="title">👽</p>
