@@ -4,10 +4,10 @@ include_once '../includes/connect-db.php';
 include_once '../includes/token.php';
 
 if (isset($_SESSION['auth_token'])) {
-    $payload = decryptToken($_SESSION['auth_token']);
-    if ($payload && isset($payload['user_type'])) {
-        $iduser = $payload['user_id'];
-    }
+  $payload = decryptToken($_SESSION['auth_token']);
+  if ($payload && isset($payload['user_type'])) {
+    $iduser = $payload['user_id'];
+  }
 }
 ?>
 
@@ -24,22 +24,24 @@ if (isset($_SESSION['auth_token'])) {
   <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     .voided-receipt {
-        filter: grayscale(100%);
-        opacity: 0.7;
-        pointer-events: none;
+      filter: grayscale(100%);
+      opacity: 0.7;
+      pointer-events: none;
     }
+
     .void-text {
-        color: #dc2626 !important;
-        font-weight: bold;
-        font-size: 16px;
-        text-align: center;
-        margin-top: 8px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+      color: #dc2626 !important;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
+
     .non-clickable {
-        pointer-events: none;
-        cursor: default;
+      pointer-events: none;
+      cursor: default;
     }
   </style>
 </head>
@@ -78,17 +80,13 @@ if (isset($_SESSION['auth_token'])) {
     <!-- Receipts Grid -->
     <div class="w-full p-4 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 md:w-10/12 gap-4 md:gap-5 place-items-center">
       <?php foreach ($purchases as $purchase): ?>
-        <div class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer <?= $purchase['is_void'] ? 'voided-receipt non-clickable' : '' ?>" 
-             data-reference="<?= $purchase['reference_no'] ?>"
-             data-ctrl="<?= $purchase['ctrl_no'] ?>"
-             data-date="<?= $purchase['date'] ?>" 
-             data-quantity="<?= $purchase['quantity'] ?>"
-             data-item="<?= $purchase['name'] ?>" 
-             data-amount="<?= $purchase['value'] ?>"
-             data-inventory="<?= $purchase['idinventory'] ?>" 
-             data-mode="<?= $purchase['payment_type'] ?>"
-             data-void="<?= $purchase['is_void'] ?>"
-             <?= $purchase['is_void'] ? 'onclick="return false;"' : '' ?>>
+        <div
+          class="clickable-div md:w-[16rem] w-11/12 h-auto md:h-72 cursor-pointer <?= $purchase['is_void'] ? 'voided-receipt non-clickable' : '' ?>"
+          data-reference="<?= $purchase['reference_no'] ?>" data-ctrl="<?= $purchase['ctrl_no'] ?>"
+          data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
+          data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
+          data-inventory="<?= $purchase['idinventory'] ?>" data-mode="<?= $purchase['payment_type'] ?>"
+          data-void="<?= $purchase['is_void'] ?>" <?= $purchase['is_void'] ? 'onclick="return false;"' : '' ?>>
 
           <div class="flex rounded-lg h-full bg-white p-6 flex-col hover:shadow-2xl relative">
             <div class="flex items-center justify-center mb-2 pb-3 border-b-1 border-black">
@@ -112,12 +110,12 @@ if (isset($_SESSION['auth_token'])) {
             </div>
 
             <div class="flex flex-col justify-between flex-grow text-center">
-              <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
-                Tap to see full details
-              </p>
               <?php if ($purchase['is_void']): ?>
                 <div class="void-text" style="color: #dc2626;">VOIDED</div>
-              <?php endif; ?>
+              <?php else: ?>
+                <p class="leading-relaxed text-base text-gray-800 my-3 font-light">
+                  Tap to see full details
+                <?php endif; ?>
             </div>
           </div>
         </div>
@@ -133,7 +131,8 @@ if (isset($_SESSION['auth_token'])) {
     <!-- hoverlay  -->
     <div id="modalOverlay" class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
 
-    <div class="modal-container flex flex-col items-center h-auto bg-white w-11/12 md:max-w-md my-10 mx-auto shadow-lg z-50 overflow-y-auto relative">
+    <div
+      class="modal-container flex flex-col items-center h-auto bg-white w-11/12 md:max-w-md my-10 mx-auto shadow-lg z-50 overflow-y-auto relative">
       <div class="bg-black w-full grid grid-cols-2 gap-x-4">
         <p class="text-white font-medium ml-3 p-2">MoneyMo</p>
         <button type="button" id="closeModal"
@@ -155,8 +154,10 @@ if (isset($_SESSION['auth_token'])) {
           <p class="text-2xl font-bold mt-1">PAYMENT RECEIPT</p>
         </div>
         <div class="py-1 gap-2 w-full border-b-1 border-gray-400">
-          <p class="text-xs font-bold text-gray-600">Ref no.   <span id="reference" class="text-xs font-bold">131231231231</span></p>
-          <p class="text-xs font-bold text-gray-600">Ctrl no.   <span id="ctrl" class="text-xs font-bold">131231231231</span></p>
+          <p class="text-xs font-bold text-gray-600">Ref no. <span id="reference"
+              class="text-xs font-bold">131231231231</span></p>
+          <p class="text-xs font-bold text-gray-600">Ctrl no. <span id="ctrl"
+              class="text-xs font-bold">131231231231</span></p>
         </div>
         <div class="border-b border-gray-400 text-black pt-1 pb-1">
           <div class="grid grid-cols-2 gap-x-4">
@@ -184,7 +185,7 @@ if (isset($_SESSION['auth_token'])) {
           </div>
         </div>
         <p class="pt-1 pb-1 text-center mt-5">This is a cutomer's copy. Thank You!</p>
-        
+
         <!-- Void message for modal -->
         <div id="voidMessage" class="hidden">
           <div class="void-text mt-4" style="color: #dc2626;">VOIDED</div>
@@ -213,7 +214,7 @@ if (isset($_SESSION['auth_token'])) {
           alert("This receipt has been voided and cannot be downloaded.");
           return false;
         }
-        
+
         html2canvas(document.querySelector(".modal-content"), {
           onrendered: function (canvas) {
             const imgDataUrl = canvas.toDataURL("image/png");
@@ -305,4 +306,5 @@ if (isset($_SESSION['auth_token'])) {
     })
   </script>
 </body>
+
 </html>
