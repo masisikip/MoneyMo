@@ -1,8 +1,7 @@
 <?php
-
+session_start();
 include_once '../../includes/connect-db.php';
 require_once '../../includes/token.php';
-
 ?>
 
 <!DOCTYPE html>
@@ -24,62 +23,68 @@ require_once '../../includes/token.php';
 
     <?php include_once '../../includes/partial.php'; ?>
 
-    <div class="mt-4 p-8 rounded-lg text-center flex flex-col items-center justify-center">
-        <!-- QR Code -->
-        <div id="qr-container" class="mt-5 flex flex-col items-center justify-center w-fit px-4 bg-gray-100">
-            <h1 class="text-2xl my-2 font-bold">MoneyMo</h1>
-            <?php
-            $qrCodeUrl = '';
-            $base64Qr = '';
+    <div class="mt-4 p-6 md:p-8 rounded-lg text-center flex flex-col items-center justify-center">
+        <div class="bg-white max-w-lg w-full grid place-content-center rounded-xl shadow-md p-6">
+            <!-- QR Code -->
+            <div id="qr-container" class="flex flex-col items-center justify-center w-fit p-4 bg-white rounded-md">
+                <h1 class="text-2xl font-bold mb-4">MoneyMo</h1>
+                <?php
+                $base64Qr = '';
 
-            if (isset($_SESSION['auth_token'])) {
-                $payload = decryptToken($_SESSION['auth_token']);
-                if ($payload && isset($payload['user_type'])) {
-                    $iduser = $payload['user_id'];
+                if (isset($_SESSION['auth_token'])) {
+                    $payload = decryptToken($_SESSION['auth_token']);
+                    if ($payload && isset($payload['user_type'])) {
+                        $iduser = $payload['user_id'];
 
-                    $stmt = $pdo->prepare('SELECT * FROM user WHERE iduser=?');
-                    $stmt->execute([$iduser]);
-                    $user = $stmt->fetch();
+                        $stmt = $pdo->prepare('SELECT * FROM user WHERE iduser=?');
+                        $stmt->execute([$iduser]);
+                        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                    if (!empty($user['student_id'])) {
-                        $qrData = $user['student_id'];
-                        $student_num = urlencode($qrData);
-                        $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data={$student_num}&size=300x300";
+                        if (!empty($user['student_id'])) {
+                            $qrData = urlencode($user['student_id']);
+                            $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data={$qrData}&size=300x300";
 
-                        // Fetch and base64 encode the QR image
-                        $qrImage = @file_get_contents($qrCodeUrl);
-                        if ($qrImage !== false) {
-                            $base64Qr = 'data:image/png;base64,' . base64_encode($qrImage);
-                            echo '<img id="qr-image" class="mt-4" src="' . $base64Qr . '" alt="User QR Code" class="mx-auto w-60 h-60">';
+                            $qrImage = @file_get_contents($qrCodeUrl);
+                            if ($qrImage !== false) {
+                                $base64Qr = 'data:image/png;base64,' . base64_encode($qrImage);
+                                echo '<img id="qr-image" class="mx-auto w-60 h-60 rounded-md" src="' . $base64Qr . '" alt="User QR Code">';
+                            } else {
+                                echo '<p class="text-red-500 font-bold">Error: Unable to generate QR code.</p>';
+                            }
                         } else {
-                            echo '<p class="text-red-500 font-bold">Error: Unable to generate QR code.</p>';
+                            echo '<p class="text-red-500 font-bold">Error: No student number found.</p>';
                         }
                     } else {
-                        echo '<p class="text-red-500 font-bold">Error: No student number found.</p>';
+                        echo '<p class="text-red-500 font-bold">Error: Invalid user session.</p>';
                     }
                 } else {
-                    echo '<p class="text-red-500 font-bold">Error: Invalid user session.</p>';
+                    echo '<p class="text-red-500 font-bold">Error: No user authentication detected.</p>';
                 }
-            } else {
-                echo '<p class="text-red-500 font-bold">Error: No user authentication detected.</p>';
-            }
-            ?>
-            <div class="flex flex-col my-5 items-center">
-                <span class="text-xl font-bold"><?= $user['f_name'] ?> <?= $user['l_name'] ?></span>
-                <span class="text-gray-700 font-semibold"><?= $user['student_id'] ?></span>
-                <span class="text-gray-700"><?= $user['email'] ?></span>
-            </div>
-        </div>
+                ?>
 
-        <div class="w-full flex justify-center">
+                <!-- User Info -->
+                <?php if (!empty($user)): ?>
+                    <div class="flex flex-col items-center pt-4">
+                        <span class="text-xl font-bold"><?= htmlspecialchars($user['f_name']) ?>
+                            <?= htmlspecialchars($user['l_name']) ?></span>
+                        <span class="text-gray-700 font-semibold"><?= htmlspecialchars($user['student_id']) ?></span>
+                        <span class="text-gray-700"><?= htmlspecialchars($user['email']) ?></span>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Download Button -->
             <?php if (!empty($base64Qr)): ?>
-                <button id="download-btn"
-                    class="px-4 py-2 bg-zinc-700 cursor-pointer text-white rounded-md hover:bg-zinc-800">
-                    Download QR Code
-                </button>
+                <div class="w-full flex justify-center mt-4">
+                    <button id="download-btn"
+                        class="px-12 py-2 mb-4 bg-zinc-700 text-white rounded-full hover:bg-gray-800 cursor-pointer text-sm transition duration-200">
+                        Download
+                    </button>
+                </div>
             <?php endif; ?>
         </div>
     </div>
+
     <?php include_once '../../includes/footer.php'; ?>
 
 </body>
@@ -107,5 +112,5 @@ require_once '../../includes/token.php';
 
     $(document).ready(function () {
         $('#header-title').text('QR Code');
-    })
+    });
 </script>
