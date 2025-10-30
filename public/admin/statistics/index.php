@@ -76,12 +76,12 @@ foreach ($item_lookup as $id => $data) {
         ];
     }
 
-    
+
     $item_stats[$id]["total"] = number_format($item_stats[$id]["total"], 2, '.', '');
 }
 
 usort($item_stats, function ($a, $b) {
-    return $b['stock'] <=> $a['stock']; 
+    return $b['stock'] <=> $a['stock'];
 });
 $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
 ?>
@@ -94,6 +94,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoneyMo - Statistics</title>
+    <?php include_once '../../includes/favicon.php'; ?>
     <link rel="stylesheet" href="../../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -199,8 +200,10 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                     <?php foreach ($item_stats as $item): ?>
                         <?php $stock = (int) $item['stock']; ?>
                         <div class="flex justify-between py-2">
-                            <span class="<?= $stock === 0 ? 'text-red-500' : ( $stock < 15 && $stock > 0 ? 'text-amber-600' : '') ?>"><?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8') ?></span>
-                            <span class="<?= $stock === 0 ? 'text-red-500' : ( $stock < 15 && $stock > 0 ? 'text-amber-600' : '') ?>"><?= $stock ?></span>
+                            <span
+                                class="<?= $stock === 0 ? 'text-red-500' : ($stock < 15 && $stock > 0 ? 'text-amber-600' : '') ?>"><?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                            <span
+                                class="<?= $stock === 0 ? 'text-red-500' : ($stock < 15 && $stock > 0 ? 'text-amber-600' : '') ?>"><?= $stock ?></span>
                         </div>
                     <?php endforeach; ?>
                 </div>

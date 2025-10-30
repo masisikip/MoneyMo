@@ -169,6 +169,7 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoneyMo - Admin Dashboard</title>
+    <?php include_once '../includes/favicon.php'; ?>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -265,14 +266,11 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                     </thead>
                     <tbody>
                         <?php foreach ($purchases as $purchase): ?>
-                            <tr class="border-b <?= $purchase['is_void'] ? 'bg-gray-100 text-gray-500' : '' ?>" 
-                                data-reference="<?= $purchase['ctrl_no'] ?>"
-                                data-date="<?= $purchase['date'] ?>" 
-                                data-item="<?= $purchase['itemname'] ?>" 
-                                data-amount="<?= $purchase['itemvalue'] ?>"
+                            <tr class="border-b <?= $purchase['is_void'] ? 'bg-gray-100 text-gray-500' : '' ?>"
+                                data-reference="<?= $purchase['ctrl_no'] ?>" data-date="<?= $purchase['date'] ?>"
+                                data-item="<?= $purchase['itemname'] ?>" data-amount="<?= $purchase['itemvalue'] ?>"
                                 data-officerName="<?= $purchase['officerName'] ?>"
-                                data-mode="<?= $purchase['payment_type'] ?>"
-                                data-void="<?= $purchase['is_void'] ?>">
+                                data-mode="<?= $purchase['payment_type'] ?>" data-void="<?= $purchase['is_void'] ?>">
                                 <td class="py-3 px-4">
                                     <?= htmlspecialchars($purchase['username']) ?>
                                     <?php if ($purchase['is_void']): ?>
@@ -283,16 +281,17 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                                 <td class="py-3 px-4"><?= htmlspecialchars($purchase['itemname']) ?></td>
                                 <td class="py-3 px-4">₱<?= number_format($purchase['itemvalue'], 2) ?></td>
                                 <td class="py-3 px-4 text-center">
-                                    <button class="print-btn text-white px-4 py-1 rounded-full hover:bg-gray-700 cursor-pointer <?= $purchase['is_void'] ? 'bg-gray-400 opacity-50 cursor-not-allowed' : 'bg-black' ?>"
-                                            <?= $purchase['is_void'] ? 'disabled' : '' ?>
-                                            data-student-name="<?= htmlspecialchars($purchase['username']) ?>"
-                                            data-date="<?= $purchase['date'] ?>"
-                                            data-item="<?= htmlspecialchars($purchase['itemname']) ?>"
-                                            data-amount="<?= $purchase['itemvalue'] ?>"
-                                            data-reference="<?= $purchase['ctrl_no'] ?>"
-                                            data-officer-name="<?= htmlspecialchars($purchase['officerName']) ?>"
-                                            data-mode="<?= $purchase['payment_type'] ?>"
-                                            data-void="<?= $purchase['is_void'] ?>">
+                                    <button
+                                        class="print-btn text-white px-4 py-1 rounded-full hover:bg-gray-700 cursor-pointer <?= $purchase['is_void'] ? 'bg-gray-400 opacity-50 cursor-not-allowed' : 'bg-black' ?>"
+                                        <?= $purchase['is_void'] ? 'disabled' : '' ?>
+                                        data-student-name="<?= htmlspecialchars($purchase['username']) ?>"
+                                        data-date="<?= $purchase['date'] ?>"
+                                        data-item="<?= htmlspecialchars($purchase['itemname']) ?>"
+                                        data-amount="<?= $purchase['itemvalue'] ?>"
+                                        data-reference="<?= $purchase['ctrl_no'] ?>"
+                                        data-officer-name="<?= htmlspecialchars($purchase['officerName']) ?>"
+                                        data-mode="<?= $purchase['payment_type'] ?>"
+                                        data-void="<?= $purchase['is_void'] ?>">
                                         Print
                                     </button>
                                 </td>
@@ -419,7 +418,7 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
             // Enhanced Receipt Printing Function with Void Status
             function printReceipt(data) {
                 const printWindow = window.open('', '_blank');
-                
+
                 // Voided receipt styling
                 const voidedStyle = data.isVoid ? `
                     .receipt {
@@ -552,7 +551,7 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                     </html>
                 `);
                 printWindow.document.close();
-                
+
                 setTimeout(() => {
                     printWindow.print();
                     printWindow.close();
@@ -565,4 +564,5 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
         })
     </script>
 </body>
+
 </html>

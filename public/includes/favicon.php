@@ -1,0 +1,1 @@
+<link rel="icon" href="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/assets/logo-circle.png" type="image/x-icon" />

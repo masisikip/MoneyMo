@@ -77,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <?php include_once './includes/favicon.php'; ?>
     <link href="css/styles.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>MoneyMo - MoneyMo - Login</title>
@@ -86,8 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <main class="flex min-h-screen w-full max-w-screen">
         <!-- Left side: Login form -->
         <div class="flex flex-col relative justify-center w-full px-8 py-12 lg:px-24">
-            <a href="" class="absolute top-0 left-0 flex justify-center items-center gap-4 px-6 py-4">
-                <img src="assets/logo.png" alt="MoneyMo Logo" class="max-h-16 w-auto">
+            <a href="" class="absolute top-0 left-0 flex justify-center items-center gap-2 px-6 py-4">
+                <img src="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/assets/logo-circle.png"
+                    alt="MoneyMo Logo" class="max-h-16 w-auto">
                 <span class="text-3xl font-bold">MoneyMo</span>
             </a>
 
@@ -95,7 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h1 class="md:text-4xl text-2xl font-bold mb-1">Login to Your Account</h1>
                 <p class="md:text-lg text-[#545454] mb-8">Enter your credentials to continue</p>
 
-                <form class="space-y-4 flex flex-col items-center md:w-lg w-full" method='post'id="sign-form" action="">
+                <form class="space-y-4 flex flex-col items-center md:w-lg w-full" method='post' id="sign-form"
+                    action="">
                     <div class="w-full">
                         <input type="text" id="email" name="email" placeholder="Enter your email..." required
                             class="block w-full px-6 py-4 text-[#262626] bg-[#d9d9d9] rounded-full focus:outline-none focus:ring-1 focus:ring-[#545454]"
