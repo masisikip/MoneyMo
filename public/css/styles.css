@@ -695,6 +695,12 @@
   .w-full {
     width: 100%;
   }
+  .w-lg {
+    width: var(--container-lg);
+  }
+  .w-md {
+    width: var(--container-md);
+  }
   .w-screen {
     width: 100vw;
   }
