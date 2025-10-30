@@ -8,6 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoneyMo - Inventory</title>
+    <?php include_once '../../includes/favicon.php'; ?>
     <link rel="stylesheet" href="../../css/styles.css">
     <script src="https://kit.fontawesome.com/YOUR-FONT-AWESOME-KEY.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -41,7 +42,7 @@
     $filter = $_GET['filter'] ?? '';
 
     $whereClause = "WHERE inventory.is_void = 0"; // Only show non-voided transactions
-
+    
     if (!empty($search)) {
         $whereClause .= " AND (item.name LIKE :search1 OR f_name LIKE :search2 OR l_name LIKE :search3)";
     }

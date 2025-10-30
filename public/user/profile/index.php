@@ -30,7 +30,7 @@ if (!$user) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MoneyMo - Profile</title>
     <link rel="stylesheet" href="../../css/styles.css" />
-    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon" />
+    <?php include_once '../../includes/favicon.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
     <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>

@@ -10,6 +10,7 @@ include_once '../../includes/connect-db.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoneyMo - Export</title>
+    <?php include_once '../../includes/favicon.php'; ?>
     <link rel="stylesheet" href="../../css/styles.css">
     <script src="https://kit.fontawesome.com/YOUR-FONT-AWESOME-KEY.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -30,7 +31,8 @@ include_once '../../includes/connect-db.php';
                     <label class="block font-semibold mb-1">End Date</label>
                     <input type="date" id="endDate" name="end_date" class="border p-2 rounded w-full">
                 </div>
-                <button type="submit" class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded w-full cursor-pointer">
+                <button type="submit"
+                    class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded w-full cursor-pointer">
                     Export to CSV
                 </button>
             </form>

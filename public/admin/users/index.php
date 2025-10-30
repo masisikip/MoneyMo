@@ -85,6 +85,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoneyMo - Users</title>
+    <?php include_once '../../includes/favicon.php'; ?>
     <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -384,7 +385,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <div class="flex justify-end space-x-2">
                     <button type="button" id="closeModal"
-                    class="bg-gray-600 cursor-pointer text-white px-4 py-2 rounded">Cancel</button>
+                        class="bg-gray-600 cursor-pointer text-white px-4 py-2 rounded">Cancel</button>
                     <button type="submit" name="update_user"
                         class="bg-black cursor-pointer text-white px-4 py-2 rounded">Update</button>
                 </div>
