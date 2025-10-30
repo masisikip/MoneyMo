@@ -391,7 +391,8 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                 },
                 options: {
                     responsive: true,
-                    cutout: '50%',
+                    cutout: '70%',
+                    radius: '70%',
                     plugins: {
                         legend: {
                             position: 'bottom'
@@ -412,9 +413,27 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                                 weight: 'bold',
                                 size: 12
                             },
-                            formatter: (val) => {
+                            anchor: 'end',
+                            align: 'end',
+                            offset: (ctx) => {
+                                const val = ctx.dataset.data[ctx.dataIndex];
+                                const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                const pct = (val / sum) * 100;
+                                return pct < 2 ? 40 : 25; // small slices get more offset
+                            },
+
+                            display: (ctx) => {
+                                const val = ctx.dataset.data[ctx.dataIndex];
+                                const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                const pct = (val / sum) * 100;
+                                return pct >= 1; // only hide if < 1%
+                            },
+
+                            clamp: true,
+                            formatter: (val, ctx) => {
+                                const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
                                 const pct = ((val / sum) * 100).toFixed(1);
-                                return `${pct}%`;
+                                return pct >= 1 ? `${pct}%` : '';
                             }
                         }
                     }
