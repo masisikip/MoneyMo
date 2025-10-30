@@ -341,7 +341,8 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                     },
                     options: {
                         responsive: true,
-                        cutout: '50%',
+                        cutout: '70%',
+                        radius: '80%',
                         layout: { // ✅ this should be directly under options
                             padding: {
                                 top: 40,
@@ -362,17 +363,31 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                             },
                             datalabels: {
                                 color: '#111',
-                                formatter: (val) => ((val / sum) * 100).toFixed(1) + '%',
-                                anchor: 'end',
-                                align: 'end',
-                                offset: 5,
-                                clamp: true,
-                                clip: false,
-                                borderRadius: 4,
-                                font: {
-                                    weight: 'bold',
-                                    size: 12
-                                }
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    },
+                    anchor: 'end',
+                    align: 'end',
+                    offset: (ctx) => {
+                        const val = ctx.dataset.data[ctx.dataIndex];
+                        const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        const pct = (val / sum) * 100;
+                        return pct < 2 ? 35 : 25; // small slices get more offset
+                    },
+                    clamp: true,
+                    // ✅ Only show labels ≥ 1%
+                    display: (ctx) => {
+                        const val = ctx.dataset.data[ctx.dataIndex];
+                        const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        const pct = (val / sum) * 100;
+                        return pct >= 1;
+                    },
+                    formatter: (val, ctx) => {
+                        const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        const pct = ((val / sum) * 100).toFixed(1);
+                        return `${pct}%`;
+                    }
                             }
                         }
                     },
