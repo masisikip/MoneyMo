@@ -143,7 +143,7 @@ if (isset($_SESSION['auth_token'])) {
           </div>
           <?php if ($purchase['is_void']): ?>
             <div class="z-20 absolute top-0 left-0 h-full w-full flex items-center justify-center 
-              bg-gray-600/80 rounded-2xl select-none">
+              bg-gray-600/80 rounded-lg select-none">
               <p class="leading-relaxed text-4xl font-bold uppercase pointer-events-none"
                 style="color: #dc2626; transform: rotate(-45deg);">
                 VOIDED
@@ -161,70 +161,89 @@ if (isset($_SESSION['auth_token'])) {
   <!-- Receipt Modal -->
   <div id="myModal" class="modal fixed w-full h-full top-0 left-0 hidden items-center justify-center">
     <!-- hoverlay  -->
-    <div id="modalOverlay" class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+    <div id="modalOverlay" class="modal-overlay absolute top-0 left-0 w-full h-full bg-gray-900 opacity-50"></div>
 
     <div
-      class="modal-container flex flex-col items-center h-auto bg-white w-11/12 md:max-w-md my-10 mx-auto shadow-lg z-50 overflow-y-auto relative">
+      class="modal-container flex flex-col items-center h-[90%] bg-white w-11/12 md:max-w-sm my-10 mx-auto rounded-md shadow-lg z-50 overflow-y-auto relative">
       <div class="bg-black w-full grid grid-cols-2 gap-x-4">
-        <p class="text-white font-medium ml-3 p-2">MoneyMo</p>
+        <div class="flex items-center gap-1 ml-2">
+          <img
+            src="<?= $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] ?>/MoneyMo/public/assets/logo-circle.png"
+            alt="MoneyMo Logo" class="h-6 w-6 object-contain" />
+          <p class="text-white font-semibold">MoneyMo</p>
+        </div>
         <button type="button" id="closeModal"
-          class="text-white hover:bg-white hover:text-black px-4 py-2 ml-auto cursor-pointer">
+          class="text-white hover:bg-white hover:text-black px-3 py-1 m-1.5 ml-auto cursor-pointer rounded-full">
           X
         </button>
       </div>
-      <!-- Add modal content here -->
-      <div class="w-3/4 modal-content py-4 text-left px-6 bg-white">
-        <div class="flex justify-center items-center">
-          <img src="../assets/acs_logo.jpg" alt="@" class="h-16 m-2">
-        </div>
-        <div class="flex justify-center items-center">
-          <p class="text-1 font-extralight">
-            Association of Computer Scientists
-          </p>
-        </div>
-        <div class="flex justify-center items-center pb-2">
-          <p class="text-2xl font-bold mt-1">PAYMENT RECEIPT</p>
-        </div>
-        <div class="py-1 gap-2 w-full border-b-1 border-gray-400">
-          <p class="text-xs font-bold text-gray-600">Ref no. <span id="reference"
-              class="text-xs font-bold">131231231231</span></p>
-          <p class="text-xs font-bold text-gray-600">Ctrl no. <span id="ctrl"
-              class="text-xs font-bold">131231231231</span></p>
-        </div>
-        <div class="border-b border-gray-400 text-black pt-1 pb-1">
-          <div class="grid grid-cols-2 gap-x-4">
-            <p class="font-semibold text-gray-400">Date</p>
-            <p id="date" class="font-semibold">01/01/2025</p>
+      <!-- Receipt Modal Content -->
+      <div class="w-full modal-content py-6 px-12 bg-white text-gray-800 text-sm font-sans">
 
-            <p class="font-semibold text-gray-400">Payment Method</p>
-            <p id="mode" class="font-semibold">Gcash</p>
+        <!-- Header -->
+        <div class="flex flex-col items-center pb-3">
+          <img src="../assets/acs_logo.jpg" alt="ACS Logo" class="h-16 mb-2 object-contain">
+          <p class="text-gray-500 text-xs tracking-wide font-light uppercase">Association of Computer Scientists</p>
+          <p class="text-2xl font-bold mt-1 text-gray-800">PAYMENT RECEIPT</p>
+        </div>
 
-            <p class="font-semibold text-gray-400">Item</p>
-            <p id="item" class="font-semibold">Org Fee</p>
-
-            <p class="font-semibold text-gray-400">Quantity</p>
-            <p id="quantity" class="font-semibold">ACS</p>
-
-            <p class="font-semibold text-gray-400">Product Price</p>
-            <p id="amount" class="font-semibold">₱100.00</p>
+        <!-- Reference Section -->
+        <div class="py-2 border-b border-gray-300 mt-2">
+          <div class="flex justify-between text-xs text-gray-600 font-semibold">
+            <p>Ref No: <span id="reference" class="text-gray-800 font-bold">131231231231</span></p>
+            <p>Ctrl No: <span id="ctrl" class="text-gray-800 font-bold">131231231231</span></p>
           </div>
         </div>
 
-        <div class="border-b border-gray-400 text-black pt-1 pb-1">
-          <div class="grid grid-cols-2 gap-x-4">
-            <p class="font-bold">Total</p>
-            <p id="total" class="font-bold">₱ 100.00</p>
+        <!-- Details Section -->
+        <div class="py-4 border-b border-gray-300">
+          <div class="grid grid-cols-2 gap-y-2 gap-x-4">
+            <p class="font-semibold text-gray-400">Date:</p>
+            <p id="date" class="font-semibold text-gray-800 text-right">01/01/2025</p>
+
+            <p class="font-semibold text-gray-400">Payment Method:</p>
+            <p id="mode" class="font-semibold text-gray-800 text-right">Gcash</p>
+
+            <p class="font-semibold text-gray-400">Item:</p>
+            <p id="item" class="font-semibold text-gray-800 text-right">Org Fee</p>
           </div>
         </div>
-        <p class="pt-1 pb-1 text-center mt-5">This is a cutomer's copy. Thank You!</p>
 
-        <!-- Void message for modal -->
-        <div id="voidMessage" class="hidden">
-          <div class="void-text mt-4" style="color: #dc2626;">VOIDED</div>
-          <p class="text-center text-gray-600 text-sm mt-2">This receipt has been voided and cannot be downloaded.</p>
+        <!-- Quantity & Product Price Section -->
+        <div class="py-4 border-b border-gray-300">
+          <div class="grid grid-cols-2 gap-y-2 gap-x-4">
+            <p class="font-semibold text-gray-400">Product Price:</p>
+            <p id="amount" class="font-semibold text-gray-800 text-right">₱100.00</p>
+
+            <p class="font-semibold text-gray-400">Quantity:</p>
+            <p id="quantity" class="font-semibold text-gray-800 text-right">x 1</p>
+          </div>
+        </div>
+
+        <!-- Total Section -->
+        <div class="py-4 border-b border-gray-300">
+          <div class="flex justify-between items-center">
+            <p class="font-bold text-gray-800 uppercase tracking-wide">Total</p>
+            <p id="total" class="font-bold text-gray-900 text-lg">₱100.00</p>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <p class="pt-3 text-center mt-6 text-xs text-gray-600 border-t border-dashed border-gray-400">
+          --- Customer Copy ---<br>
+          Thank you for your purchase!
+        </p>
+
+        <!-- Voided Message -->
+        <div id="voidMessage" class="hidden mt-4 text-center">
+          <div class="text-3xl font-bold uppercase text-red-600 tracking-widest opacity-80 rotate-[-10deg] select-none">
+            VOIDED
+          </div>
+          <p class="text-gray-600 text-xs mt-2">This receipt has been voided and cannot be downloaded.</p>
         </div>
       </div>
-      <div class="my-4 flex justify-center">
+
+      <div class="mb-4 flex justify-center">
         <button id="downloadButton"
           class="px-20 bg-black p-3 ml-3 rounded-lg text-white hover:bg-white border-1 hover:border-1 hover:text-black hover:shadow-2xl cursor-pointer">
           Download
@@ -291,11 +310,11 @@ if (isset($_SESSION['auth_token'])) {
         $("#reference").text(reference);
         $("#ctrl").text(ctrl);
         $("#date").text(date);
-        $("#quantity").text(quantity);
+        $("#quantity").text("x " + quantity);
         $("#item").text(item);
-        $("#amount").text("₱ " + amount);
+        $("#amount").text("₱ " + Number(amount).toFixed(2));
         $("#mode").text(mode);
-        $("#total").text("₱ " + amount);
+        $("#total").text("₱ " + Number(amount).toFixed(2));
 
         // Update modal for void status
         if (isVoid) {
