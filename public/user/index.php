@@ -89,25 +89,13 @@ if (isset($_SESSION['auth_token'])) {
           data-void="<?= $purchase['is_void'] ?>" <?= $purchase['is_void'] ? 'onclick="return false;"' : '' ?>>
 
           <div class="flex rounded-lg max-w-xs h-full mx-auto bg-white p-4 flex-col items-between 
-         shadow-md transition duration-300 transform hover:scale-105 hover:shadow-2xl relative">
+         shadow-md transition duration-200 transform hover:scale-105 hover:shadow-2xl relative">
             <div class="mb-2 md:mb-4 flex-1">
               <h2 class="text-black font-bold"><?= $purchase['name'] ?></h2>
             </div>
 
             <div class="text-black text-sm">
               <div class="flex flex-col w-full max-w-md mx-auto">
-                <!-- Date -->
-                <div class="flex items-center">
-                  <div class="px-2 py-1 text-gray-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                      stroke="currentColor" class="size-6">
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                    </svg>
-                  </div>
-                  <div class="flex-1 font-bold px-2 py-1"><?= $purchase['date'] ?></div>
-                </div>
-
                 <!-- Payment Type -->
                 <div class="flex items-center">
                   <div class="px-2 py-1 text-gray-600">
@@ -131,6 +119,18 @@ if (isset($_SESSION['auth_token'])) {
                   </div>
                   <div class="flex-1 font-bold px-2 py-1">₱ <?= number_format($purchase['value'], 2) ?></div>
                 </div>
+              </div>
+
+              <!-- Date -->
+              <div class="flex items-center">
+                <div class="px-2 py-1 text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                  </svg>
+                </div>
+                <div class="flex-1 font-bold px-2 py-1"><?= $purchase['date'] ?></div>
               </div>
             </div>
 
