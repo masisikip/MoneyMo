@@ -2,6 +2,7 @@
 include_once '../includes/partial.php';
 include_once '../includes/connect-db.php';
 include_once '../includes/token.php';
+include_once './card.php';
 
 if (isset($_SESSION['auth_token'])) {
   $payload = decryptToken($_SESSION['auth_token']);
@@ -21,7 +22,7 @@ if (isset($_SESSION['auth_token'])) {
   <link rel="stylesheet" href="../css/styles.css" />
   <?php include_once '../includes/favicon.php'; ?>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
-  <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     .voided-receipt {
       filter: grayscale(100%);
@@ -53,7 +54,7 @@ if (isset($_SESSION['auth_token'])) {
   <div class="flex flex-col w-full h-full min-h-screen items-center pt-4 md:p-4">
     <?php
     $stmt = $pdo->prepare("
-        SELECT 
+        SELECT
         reference_no,
         ctrl_no,
           date(date) AS date,
@@ -63,7 +64,7 @@ if (isset($_SESSION['auth_token'])) {
           idinventory,
           ctrl_no,
           is_void,
-          CASE 
+          CASE
           WHEN payment_type = 0 THEN 'Cash'
               WHEN payment_type = 1 THEN 'Gcash'
               ELSE 'unknown'
@@ -79,79 +80,9 @@ if (isset($_SESSION['auth_token'])) {
 
     <!-- Receipts Grid -->
     <div class="w-full p-2 md:p-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 md:w-10/12 gap-2 md:gap-4">
-      <?php foreach ($purchases as $purchase): ?>
-        <div
-          class="clickable-div w-full h-auto cursor-pointer <?= $purchase['is_void'] ? 'voided-receipt non-clickable' : '' ?>"
-          data-reference="<?= $purchase['reference_no'] ?>" data-ctrl="<?= $purchase['ctrl_no'] ?>"
-          data-date="<?= $purchase['date'] ?>" data-quantity="<?= $purchase['quantity'] ?>"
-          data-item="<?= $purchase['name'] ?>" data-amount="<?= $purchase['value'] ?>"
-          data-inventory="<?= $purchase['idinventory'] ?>" data-mode="<?= $purchase['payment_type'] ?>"
-          data-void="<?= $purchase['is_void'] ?>" <?= $purchase['is_void'] ? 'onclick="return false;"' : '' ?>>
-
-          <div class="flex rounded-lg max-w-xs h-full mx-auto bg-white p-4 flex-col items-between 
-         shadow-md transition duration-200 transform hover:scale-105 hover:shadow-2xl relative">
-            <div class="mb-2 md:mb-4 flex-1">
-              <h2 class="text-black font-bold"><?= $purchase['name'] ?></h2>
-            </div>
-
-            <div class="text-black text-sm">
-              <div class="flex flex-col w-full max-w-md mx-auto">
-                <!-- Payment Type -->
-                <div class="flex items-center">
-                  <div class="px-2 py-1 text-gray-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                      stroke="currentColor" class="size-6">
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
-                    </svg>
-                  </div>
-                  <div class="flex-1 font-bold px-2 py-1"><?= $purchase['payment_type'] ?></div>
-                </div>
-
-                <!-- Value -->
-                <div class="flex items-center">
-                  <div class="px-2 py-1 text-gray-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                      stroke="currentColor" class="size-6">
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                    </svg>
-                  </div>
-                  <div class="flex-1 font-bold px-2 py-1">₱ <?= number_format($purchase['value'], 2) ?></div>
-                </div>
-              </div>
-
-              <!-- Date -->
-              <div class="flex items-center">
-                <div class="px-2 py-1 text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                  </svg>
-                </div>
-                <div class="flex-1 font-bold px-2 py-1"><?= $purchase['date'] ?></div>
-              </div>
-            </div>
-
-            <div class="flex flex-col items-center justify-between text-center mt-3">
-              <p class="px-4 py-1 bg-gray-200 rounded-full text-gray-700 text-xs font-light">
-                Tap to see full details
-              </p>
-            </div>
-
-          </div>
-          <?php if ($purchase['is_void']): ?>
-            <div class="z-20 absolute top-0 left-0 h-full w-full flex items-center justify-center 
-              bg-gray-600/80 rounded-lg select-none">
-              <p class="leading-relaxed text-4xl font-bold uppercase pointer-events-none"
-                style="color: #dc2626; transform: rotate(-45deg);">
-                VOIDED
-              </p>
-            </div>
-          <?php endif; ?>
-        </div>
-      <?php endforeach; ?>
+      <?php foreach ($purchases as $purchase){
+        renderPurchaseCard($purchase);
+      } ?>
     </div>
   </div>
 
@@ -326,11 +257,10 @@ if (isset($_SESSION['auth_token'])) {
           $('#voidMessage').addClass('hidden');
           $('#downloadButton').removeClass('opacity-50 cursor-not-allowed').prop('disabled', false);
         }
-      });
 
-      // Show modal when button is clicked (only for non-voided receipts)
-      $(document).on("click", ".clickable-div:not(.non-clickable)", function () {
+        // Finally show the modal
         $("#myModal").removeClass("hidden").addClass("flex");
+        console.log("✅ clickable-div clicked:", this);
       });
 
       // Hide modal when close button is clicked
