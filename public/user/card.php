@@ -2,7 +2,7 @@
 function renderPurchaseCard(array $purchase): void
 {
   $isVoid = $purchase['is_void'];
-  $classes = "max-w-xs w-auto h-auto cursor-pointer";
+  $classes = "max-w-xs w-auto h-auto cursor-pointer clickable-div hover:scale-110 hover:z-99 transition-all";
   if ($isVoid) {
     $classes .= " voided-receipt non-clickable";
   }
@@ -58,7 +58,7 @@ function renderPurchaseCard(array $purchase): void
           </div>
           <span class="flex-1 font-bold px-2 py-1">{$purchase['date']}</span>
         </li>
-        <li class="flex items-center">
+        <li class="flex flex-col items-center justify-center">
           <p class="px-4 py-1 bg-base-300 rounded-full text-xs font-light">
             Tap to see full details
           </p>
@@ -69,8 +69,8 @@ HTML;
 
   if ($isVoid) {
     echo <<<HTML
-    <div class="z-20 absolute top-0 left-0 h-full w-full flex items-center justify-center
-      bg-gray-600 opacity-80 rounded-lg select-none">
+    <div class="z-20 card absolute top-0 left-0 h-full w-full flex items-center justify-center
+      bg-gray-600 opacity-80 select-none">
       <p class="leading-relaxed rotate-45 text-4xl font-bold uppercase pointer-events-none">
         VOIDED
       </p>
