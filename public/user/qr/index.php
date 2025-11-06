@@ -44,7 +44,7 @@ if (isset($_SESSION['auth_token'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 </head>
 
-<body class="bg-gray-100 w-screen min-h-screen flex flex-col">
+<body class="bg-base-300 w-screen min-h-screen flex flex-col">
 
     <?php include_once '../../includes/partial.php'; ?>
 
@@ -53,7 +53,7 @@ if (isset($_SESSION['auth_token'])) {
             <!-- QR Code -->
             <div id="qr-container"
                 class="flex flex-col items-center justify-center w-fit p-4 bg-white rounded-md">
-                <h1 class="text-2xl font-bold mb-4">My QR Code</h1>
+                <h1 class="text-2xl text-primary font-bold mb-4">My QR Code</h1>
                 <?php
                 $base64Qr = '';
 
@@ -75,7 +75,7 @@ if (isset($_SESSION['auth_token'])) {
 
                 <!-- User Info -->
                 <div class="flex flex-col items-center pt-4">
-                    <span class="text-xl font-bold"><?= htmlspecialchars($user['f_name']) ?>
+                    <span class="text-xl text-black font-bold"><?= htmlspecialchars($user['f_name']) ?>
                         <?= htmlspecialchars($user['l_name']) ?></span>
                     <span class="text-gray-700 font-semibold"><?= htmlspecialchars($user['student_id']) ?></span>
                     <span class="text-gray-700"><?= htmlspecialchars($user['email']) ?></span>
@@ -85,10 +85,7 @@ if (isset($_SESSION['auth_token'])) {
             <!-- Download Button -->
             <?php if (!empty($base64Qr)): ?>
                 <div class="w-full flex justify-center">
-                    <button id="download-btn"
-                        class="px-12 py-2 mb-4 bg-zinc-700 text-white rounded-full hover:bg-gray-800 cursor-pointer text-sm transition duration-200">
-                        Download
-                    </button>
+                    <button class="btn btn-primary" id="download-btn">Download</button>
                 </div>
             <?php endif; ?>
         </div>

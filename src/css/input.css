@@ -2,3 +2,13 @@
 @plugin "daisyui" {
   themes: all;
 };
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  --color-primary: black;
+}
+@plugin "daisyui/theme" {
+  name: "dark";
+  prefersdark: true;
+  --color-primary: black;
+}
