@@ -71,16 +71,16 @@ $path = ($host === 'localhost')
                     type="radio"
                     name="theme-dropdown"
                     class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start"
-                    aria-label="Retro"
-                    value="retro" />
+                    aria-label="Deep Ocean"
+                    value="deepocean" />
                 </li>
                 <li>
                   <input
                     type="radio"
                     name="theme-dropdown"
                     class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start"
-                    aria-label="Cyberpunk"
-                    value="cyberpunk" />
+                    aria-label="Burning Red"
+                    value="burningred" />
                 </li>
                 <li>
                   <input
