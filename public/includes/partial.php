@@ -22,7 +22,7 @@ $path = ($host === 'localhost')
 ?>
 
 <header
-    class="<?= $usertype == 1 ? 'bg-white text-black' : 'bg-black text-white' ?> shadow-md p-4 flex justify-between items-center w-full top-0">
+    class="<?= $usertype == 1 ? 'bg-white text-black' : 'bg-base-300 text-white' ?> shadow-md p-4 flex justify-between items-center w-full top-0">
     <div class="flex items-center space-x-4">
         <?php if ($usertype == 1): ?>
             <button id="toggleSidebar" class="p-2 focus:outline-none cursor-pointer">

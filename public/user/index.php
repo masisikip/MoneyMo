@@ -25,7 +25,6 @@ if (isset($_SESSION['auth_token'])) {
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     .voided-receipt {
-      filter: grayscale(100%);
       opacity: 0.7;
       pointer-events: none;
     }
@@ -47,7 +46,7 @@ if (isset($_SESSION['auth_token'])) {
   </style>
 </head>
 
-<body class="bg-base-300 flex flex-col w-screen min-h-screen overflow-x-hidden">
+<body class="bg-base-200 flex flex-col w-screen min-h-screen overflow-x-hidden">
   <?php include_once '../includes/partial.php'; ?>
 
   <!--Receipts-->

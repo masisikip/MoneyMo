@@ -1,6 +1,6 @@
 <dialog id="myModal" class="modal">
   <div class="modal-box w-11/12 md:max-w-sm p-0 pt-5">
-    <form method="dialog" class="absolute left-0 top-0 bg-primary flex items-center p-2 w-full">
+    <form method="dialog" class="absolute left-0 top-0 bg-base-300 flex items-center p-2 w-full">
       <div class="flex-1 flex gap-1">
         <img
           src="../assets/logo-circle.png"

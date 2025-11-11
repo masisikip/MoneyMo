@@ -11,7 +11,7 @@ if (isset($_SESSION['auth_token'])) {
         $iduser = $payload['user_id'];
     }
 }
-$stmt = $pdo->prepare(query: "SELECT * FROM user WHERE iduser = ?");
+$stmt = $pdo->prepare("SELECT * FROM user WHERE iduser = ?");
 $stmt->execute([$iduser]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

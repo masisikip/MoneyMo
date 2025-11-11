@@ -44,11 +44,11 @@ if (isset($_SESSION['auth_token'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 </head>
 
-<body class="bg-base-300 w-screen min-h-screen flex flex-col">
+<body class="bg-base-200 w-screen min-h-screen flex flex-col">
 
     <?php include_once '../../includes/partial.php'; ?>
 
-    <div class="mt-4 p-6 md:p-8 rounded-lg text-center flex flex-col items-center justify-center">
+    <div class="mt-4 p-6 md:p-8 rounded-lg text-center min-h-screen flex flex-col items-center justify-center">
         <div class="bg-white w-md grid place-content-center rounded-xl shadow-md p-4">
             <!-- QR Code -->
             <div id="qr-container"

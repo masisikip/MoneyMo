@@ -26,7 +26,7 @@ function renderPurchaseCard(array $purchase): void
   echo <<<HTML
   <div class="card bg-base-100 shadow-2xl $classes" $dataAttrs $onclick>
     <div class="card-body">
-      <h2 class="card-title w-full">{$purchase['name']}</h2>
+      <h2 class="card-title w-full text-primary">{$purchase['name']}</h2>
       <ul class="mt-6 flex flex-col gap-2 text-xs">
         <li class="flex items-center">
           <div class="px-2 py-1 text-base-content inline-block opacity-85">
@@ -59,7 +59,7 @@ function renderPurchaseCard(array $purchase): void
           <span class="flex-1 font-bold px-2 py-1">{$purchase['date']}</span>
         </li>
         <li class="flex flex-col items-center justify-center">
-          <p class="px-4 py-1 bg-base-300 rounded-full text-xs font-light">
+          <p class="px-4 py-1 bg-primary/75 text-base-100 rounded-full text-xs font-light">
             Tap to see full details
           </p>
         </li>
@@ -70,7 +70,7 @@ HTML;
   if ($isVoid) {
     echo <<<HTML
     <div class="z-20 card absolute top-0 left-0 h-full w-full flex items-center justify-center
-      bg-gray-600 opacity-80 select-none">
+      bg-primary opacity-80 select-none">
       <p class="leading-relaxed rotate-45 text-4xl font-bold uppercase pointer-events-none">
         VOIDED
       </p>
