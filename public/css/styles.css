@@ -3963,6 +3963,16 @@
       }
     }
   }
+  .hover\:bg-primary\/75 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-primary);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--color-primary) 75%, transparent);
+        }
+      }
+    }
+  }
   .hover\:bg-primary\/80 {
     &:hover {
       @media (hover: hover) {
