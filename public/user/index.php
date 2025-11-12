@@ -90,6 +90,7 @@ if (isset($_SESSION['auth_token'])) {
 
   <?php
   include_once './receipt_modal.php';
+  include_once '../includes/theme.php';
   include_once '../includes/footer.php'; ?>
 
   <script>

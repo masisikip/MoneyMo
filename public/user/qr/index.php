@@ -92,7 +92,9 @@ if (isset($_SESSION['auth_token'])) {
     </div>
 
 
-    <?php include_once '../../includes/footer.php'; ?>
+    <?php
+    include_once '../../includes/theme.php';
+    include_once '../../includes/footer.php'; ?>
 
 </body>
 
