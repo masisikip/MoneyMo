@@ -22,7 +22,7 @@ $path = ($host === 'localhost')
 ?>
 
 <header
-    class="<?= $usertype == 1 ? 'bg-white text-black' : 'bg-base-300 text-white' ?> shadow-md p-4 flex justify-between items-center w-full top-0">
+    class="<?= $usertype == 1 ? 'bg-base-300 text-black' : 'bg-base-300 text-white' ?> shadow-md p-4 flex justify-between items-center w-full top-0">
     <div class="flex items-center space-x-4">
         <?php if ($usertype == 1): ?>
             <button id="toggleSidebar" class="p-2 focus:outline-none cursor-pointer">
@@ -72,7 +72,7 @@ $path = ($host === 'localhost')
 <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"></div>
 
 <aside id="sidebar"
-    class="fixed left-0 top-0 w-64 h-screen bg-black text-white p-6 transform -translate-x-full transition-transform duration-300 z-50 shadow-lg">
+    class="fixed left-0 top-0 w-64 h-screen bg-base-300 text-white p-6 transform -translate-x-full transition-transform duration-300 z-50 shadow-lg">
     <h2 class="text-2xl font-bold mb-6">MoneyMo</h2>
     <nav>
         <ul class="space-y-3 text-sm">
