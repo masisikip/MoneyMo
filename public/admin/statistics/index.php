@@ -108,8 +108,8 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
     <main class="py-8 px-4 md:px-16 space-y-6">
         <!-- Date Picker Container -->
         <form id="date-filter-form">
-            <div class="w-full flex justify-center md:justify-end gap-2">
-                <div class="grid grid-cols-1 text-sm">
+            <div class="w-full flex text-primary justify-center md:justify-end gap-2">
+                <div class="grid grid-cols-1 text-sm text-primary">
                     <label for="start-date">Start</label>
                     <input type="date" name="start-date" id="start-date"
                         class="rounded border border-gray-200 bg-white p-2 w-36 text-center">
@@ -349,19 +349,50 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
                         </div>
                     </div>`
         }
+        function hexToHSL(H) {
+          // Remove leading ‘#’ if present
+          let hex = H.replace(/^#/, '');
+          if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+          const r = parseInt(hex.substr(0,2),16)/255;
+          const g = parseInt(hex.substr(2,2),16)/255;
+          const b = parseInt(hex.substr(4,2),16)/255;
+          const max = Math.max(r,g,b), min = Math.min(r,g,b);
+          let h, s, l = (max + min) / 2;
 
-        function generateGrayShades(count) {
-            const colors = [];
-            const LIGHT = 220;
-            const DARK = 60;
-            const step = (LIGHT - DARK) / Math.max(count - 1, 1);
-
-            for (let i = 0; i < count; i++) {
-                const grayLevel = Math.round(DARK + (step * i));
-                colors.push(`rgb(${grayLevel}, ${grayLevel}, ${grayLevel})`);
+          if (max === min) {
+            h = s = 0; // achromatic
+          } else {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch(max) {
+              case r: h = ((g - b) / d + (g < b ? 6 : 0)); break;
+              case g: h = ((b - r) / d + 2); break;
+              case b: h = ((r - g) / d + 4); break;
             }
+            h /= 6;
+          }
+          return { h: h * 360, s: s * 100, l: l * 100 };
+        }
 
-            return colors;
+        // Helper: HSL → CSS string
+        function hslToCSS(h, s, l) {
+          return `hsl(${h.toFixed(1)}, ${s.toFixed(1)}%, ${l.toFixed(1)}%)`;
+        }
+
+        // New function: generate shades of primary
+        function generatePrimaryShades(count) {
+          const rootStyle = getComputedStyle(document.documentElement);
+          const primaryHex = rootStyle.getPropertyValue('--color-base-300').trim();
+          const {h, s, l} = hexToHSL(primaryHex);
+
+          const colors = [];
+          const step = 35 / Math.max(count - 1, 1); // adjust how much lighter/darker you want
+          for (let i = 0; i < count; i++) {
+            // spread lightness from l-15% to l+15% (clamped)
+            const newL = Math.min(100, Math.max(0, l + (step * (i - (count-1)/2))));
+            colors.push(hslToCSS(h, s, newL));
+          }
+          return colors;
         }
 
         function renderDonutChart(data) {
@@ -373,7 +404,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
             const labels = items.map(i => i.name);
             const values = items.map(i => i.total);
             const sum = values.reduce((a, b) => a + b, 0);
-            const colors = generateGrayShades(items.length);
+            const colors = generatePrimaryShades(items.length);
 
             $('#chartContainer').html(`<canvas id='chartCanvas'></chart>`);
 

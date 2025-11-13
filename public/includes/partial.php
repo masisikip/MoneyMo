@@ -76,43 +76,43 @@ $path = ($host === 'localhost')
     <h2 class="text-2xl font-bold mb-6">MoneyMo</h2>
     <nav>
         <ul class="space-y-3 text-sm">
-            <li><a href="<?= $path ?>admin/" class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+            <li><a href="<?= $path ?>admin/" class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fas fa-home"></i><span>Dashboard</span></a></li>
 
             <li><a href="<?= $path . 'admin/collection' ?>"
-                    class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+                    class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fa-solid fa-money-bill-1-wave"></i>
                     <span>Collection</span></a></li>
             <li><a href="<?= $path ?>admin/inventory"
-                    class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+                    class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fas fa-box"></i><span>Inventory</span></a></li>
             <li><a href="<?= $path ?>admin/statistics"
-                    class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+                    class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fa-solid fa-chart-line"></i><span>Statistics</span></a></li>
             <li><a href="<?= $path ?>admin/scanner"
-                    class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+                    class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fas fa-qrcode"></i><span>QR Scanner</span></a></li>
 
             <li><a href="<?= $path ?>admin/item"
-                    class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+                    class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fas fa-list"></i><span>Items Management</span></a></li>
             <li><a href="<?= $path ?>admin/users"
-                    class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+                    class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fas fa-users"></i><span>Users Management</span></a></li>
             <li><a href="<?= $path ?>admin/import"
-                    class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+                    class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fa-solid fa-file-import"></i><span>Import Students</span></a></li>
             <li><a href="<?= $path ?>admin/export"
-                    class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+                    class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fa-solid fa-file-arrow-up"></i><span>Export Collection</span></a></li>
             <hr>
-            <li><a href="<?= $path ?>user/" class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+            <li><a href="<?= $path ?>user/" class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fa-solid fa-file-invoice-dollar"></i><span>My Purchases</span></a></li>
             <li><a href="<?= $path ?>admin/code"
-                    class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+                    class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fas fa-barcode"></i><span>QR Code</span></a></li>
             <li><a href="<?= $path ?>user/profile"
-                    class="flex items-center space-x-2 hover:bg-gray-700 px-2 py-1 rounded"><i
+                    class="flex items-center space-x-2 hover:bg-primary/65 px-2 py-1 rounded"><i
                         class="fa-solid fa-user"></i><span>Profile</span></a></li>
             <hr>
             <li><a href="<?= $path ?>logout.php"
