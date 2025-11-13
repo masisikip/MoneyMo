@@ -126,7 +126,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="bg-white p-4 rounded-lg shadow">
                 <div class="mb-6">
-                    <h3 class="text-gray-800">Total Collected Cash</h3>
+                    <h3 class="text-primary">Total Collected Cash</h3>
                 </div>
                 <div class="grid place-items-center">
                     <span class="text-3xl font-bold"
@@ -135,7 +135,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
             </div>
             <div class="bg-white pt-4 px-6 pb-12 rounded-lg shadow">
                 <div class="mb-6">
-                    <h3 class="text-gray-800">Items Sold</h3>
+                    <h3 class="text-primary">Items Sold</h3>
                 </div>
                 <div class="grid place-items-center">
                     <span id="item-sold-value"
@@ -144,7 +144,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
             </div>
             <div class="bg-white p-4 rounded-lg shadow">
                 <div class="mb-6">
-                    <h3 class="text-gray-800">Low Stock</h3>
+                    <h3 class="text-primary">Low Stock</h3>
                 </div>
                 <div class="grid place-items-center">
                     <span id="low-stock-value"
@@ -153,7 +153,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
             </div>
             <div class="bg-white p-4 rounded-lg shadow">
                 <div class="mb-6">
-                    <h3 class="text-gray-800">Out of Stocks</h3>
+                    <h3 class="text-primary">Out of Stocks</h3>
                 </div>
                 <div class="grid place-items-center">
                     <span id="out-of-stock-value"
@@ -167,7 +167,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
             <!-- Collection Breakdown -->
             <div class="col-span-1 md:col-span-2 bg-white p-4 rounded-lg shadow min-h-80">
                 <div>
-                    <h3 class="text-lg text-gray-800">Collection Breakdown</h3>
+                    <h3 class="text-lg text-primary">Collection Breakdown</h3>
                 </div>
                 <div class="flex flex-col md:flex-row gap-6 p-2">
                     <!-- Pie Chart -->
@@ -194,7 +194,7 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
             <!-- Item Stock Levels -->
             <div class="col-span-1 bg-white p-8 rounded-lg shadow min-h-80">
                 <div class="mb-4">
-                    <h3 class="text-lg text-gray-800 font-semibold">Item Stock Levels</h3>
+                    <h3 class="text-lg text-primary font-semibold">Item Stock Levels</h3>
                 </div>
                 <div id="stock-levels" class="pl-6 max-w-96 text-lg flex flex-col">
                     <?php foreach ($item_stats as $item): ?>
