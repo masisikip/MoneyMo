@@ -210,7 +210,9 @@ $total_collected_cash = number_format($total_collected_cash, 2, '.', '');
             </div>
         </div>
     </main>
-    <?php include_once '../../includes/footer.php'; ?>
+    <?php
+    include_once '../../includes/theme.php';
+    include_once '../../includes/footer.php'; ?>
 
 </body>
 

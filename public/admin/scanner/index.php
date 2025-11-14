@@ -24,7 +24,7 @@ try {
     <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 
-<body class="flex flex-col w-screen min-h-screen">
+<body class="flex flex-col w-screen min-h-screen bg-base-200">
     <?php include_once '../../includes/partial.php' ?>
     <main class="w-full h-full flex flex-col items-center min-h-screen">
         <div class="font-bold text-2xl mt-5">Scan QR</div>
@@ -143,7 +143,9 @@ try {
     <div id="loader" class="w-full h-full fixed items-center justify-center top-0 left-0 bg-gray-700/50 hidden">
         <div class="w-16 h-16 border-4 border-t-black border-gray-300 rounded-full animate-spin"></div>
     </div>
-    <?php include_once '../../includes/footer.php'; ?>
+    <?php
+    include_once '../../includes/theme.php';
+    include_once '../../includes/footer.php'; ?>
 
 </body>
 

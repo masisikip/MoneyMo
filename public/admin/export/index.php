@@ -17,7 +17,7 @@ include_once '../../includes/connect-db.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
-<body class="">
+<body class="bg-base-200">
     <main class="min-h-screen p-4 flex justify-center items-center">
         <div class="bg-white w-full md:w-96 border rounded-xl p-6">
             <h2 class="text-xl font-bold mb-4 w-full text-center">Export Collection</h2>
@@ -32,14 +32,16 @@ include_once '../../includes/connect-db.php';
                     <input type="date" id="endDate" name="end_date" class="border p-2 rounded w-full">
                 </div>
                 <button type="submit"
-                    class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded w-full cursor-pointer">
+                    class="bg-primary hover:bg-gray-800 text-white px-4 py-2 rounded w-full cursor-pointer">
                     Export to CSV
                 </button>
             </form>
 
         </div>
     </main>
-    <?php include_once '../../includes/footer.php'; ?>
+    <?php
+    include_once '../../includes/theme.php';
+    include_once '../../includes/footer.php'; ?>
 
     <script>
         $('#exportForm').on('submit', function (e) {

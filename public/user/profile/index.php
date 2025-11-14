@@ -73,8 +73,8 @@ if (!$user) {
                         class="hidden border-2 border-white border-t-transparent rounded-full w-4 h-4 animate-spin"></span>
                 </button>
             </div>
-             <div class="dropdown dropdown-end text-base-content">
-                <div tabindex="0" role="button" class="btn m-1">
+             <div class="dropdown dropdown-end text-base-content w-full">
+                <div tabindex="0" role="button" class="btn w-full">
                   Theme
                   <svg
                     width="12px"

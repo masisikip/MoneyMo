@@ -44,14 +44,14 @@ $total_pages = ceil($total_records / $limit);
 
 // Get actual user data
 $query = "
-SELECT 
+SELECT
     iduser,
     f_name,
     l_name,
     student_id,
     email,
     year,
-    CASE 
+    CASE
         WHEN year = 0 THEN 'unknown'
         WHEN year = 1 THEN '1st'
         WHEN year = 2 THEN '2nd'
@@ -93,14 +93,14 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body class="">
+<body class="min-h-screen bg-base-200">
     <?php include_once '../../includes/partial.php' ?>
 
     <main id="mainContent" class="mt-5 p-6 w-full max-w-full transition-all duration-300">
         <div class="flex items-center justify-between bg-white p-4 shadow rounded-lg relative">
             <!-- Left: Title, Search, Filter -->
-            <div class="flex flex-col md:flex-row p-1 gap-4 flex-wrap flex-grow">
-                <div class="flex flex-1 gap-2 max-w-[40rem]">
+            <div class="flex flex-col md:flex-row p-1 gap-4 flex-wrap grow">
+                <div class="flex flex-1 gap-2 max-w-160">
                     <!-- Search -->
                     <div class="relative w-full flex items-center">
                         <input type="text" id="userSearch" placeholder="Search" autocomplete="off" value="<?php if (isset($_GET['search'])) {
@@ -114,7 +114,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <!-- Filter Dropdown -->
                     <div class="relative">
                         <button id="toggleFilterMenu"
-                            class="bg-gray-100 text-black p-3 rounded-lg flex items-center hover:bg-gray-200 transition">
+                            class="bg-base-200 text-black p-3 rounded-lg flex items-center hover:bg-gray-200 transition">
                             <i class="fa-solid fa-sliders text-xl"></i>
                         </button>
 
@@ -134,17 +134,17 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <label><input type="checkbox" name="usertype[]" value="1"> Officer</label>
                                 </div>
                                 <button type="submit"
-                                    class="w-full mt-2 bg-black text-white py-2 rounded hover:bg-gray-800">Apply
+                                    class="w-full mt-2 bg-primary text-white py-2 rounded hover:bg-gray-800">Apply
                                     Filters</button>
                             </form>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex flex-grow justify-end">
+                <div class="flex grow justify-end">
                     <!-- Right: Add User Button -->
                     <button id="openAddUserModal"
-                        class="w-full cursor-pointer bg-black text-white rounded-lg flex items-center hover:bg-gray-800 transition md:w-fit md:px-4 py-2 gap-2">
+                        class="w-full cursor-pointer bg-primary text-white rounded-lg flex items-center hover:bg-gray-800 transition md:w-fit md:px-4 py-2 gap-2">
                         <i class="fas fa-user-plus text-xl ml-4 md:ml-0"></i>
                         <span class="font-medium mx-auto md:mx-0">Add User</span>
                     </button>
@@ -161,7 +161,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <!-- Desktop View (Table) -->
                     <table class="hidden md:table w-full border-collapse border border-gray-300">
                         <thead>
-                            <tr class="bg-gray-100">
+                            <tr class="bg-base-200">
                                 <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Name</th>
                                 <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Student ID</th>
                                 <th class="px-2 md:px-6 py-3 text-left text-xs md:text-base">Year</th>
@@ -462,7 +462,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <?php include_once '../../includes/footer.php'; ?>
+    <?php
+    include_once '../../includes/theme.php';
+    include_once '../../includes/footer.php'; ?>
 
     <script>
         function showLoading() {

@@ -21,17 +21,17 @@
     include_once '../../includes/connect-db.php';
     ?>
 
-    <main class="min-h-screen p-4 flex justify-center items-center">
+    <main class="min-h-screen p-4 flex justify-center items-center bg-base-200">
         <div class="bg-white w-full md:w-1/2   justify-center flex flex-col items-center border rounded-xl p-6">
             <h2 class="text-2xl font-bold mb-4">Import Students</h2>
 
             <form id="importForm" class="space-y-4 md:w-1/2">
-                <input type="file" name="student_file" accept=".csv" required class="border rounded-full cursor-pointer block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 
-                          file:rounded-full file:border-0 file:text-sm file:font-semibold 
-                          file:bg-black file:text-white hover:file:bg-gray-800">
+                <input type="file" name="student_file" accept=".csv" required class="border rounded-full cursor-pointer block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4
+                          file:rounded-full file:border-0 file:text-sm file:font-semibold
+                          file:bg-primary file:text-white hover:file:bg-gray-800">
 
                 <button type="submit"
-                    class="cursor-pointer  w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800">
+                    class="cursor-pointer  w-full bg-primary text-white py-2 rounded-lg hover:bg-gray-800">
                     Preview Students
                 </button>
             </form>
@@ -53,7 +53,9 @@
         </div>
     </div>
 
-    <?php include_once '../../includes/footer.php'; ?>
+    <?php
+    include_once '../../includes/theme.php';
+    include_once '../../includes/footer.php'; ?>
 
 </body>
 
