@@ -5,13 +5,6 @@
 @plugin "daisyui/theme" {
   name: "light";
   default: true;
-  --color-primary: #088155;
-  --color-base-100: white;
-  --color-base-200: #e3f2ee;
-  --color-base-300: #18c4a4;
-}
-@plugin "daisyui/theme" {
-  name: "dark";
   prefersdark: true;
   --color-primary: #088155;
   --color-base-100: white;
