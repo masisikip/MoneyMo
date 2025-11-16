@@ -48,7 +48,7 @@ $total_records = $countStmt->fetchColumn();
 $total_pages = ceil($total_records / $limit);
 
 $stmt = $pdo->prepare("
-    SELECT 
+    SELECT
         ctrl_no,
         date(date) AS date,
         CONCAT(u1.f_name, ' ', u1.l_name) AS username,
@@ -57,7 +57,7 @@ $stmt = $pdo->prepare("
         inventory.value,
         idinventory,
         CONCAT(u2.f_name, ' ', u2.l_name) AS officerName,
-        CASE 
+        CASE
             WHEN payment_type = 0 THEN 'Cash'
             WHEN payment_type = 1 THEN 'Gcash'
             ELSE 'unknown'
@@ -68,8 +68,8 @@ $stmt = $pdo->prepare("
     INNER JOIN user u1 ON inventory.iduser = u1.iduser
     INNER JOIN user u2 ON inventory.idofficer = u2.iduser
     $whereClause
-    ORDER BY date desc, ctrl_no desc   
-    LIMIT :limit OFFSET :offset 
+    ORDER BY date desc, ctrl_no desc
+    LIMIT :limit OFFSET :offset
     ");
 
 if (!empty($search)) {
@@ -88,7 +88,7 @@ $stmt->execute();
 $purchases = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $stmt2 = $pdo->query("
-    SELECT 
+    SELECT
         iditem,
         name
     FROM item
@@ -116,13 +116,11 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
         /* Enhanced button hover effects */
         .print-btn {
-            background-color: #000000;
             color: white;
             transition: all 0.3s ease;
         }
 
         .print-btn:hover:not(:disabled) {
-            background-color: #374151 !important;
             /* gray-700 */
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -194,12 +192,12 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 
-<body class="w-full h-full bg-gray-100">
+<body class="w-full h-full bg-base-200">
     <div class="flex-1 p-4 md:p-8 overflow-y-auto w-full md:ml-0 pb-24">
 
         <div class="w-full flex justify-end">
             <button onclick="openDateSelect()"
-                class="px-5 py-2 bg-black text-white hover:cursor-pointer font-medium rounded-lg shadow-md hover:bg-gray-900 active:scale-95 transition-all duration-150">
+                class="px-5 py-2 bg-primary text-white hover:cursor-pointer font-medium rounded-lg shadow-md hover:bg-primary/75 active:scale-95 transition-all duration-150">
                 Batch Print <i class="fa-solid fa-print"></i>
             </button>
         </div>
@@ -208,14 +206,14 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             <div
                 class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full  mx-auto">
                 <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
-                    <div class="px-3 py-2 text-white border rounded-l-lg bg-zinc-700">
+                    <div class="px-3 py-2 text-white border rounded-l-lg bg-primary">
                         <i class="fas fa-search"></i>
                     </div>
                     <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
                         placeholder="Search inventory..." class="px-2 w-full focus:outline-none py-0">
                 </div>
                 <div class="flex items-center border border-gray-300 rounded-lg w-full md:w-auto">
-                    <button type="submit" class="text-white border bg-zinc-700 rounded-l-lg py-2 px-3">
+                    <button type="submit" class="text-white border bg-primary rounded-l-lg py-2 px-3">
                         <i class="fas fa-sliders-h"></i>
                     </button>
                     <select name="filter" class="px-2 focus:outline-none w-full md:w-auto">
@@ -234,7 +232,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             <div class="min-w-full overflow-x-auto">
                 <table class="w-full border-collapse">
                     <thead>
-                        <tr class="bg-gray-200 text-gray-700">
+                        <tr class="bg-base-200 text-primary">
                             <th class="py-2 px-1 md:px-4 text-left text-[9px] md:text-[12px] md:text-xs cursor-pointer">
                                 Ctrl no
                             </th>
@@ -260,7 +258,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     </thead>
                     <tbody>
                         <?php foreach ($purchases as $purchase): ?>
-                            <tr class="border-b <?= $purchase['is_void'] ? 'bg-gray-100 text-gray-500' : '' ?>"
+                            <tr class="border-b <?= $purchase['is_void'] ? 'bg-gray-100 text-gray-500' : 'text-primary' ?>"
                                 data-reference="<?= $purchase['ctrl_no'] ?>" data-date="<?= $purchase['date'] ?>"
                                 data-quantity="<?= $purchase['quantity'] ?>" data-item="<?= $purchase['itemname'] ?>"
                                 data-amount="<?= $purchase['value'] ?>" data-inventory="<?= $purchase['idinventory'] ?>"
@@ -292,7 +290,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                 <td class="py-2 md:py-3 px-2 md:px-4">
                                     <div class="flex justify-center gap-2">
                                         <button
-                                            class="print-btn text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs transition duration-300 <?= $purchase['is_void'] ? 'opacity-50 cursor-not-allowed' : '' ?>"
+                                            class="print-btn bg-primary text-white px-2 md:px-4 py-1 rounded-full text-[10px] md:text-xs transition duration-300 <?= $purchase['is_void'] ? 'opacity-50 cursor-not-allowed' : '' ?>"
                                             <?= $purchase['is_void'] ? 'disabled' : '' ?>>
                                             Print
                                         </button>
@@ -449,7 +447,9 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <?php include_once '../../includes/footer.php'; ?>
+    <?php
+    include_once '../../includes/theme.php';
+    include_once '../../includes/footer.php'; ?>
 
     <script>
 
@@ -827,11 +827,11 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                         <style>
                             @media print {
                                 @page { margin: 0; }
-                                body { 
-                                    margin: 0; 
-                                    font-family: 'Courier New', monospace; 
+                                body {
+                                    margin: 0;
+                                    font-family: 'Courier New', monospace;
                                     text-align: center;
-                                    width: 45mm; 
+                                    width: 45mm;
                                 }
                                 .receipt {
                                     padding: 3px;
@@ -900,7 +900,7 @@ $items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                             <p class="total">Total: ₱${parseFloat(amount).toFixed(2)}</p>
 
                             <hr>
-                    
+
                             <p class="info">This is a customer's copy.</p>
                             <p class="info">Thank You!</p>
                             <br>

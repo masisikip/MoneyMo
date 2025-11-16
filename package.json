@@ -5,5 +5,8 @@
   },
   "scripts": {
     "build:tailwind": "tailwindcss -i ./src/css/input.css -o ./public/css/styles.css --watch"
+  },
+  "devDependencies": {
+    "daisyui": "^5.4.2"
   }
 }

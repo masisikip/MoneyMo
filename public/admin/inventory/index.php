@@ -30,7 +30,7 @@
     </style>
 </head>
 
-<body>
+<body class="bg-base-200">
     <?php
     include_once '../../includes/partial.php';
     include_once '../../includes/connect-db.php';
@@ -42,7 +42,7 @@
     $filter = $_GET['filter'] ?? '';
 
     $whereClause = "WHERE inventory.is_void = 0"; // Only show non-voided transactions
-    
+
     if (!empty($search)) {
         $whereClause .= " AND (item.name LIKE :search1 OR f_name LIKE :search2 OR l_name LIKE :search3)";
     }
@@ -112,7 +112,7 @@
         $placeholdersString = implode(',', $placeholders);
 
         $query = "
-        SELECT 
+        SELECT
             idinventory,
             DATE(date) AS date,
             DATE(received_at) AS claimdate,
@@ -120,7 +120,7 @@
             CONCAT(f_name, ' ', l_name) AS username,
             is_received,
             inventory.is_void,
-            CASE 
+            CASE
                 WHEN is_received = 1 THEN 'Claimed'
                 WHEN is_received = 0 THEN 'Claim'
                 ELSE 'Unknown'
@@ -168,14 +168,14 @@
             <div
                 class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full max-w-5xl mx-auto">
                 <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
-                    <div class="px-3 py-1 text-white border rounded-l-lg bg-zinc-700">
+                    <div class="px-3 py-1 text-white border rounded-l-lg bg-primary">
                         <i class="fas fa-search"></i>
                     </div>
                     <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
                         placeholder="Search inventory..." class="px-2 w-full focus:outline-none py-0">
                 </div>
                 <div class="flex items-center border border-gray-300 rounded-lg w-full md:w-auto">
-                    <button type="submit" class="text-white border bg-zinc-700 rounded-l-lg py-1 px-3">
+                    <button type="submit" class="text-white border bg-primary rounded-l-lg py-1 px-3">
                         <i class="fas fa-sliders-h"></i>
                     </button>
                     <select name="filter" class="px-2 focus:outline-none w-full md:w-auto">
@@ -198,7 +198,7 @@
                     <div class="mb-4 border rounded-lg overflow-hidden">
                         <!-- User Header (clickable) -->
                         <button onclick="toggleUserItems(this)"
-                            class="w-full text-left bg-gray-200 px-4 py-2 font-bold flex justify-between items-center">
+                            class="w-full text-left bg-base-200 px-4 py-2 font-bold flex justify-between items-center">
                             <?= htmlspecialchars($username) ?>
                             <i class="fas fa-chevron-down"></i>
                         </button>
@@ -206,7 +206,7 @@
                         <!-- Items Table (collapsed initially) -->
                         <div class="user-items hidden">
                             <table class="w-full border-collapse min-w-[600px]">
-                                <thead class="bg-gray-100 text-gray-700">
+                                <thead class="bg-base-200 text-gray-700">
                                     <tr>
                                         <th class="py-2 px-4 text-left">Item Name</th>
                                         <th class="py-2 px-4 text-left">Date of Purchase</th>
@@ -216,7 +216,7 @@
                                 </thead>
                                 <tbody>
                                     <?php foreach ($items as $purchase): ?>
-                                        <tr class="border-b">
+                                        <tr class="border-b text-primary">
                                             <td class="py-3 px-4"><?= htmlspecialchars($purchase['itemname']) ?></td>
                                             <td class="py-3 px-4"><?= htmlspecialchars($purchase['date']) ?></td>
                                             <td class="py-3 px-4"><?= htmlspecialchars($purchase['claimdate']) ?></td>
@@ -224,7 +224,7 @@
                                                 <?php if ($purchase['is_received'] == 0): ?>
                                                     <button
                                                         onclick="confirmClaim(<?= $purchase['idinventory'] ?>, '<?= addslashes($purchase['itemname']) ?>', '<?= addslashes($purchase['username']) ?>', this)"
-                                                        class="bg-gray-950 cursor-pointer text-white px-4 py-1 rounded-full hover:bg-gray-800 min-w-[120px]">
+                                                        class="bg-primary cursor-pointer text-white px-4 py-1 rounded-full hover:bg-primary/75 min-w-[120px]">
                                                         Claim
                                                     </button>
                                                 <?php else: ?>
@@ -342,7 +342,9 @@
         </div>
     </div>
 
-    <?php include_once '../../includes/footer.php'; ?>
+    <?php
+    include_once '../../includes/theme.php';
+    include_once '../../includes/footer.php'; ?>
 
 </body>
 

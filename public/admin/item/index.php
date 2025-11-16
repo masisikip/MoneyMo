@@ -95,13 +95,13 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 
-<body class="flex flex-col h-screen bg-gray-100">
+<body class="flex flex-col min-h-screen bg-base-200">
     <?php include_once '../../includes/partial.php' ?>
 
 
     <div class="w-full flex justify-end mt-5 mr-20 pr-10">
 
-        <button class="text-white  bg-black px-4 py-2 rounded flex items-center add-item-button cursor-pointer"
+        <button class="text-white  bg-primary px-4 py-2 rounded flex items-center add-item-button cursor-pointer"
             onclick="openAddModal()">
             <i class="fas fa-plus mr-2"></i> <span>Add Item</span>
         </button>
@@ -112,14 +112,14 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div
             class="mt-5 bg-white flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-sm p-4 mb-4 space-y-3 md:space-y-0 w-full max-w-5xl mx-auto">
             <div class="flex items-center w-full md:max-w-2xl border border-gray-300 rounded-lg">
-                <div class="px-3 py-1 text-white border rounded-l-lg bg-zinc-700">
+                <div class="px-3 py-1 text-white border rounded-l-lg bg-primary">
                     <i class="fas fa-search"></i>
                 </div>
                 <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
                     placeholder="Search inventory..." class="px-2 w-full focus:outline-none py-0">
             </div>
             <div class="flex items-center border border-gray-300 rounded-lg w-full md:w-auto">
-                <button type="submit" class="text-white border bg-zinc-700 rounded-l-lg py-1 px-3">
+                <button type="submit" class="text-white border bg-primary rounded-l-lg py-1 px-3">
                     <i class="fas fa-sliders-h"></i>
                 </button>
                 <select name="filter" class="px-2 focus:outline-none w-full md:w-auto">
@@ -160,16 +160,16 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="absolute top-0 left-0 right-0 flex items-center justify-between h-16 px-3 text-black">
                             <div class="flex rounded-full bg-[#ffffffa8] border border-zinc-700/60">
                                 <div onclick="openUpdateModal(<?= $item['iditem'] ?>)"
-                                    class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 border-r rounded-l-full cursor-pointer border-r-gray-600 icon-button">
+                                    class="flex justify-center w-1/2 h-full px-2 py-1 text-primary border-r rounded-l-full cursor-pointer border-r-gray-600 icon-button">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </div>
                                 <div onclick="openDeleteModal(<?= $item['iditem'] ?>)"
-                                    class="flex justify-center w-1/2 h-full px-2 py-1 text-gray-600 rounded-r-full cursor-pointer icon-button">
+                                    class="flex justify-center w-1/2 h-full px-2 py-1 text-primary rounded-r-full cursor-pointer icon-button">
                                     <i class="fa-solid fa-trash"></i>
                                 </div>
                             </div>
                             <div
-                                class="price-container text-white bg-gray-800/80 rounded-full shadow-lg px-2 py-1 min-w-14">
+                                class="price-container text-white bg-primary/80 rounded-full shadow-lg px-2 py-1 min-w-14">
                                 <h3 class="text-l text-center">
                                     ₱ <?php echo htmlspecialchars($item['value']); ?>
                                 </h3>
@@ -178,7 +178,7 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         <!-- Item Name -->
                         <div
-                            class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center h-28 px-3 text-white rounded-b-lg bg-gradient-to-t from-zinc-800/90 via-zinc-800/30 to-transparent">
+                            class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center h-28 px-3 text-white rounded-b-lg bg-linear-to-t from-primary/90 via-primary/30 to-transparent">
                             <h3 class="text-lg font-bold item-name text-center">
                                 <?php echo htmlspecialchars($item['name']); ?>
                             </h3>
@@ -372,7 +372,9 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <p class="text-lg font-semibold">Processing...</p>
         </div>
     </div>
-    <?php include_once '../../includes/footer.php'; ?>
+    <?php
+    include_once '../../includes/theme.php';
+    include_once '../../includes/footer.php'; ?>
 
 
 </body>

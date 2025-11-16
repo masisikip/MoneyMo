@@ -19,7 +19,7 @@ require_once '../../includes/token.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 </head>
 
-<body class="bg-gray-100 w-screen min-h-screen flex flex-col">
+<body class="bg-base-200 w-screen min-h-screen flex flex-col">
 
     <?php include_once '../../includes/partial.php'; ?>
 
@@ -77,7 +77,7 @@ require_once '../../includes/token.php';
             <?php if (!empty($base64Qr)): ?>
                 <div class="w-full flex justify-center mt-4">
                     <button id="download-btn"
-                        class="px-12 py-2 mb-4 bg-zinc-700 text-white rounded-full hover:bg-gray-800 cursor-pointer text-sm transition duration-200">
+                        class="px-12 py-2 mb-4 bg-primary text-white rounded-full hover:bg-gray-800 cursor-pointer text-sm transition duration-200">
                         Download
                     </button>
                 </div>
@@ -85,7 +85,9 @@ require_once '../../includes/token.php';
         </div>
     </div>
 
-    <?php include_once '../../includes/footer.php'; ?>
+    <?php
+    include_once '../../includes/theme.php';
+    include_once '../../includes/footer.php'; ?>
 
 </body>
 

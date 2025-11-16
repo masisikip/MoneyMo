@@ -82,7 +82,7 @@ $limit = 15;
 
 // Build Main Query with Date Filters - UPDATED TO INCLUDE is_void
 $base_query = "
-    SELECT 
+    SELECT
         reference_no,
         DATE(date) AS date,
         CONCAT(u1.f_name, ' ', u1.l_name) AS username,
@@ -90,7 +90,7 @@ $base_query = "
         item.name AS itemname,
         item.value AS itemvalue,
         CONCAT(u2.f_name, ' ', u2.l_name) AS officerName,
-        CASE 
+        CASE
             WHEN payment_type = 0 THEN 'Cash'
             WHEN payment_type = 1 THEN 'Gcash'
             ELSE 'unknown'
@@ -177,14 +177,14 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </head>
 
-<body class="h-screen bg-gray-100">
+<body class="min-h-screen bg-base-200">
     <?php include_once '../includes/partial.php'; ?>
 
     <main class="py-8 px-8 md:px-16 space-y-6">
         <!-- Date Filter Form -->
         <form method="GET" class="bg-white p-4 rounded-lg shadow">
             <div class="flex flex-col gap-2 md:gap-0 md:flex-row justify-between items-center">
-                <h3 class="text-lg font-semibold">Filter Transactions</h3>
+                <h3 class="text-lg text-primary font-semibold">Filter Transactions</h3>
                 <div class="flex flex-col md:flex-row gap-4">
                     <div class="flex items-center gap-2">
                         <input type="date" name="start-date" value="<?= htmlspecialchars($start_date) ?>"
@@ -195,11 +195,11 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                     </div>
                     <div class="flex justify-center md:justify-start gap-2">
                         <button type="submit"
-                            class="bg-zinc-600 text-white px-4 py-2 rounded text-sm hover:bg-zinc-700 cursor-pointer">
+                            class="bg-primary/80 text-white px-4 py-2 rounded text-sm hover:bg-primary cursor-pointer">
                             Apply
                         </button>
                         <button type="button" onclick="window.location.href='?'"
-                            class="bg-gray-100 px-4 py-2 rounded text-sm hover:bg-gray-200 cursor-pointer">
+                            class="bg-base-300/80 text-white px-4 py-2 rounded text-sm hover:bg-base-300 cursor-pointer">
                             Clear
                         </button>
                     </div>
@@ -212,8 +212,8 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
             <!-- Left Column -->
             <div class="md:col-span-1 bg-white p-4 rounded-lg shadow space-y-8">
                 <!-- Total Collected -->
-                <div class="text-center w-full md:w-fit">
-                    <h3 class="text-lg text-gray-500 mb-2">Total Collected Cash</h3>
+                <div class="text-center w-full md:w-fit text-primary">
+                    <h3 class="text-lg mb-2">Total Collected Cash</h3>
                     <p class="text-3xl font-bold">
                         ₱<?= number_format($total_collected_cash, 2) ?>
                     </p>
@@ -221,15 +221,15 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
 
                 <!-- Low Stock Items -->
                 <div>
-                    <h3 class="text-lg text-gray-500 mb-4">Low Stock Items</h3>
+                    <h3 class="text-lg text-primary mb-4">Low Stock Items</h3>
                     <div class="space-y-4">
                         <?php foreach ($low_stock_items as $item): ?>
                             <div class="flex items-center gap-4 p-2 bg-gray-50 rounded">
                                 <img src="data:<?= htmlspecialchars($item['mime']) ?>;base64,<?= base64_encode($item['image']) ?>"
                                     alt="<?= htmlspecialchars($item['name']) ?>" class="w-12 h-12 object-cover rounded">
                                 <div>
-                                    <p class="font-medium"><?= htmlspecialchars($item['name']) ?></p>
-                                    <p class="text-sm text-red-500">Stock: <?= $item['stock'] ?></p>
+                                    <p class="font-medium text-primary"><?= htmlspecialchars($item['name']) ?></p>
+                                    <p class="text-sm text-primary/75">Stock: <?= $item['stock'] ?></p>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -251,12 +251,12 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
         </div>
 
         <!-- Transactions Table -->
-        <div class="bg-white shadow rounded-lg p-4 md:p-6 overflow-x-auto">
+        <div class="bg-white shadow rounded-lg text-primary p-4 md:p-6 overflow-x-auto">
             <h1 class="w-full mb-6 text-2xl font-bold">Recent Transactions</h1>
             <div class="min-w-full overflow-x-auto">
                 <table class="w-full border-collapse">
                     <thead>
-                        <tr class="bg-gray-200 text-gray-700">
+                        <tr class="bg-base-200 text-primary">
                             <th class="py-2 px-4 text-left">Student Name</th>
                             <th class="py-2 px-4 text-left">Date</th>
                             <th class="py-2 px-4 text-left">Item</th>
@@ -266,7 +266,7 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                     </thead>
                     <tbody>
                         <?php foreach ($purchases as $purchase): ?>
-                            <tr class="border-b <?= $purchase['is_void'] ? 'bg-gray-100 text-gray-500' : '' ?>"
+                            <tr class="border-b <?= $purchase['is_void'] ? 'bg-gray-100 text-base-300/75' : 'text-primary' ?>"
                                 data-reference="<?= $purchase['ctrl_no'] ?>" data-date="<?= $purchase['date'] ?>"
                                 data-item="<?= $purchase['itemname'] ?>" data-amount="<?= $purchase['itemvalue'] ?>"
                                 data-officerName="<?= $purchase['officerName'] ?>"
@@ -282,7 +282,7 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                                 <td class="py-3 px-4">₱<?= number_format($purchase['itemvalue'], 2) ?></td>
                                 <td class="py-3 px-4 text-center">
                                     <button
-                                        class="print-btn text-white px-4 py-1 rounded-full hover:bg-gray-700 cursor-pointer <?= $purchase['is_void'] ? 'bg-gray-400 opacity-50 cursor-not-allowed' : 'bg-black' ?>"
+                                        class="print-btn text-white px-4 py-1 rounded-full hover:bg-primary/80 cursor-pointer <?= $purchase['is_void'] ? 'bg-primary/40 opacity-50 cursor-not-allowed' : 'bg-primary' ?>"
                                         <?= $purchase['is_void'] ? 'disabled' : '' ?>
                                         data-student-name="<?= htmlspecialchars($purchase['username']) ?>"
                                         data-date="<?= $purchase['date'] ?>"
@@ -303,18 +303,57 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
         </div>
     </main>
 
-    <?php include_once '../includes/footer.php'; ?>
+    <?php
+    include_once '../includes/theme.php';
+    include_once '../includes/footer.php'; ?>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            function generateGrayShades(count) {
-                const colors = [];
-                const step = 220 / Math.max(count - 1, 1);
-                for (let i = 0; i < count; i++) {
-                    const grayLevel = Math.round(60 + (step * i));
-                    colors.push(`rgb(${grayLevel},${grayLevel},${grayLevel})`);
+            // Helper: hex → { h, s, l }
+            function hexToHSL(H) {
+              // Remove leading ‘#’ if present
+              let hex = H.replace(/^#/, '');
+              if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+              const r = parseInt(hex.substr(0,2),16)/255;
+              const g = parseInt(hex.substr(2,2),16)/255;
+              const b = parseInt(hex.substr(4,2),16)/255;
+              const max = Math.max(r,g,b), min = Math.min(r,g,b);
+              let h, s, l = (max + min) / 2;
+
+              if (max === min) {
+                h = s = 0; // achromatic
+              } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch(max) {
+                  case r: h = ((g - b) / d + (g < b ? 6 : 0)); break;
+                  case g: h = ((b - r) / d + 2); break;
+                  case b: h = ((r - g) / d + 4); break;
                 }
-                return colors;
+                h /= 6;
+              }
+              return { h: h * 360, s: s * 100, l: l * 100 };
+            }
+
+            // Helper: HSL → CSS string
+            function hslToCSS(h, s, l) {
+              return `hsl(${h.toFixed(1)}, ${s.toFixed(1)}%, ${l.toFixed(1)}%)`;
+            }
+
+            // New function: generate shades of primary
+            function generatePrimaryShades(count) {
+              const rootStyle = getComputedStyle(document.documentElement);
+              const primaryHex = rootStyle.getPropertyValue('--color-base-300').trim();
+              const {h, s, l} = hexToHSL(primaryHex);
+
+              const colors = [];
+              const step = 35 / Math.max(count - 1, 1); // adjust how much lighter/darker you want
+              for (let i = 0; i < count; i++) {
+                // spread lightness from l-15% to l+15% (clamped)
+                const newL = Math.min(100, Math.max(0, l + (step * (i - (count-1)/2))));
+                colors.push(hslToCSS(h, s, newL));
+              }
+              return colors;
             }
 
             function renderDonutChart(data) {
@@ -324,7 +363,7 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                 const labels = items.map(i => i.name);
                 const values = items.map(i => i.total);
                 const sum = values.reduce((a, b) => a + b, 0);
-                const colors = generateGrayShades(items.length);
+                const colors = generatePrimaryShades(items.length);
 
                 const ctx = document.getElementById('chartCanvas').getContext('2d');
                 if (window.myChart) window.myChart.destroy();
@@ -401,7 +440,7 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                         <span class="w-3 h-3 rounded-full mr-2" style="background:${colors[index]}"></span>
                         <span>${item.name}</span>
                     </div>
-                    <span class="font-medium">₱${item.total.toLocaleString()}</span>
+                    <span class="font-medium text-primary">₱${item.total.toLocaleString()}</span>
                 </div>
             `).join('');
             }
@@ -479,27 +518,27 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                         <head>
                             <title>MoneyMo - Receipt</title>
                             <style>
-                                body { 
-                                    font-family: 'Courier New', monospace; 
+                                body {
+                                    font-family: 'Courier New', monospace;
                                     padding: 20px;
                                     margin: 0;
                                 }
-                                .receipt { 
-                                    width: 300px; 
+                                .receipt {
+                                    width: 300px;
                                     margin: 0 auto;
                                     border: 1px solid #000;
                                     padding: 20px;
                                     position: relative;
                                     background: white;
                                 }
-                                .header { 
-                                    text-align: center; 
+                                .header {
+                                    text-align: center;
                                     margin-bottom: 20px;
                                     border-bottom: 1px dashed #000;
                                     padding-bottom: 10px;
                                 }
-                                .details { 
-                                    margin-bottom: 15px; 
+                                .details {
+                                    margin-bottom: 15px;
                                 }
                                 .detail-row {
                                     display: flex;
@@ -507,8 +546,8 @@ $query_string = $query_params ? http_build_query($query_params) . '&' : '';
                                     margin-bottom: 5px;
                                     font-size: 14px;
                                 }
-                                .total { 
-                                    font-weight: bold; 
+                                .total {
+                                    font-weight: bold;
                                     margin-top: 10px;
                                     border-top: 2px solid #000;
                                     padding-top: 10px;
